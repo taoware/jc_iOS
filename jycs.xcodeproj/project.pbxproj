@@ -72,6 +72,7 @@
 		1E71A22B1AC10B96000A6AD3 /* login_register@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E71A2231AC10B96000A6AD3 /* login_register@2x.png */; };
 		1E71A22C1AC10B96000A6AD3 /* login_username@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E71A2241AC10B96000A6AD3 /* login_username@2x.png */; };
 		1E71A22D1AC10B96000A6AD3 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E71A2251AC10B96000A6AD3 /* logo.png */; };
+		1E74B2D21AF8A1CD00B8C0FA /* EMBuddy+JCuser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E74B2D11AF8A1CD00B8C0FA /* EMBuddy+JCuser.m */; };
 		1E940C5F1AC115C3006E5A10 /* login_preview@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E940C5E1AC115C3006E5A10 /* login_preview@2x.png */; };
 		1E940C651AC13235006E5A10 /* identify_btn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E940C621AC13235006E5A10 /* identify_btn@2x.png */; };
 		1E940C661AC13235006E5A10 /* submit_btn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E940C631AC13235006E5A10 /* submit_btn@2x.png */; };
@@ -567,6 +568,8 @@
 		1E71A2231AC10B96000A6AD3 /* login_register@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "login_register@2x.png"; sourceTree = "<group>"; };
 		1E71A2241AC10B96000A6AD3 /* login_username@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "login_username@2x.png"; sourceTree = "<group>"; };
 		1E71A2251AC10B96000A6AD3 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
+		1E74B2D01AF8A1CD00B8C0FA /* EMBuddy+JCuser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EMBuddy+JCuser.h"; sourceTree = "<group>"; };
+		1E74B2D11AF8A1CD00B8C0FA /* EMBuddy+JCuser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "EMBuddy+JCuser.m"; sourceTree = "<group>"; };
 		1E940C5E1AC115C3006E5A10 /* login_preview@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "login_preview@2x.png"; sourceTree = "<group>"; };
 		1E940C621AC13235006E5A10 /* identify_btn@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "identify_btn@2x.png"; sourceTree = "<group>"; };
 		1E940C631AC13235006E5A10 /* submit_btn@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "submit_btn@2x.png"; sourceTree = "<group>"; };
@@ -1747,6 +1750,8 @@
 				1E9E31CF1AF7BA00003BA9E1 /* UIViewController+DismissKeyboard.m */,
 				1E9E31D01AF7BA00003BA9E1 /* UIViewController+HUD.h */,
 				1E9E31D11AF7BA00003BA9E1 /* UIViewController+HUD.m */,
+				1E74B2D01AF8A1CD00B8C0FA /* EMBuddy+JCuser.h */,
+				1E74B2D11AF8A1CD00B8C0FA /* EMBuddy+JCuser.m */,
 			);
 			path = Catogory;
 			sourceTree = "<group>";
@@ -3326,6 +3331,7 @@
 				1E9E36051AF7CB6C003BA9E1 /* GroupTableViewCell.m in Sources */,
 				1E9E36321AF7CB6C003BA9E1 /* GXStoreViewController.m in Sources */,
 				1E9E31AE1AF7B83D003BA9E1 /* PSTCollectionViewItemKey.m in Sources */,
+				1E74B2D21AF8A1CD00B8C0FA /* EMBuddy+JCuser.m in Sources */,
 				1E9E360F1AF7CB6C003BA9E1 /* GXContactListViewController.m in Sources */,
 				1E9E31D31AF7BA00003BA9E1 /* NSDateFormatter+Category.m in Sources */,
 				1E9E31921AF7B83D003BA9E1 /* MWPhoto.m in Sources */,

@@ -71,6 +71,13 @@
     return user;
 }
 
++ (void)loadUserFromUsersArray:(NSArray *)users // of Users NSDictionary
+      intoManagedObjectContext:(NSManagedObjectContext *)context {
+    for (NSDictionary *user in users) {
+        [self UserWithUserInfo:user inManagedObjectContext:context];
+    }
+}
+
 + (void)deleteAllUsersInManagedObjectContext:(NSManagedObjectContext *)context {
     NSFetchRequest * allRecords = [[NSFetchRequest alloc] init];
     [allRecords setEntity:[NSEntityDescription entityForName:@"User" inManagedObjectContext:context]];

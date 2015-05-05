@@ -9,7 +9,7 @@
         <!--通讯录-->
         <scene sceneID="RdJ-lZ-NOa">
             <objects>
-                <viewController id="He2-it-mWo" customClass="GXContactViewController" sceneMemberID="viewController">
+                <viewController id="He2-it-mWo" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Db6-cf-YuN"/>
                         <viewControllerLayoutGuide type="bottom" id="TZ5-si-RbC"/>
@@ -385,7 +385,7 @@
         <!--信息-->
         <scene sceneID="wpP-jq-1gA">
             <objects>
-                <viewController id="jgu-ji-xnD" customClass="GXInfoViewController" sceneMemberID="viewController">
+                <viewController id="jgu-ji-xnD" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="tIF-hH-PHD"/>
                         <viewControllerLayoutGuide type="bottom" id="eoW-Ws-NDc"/>

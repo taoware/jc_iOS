@@ -171,7 +171,7 @@ alpha:1.0]
         [imgV setImageWithURLRequest:imageRequest placeholderImage:[UIImage imageNamed:@"placeholder.jpg"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
             if ([request.URL.absoluteString isEqualToString:request.URL.absoluteString]) {
                 imgV.image = image;
-            }   
+            }
         } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
             imgV.image = nil;
         }];

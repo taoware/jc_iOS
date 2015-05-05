@@ -23,6 +23,8 @@
 - (void)asyncResetPasswordWithOldPass:(NSString *)oldPass andNewPass:(NSString *)newPass  completion:(void(^)(NSDictionary *resetInfo, GXError* error))completion;
 - (void)asyncUpdateUserAvatarwithImageData:(NSData *)imageData andImageName:(NSString *) imageName completion:(void (^)(NSDictionary *info, GXError *error))completion;
 - (void)asyncLogoutWithCompletion:(void (^)(NSDictionary *info, GXError *error))completion;
-//- (void)asyncFetchUserInfoWithEasemobUsername:(NSArray *)usernames completion(
+- (void)asyncFetchUserInfoWithEasemobUsername:(NSArray *)usernames completion:(void (^)(GXError *error))completion;
+
+- (User *)queryUserInfoUsingEasmobUsername:(NSString* )easemobUsername;
 
 @end

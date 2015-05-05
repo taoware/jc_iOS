@@ -18,6 +18,8 @@
 #import "GroupListViewController.h"
 #import "ChatViewController.h"
 #import "XLPagerTabStripViewController.h"
+#import "GXUserEngine.h"
+#import "EMBuddy+JCuser.h"
 
 
 @interface GXContactListViewController ()<UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UIActionSheetDelegate, BaseTableCellDelegate, SRRefreshDelegate, XLPagerTabStripChildItem>
@@ -244,8 +246,10 @@
         }
         else{
             EMBuddy *buddy = [[self.dataSource objectAtIndex:(indexPath.section - 1)] objectAtIndex:indexPath.row];
-            cell.imageView.image = [UIImage imageNamed:@"chatListCellHead.png"];
-            cell.textLabel.text = buddy.username;
+//            cell.imageView.image = [UIImage imageNamed:@"chatListCellHead.png"];
+            [cell.imageView setImageWithURL:[NSURL URLWithString:buddy.avatarUrl] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
+            NSLog(@"%@", buddy.avatarUrl);
+            cell.textLabel.text = buddy.realName;
         }
     }
     
@@ -508,7 +512,7 @@
     //名字分section
     for (EMBuddy *buddy in dataArray) {
         //getUserName是实现中文拼音检索的核心，见NameIndex类
-        NSString *firstLetter = [ChineseToPinyin pinyinFromChineseString:buddy.username];
+        NSString *firstLetter = [ChineseToPinyin pinyinFromChineseString:buddy.realName];
         NSInteger section = [indexCollation sectionForObject:[firstLetter substringToIndex:1] collationStringSelector:@selector(uppercaseString)];
         
         NSMutableArray *array = [sortedArray objectAtIndex:section];
@@ -518,10 +522,10 @@
     //每个section内的数组排序
     for (int i = 0; i < [sortedArray count]; i++) {
         NSArray *array = [[sortedArray objectAtIndex:i] sortedArrayUsingComparator:^NSComparisonResult(EMBuddy *obj1, EMBuddy *obj2) {
-            NSString *firstLetter1 = [ChineseToPinyin pinyinFromChineseString:obj1.username];
+            NSString *firstLetter1 = [ChineseToPinyin pinyinFromChineseString:obj1.realName];
             firstLetter1 = [[firstLetter1 substringToIndex:1] uppercaseString];
             
-            NSString *firstLetter2 = [ChineseToPinyin pinyinFromChineseString:obj2.username];
+            NSString *firstLetter2 = [ChineseToPinyin pinyinFromChineseString:obj2.realName];
             firstLetter2 = [[firstLetter2 substringToIndex:1] uppercaseString];
             
             return [firstLetter1 caseInsensitiveCompare:firstLetter2];
@@ -556,10 +560,14 @@
         [self.contactsSource addObject:loginBuddy];
     }
     
-    [self.dataSource addObjectsFromArray:[self sortDataArray:self.contactsSource]];
-    
-    [_tableView reloadData];
-    [self hideHud];
+    [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:[self.contactsSource valueForKey:@"username"] completion:^(GXError *error) {
+        [self.dataSource removeAllObjects];
+        [self.dataSource addObjectsFromArray:[self sortDataArray:self.contactsSource]];
+        
+        [_tableView reloadData];
+        [self hideHud];
+    }];
+
 }
 
 #pragma mark - action

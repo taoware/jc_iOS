@@ -118,7 +118,7 @@
                  }
              }
          } onQueue:nil];
-        
+        [self executeCompletedOperations];
         
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         // api error handling
@@ -132,6 +132,7 @@
             // AFNetworking error handling
             completion(nil, [GXError errorWithCode:GXErrorServerNotReachable andDescription:error.localizedDescription]);
         }
+        [self executeCompletedOperations];
     }];
 }
 
@@ -242,9 +243,36 @@
         error = [GXError errorWithCode:emError.errorCode andDescription:emError.description];
     }
     completion(nil, error);
-
 }
 
+- (void)asyncFetchUserInfoWithEasemobUsername:(NSArray *)usernames completion:(void (^)(GXError *))completion {
+    NSManagedObjectContext* context = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+    
+    NSString* endpoint = @"users";
+    NSString* usernameAsString = [usernames componentsJoinedByString:@","];
+    NSDictionary* parameter = @{@"imUsernames": usernameAsString};
+    [[GXHTTPManager sharedManager] GET:endpoint parameters:parameter success:^(NSURLSessionDataTask *task, id responseObject) {
+        if ([responseObject isKindOfClass:[NSDictionary class]]) {
+            NSArray* users = [responseObject objectForKey:API_RESULTS];
+            [User loadUserFromUsersArray:users intoManagedObjectContext:context];
+        }
+        [self executeCompletedOperations];
+        completion(nil);
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        [self executeCompletedOperations];
+        completion([GXError errorWithCode:GXErrorUserQueryFailure andDescription:@"用户数据查询失败"]);
+    }];
+}
 
+- (User *)queryUserInfoUsingEasmobUsername:(NSString *)easemobUsername {
+    NSManagedObjectContext *managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+    
+    NSFetchRequest* fetchRequest = [[NSFetchRequest alloc]initWithEntityName:@"User"];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"imUsername == %@", easemobUsername];
+    fetchRequest.predicate = predicate;
+    NSError* error;
+    User* user = [[managedObjectContext executeFetchRequest:fetchRequest error:&error] firstObject];
+    return user;
+}
 
 @end
