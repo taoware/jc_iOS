@@ -7,7 +7,6 @@
 //
 
 #import "AppDelegate+EaseMob.h"
-#import "ApplyViewController.h"
 
 /**
  *  本类中做了EaseMob初始化和推送等操作
@@ -38,7 +37,7 @@
 
     [[EaseMob sharedInstance] registerSDKWithAppKey:@"gxcm#jycs"
                                        apnsCertName:apnsCertName
-                                        otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:NO]}];
+                                        otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:YES]}];
     
     // 登录成功后，自动去取好友列表
     // SDK获取结束后，会回调
@@ -208,29 +207,44 @@
 // 开始自动登录回调
 -(void)willAutoLoginWithInfo:(NSDictionary *)loginInfo error:(EMError *)error
 {
-//    UIAlertView *alertView = nil;
-//    if (error) {
-//        alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:NSLocalizedString(@"login.errorAutoLogin", @"Automatic logon failure") delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
-//    }
-//    else{
-//        alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:NSLocalizedString(@"login.beginAutoLogin", @"Start automatic login...") delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
-//    }
-//    
-//    [alertView show];
+    UIAlertView *alertView = nil;
+    if (error) {
+        alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:NSLocalizedString(@"login.errorAutoLogin", @"Automatic logon failure") delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
+        
+        //发送自动登陆状态通知
+        [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@NO];
+    }
+    else{
+        alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:NSLocalizedString(@"login.beginAutoLogin", @"Start automatic login...") delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
+        
+        //将旧版的coredata数据导入新的数据库
+        EMError *error = [[EaseMob sharedInstance].chatManager importDataToNewDatabase];
+        if (!error) {
+            error = [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
+        }
+    }
+    
+    [alertView show];
 }
 
 // 结束自动登录回调
 -(void)didAutoLoginWithInfo:(NSDictionary *)loginInfo error:(EMError *)error
 {
-//    UIAlertView *alertView = nil;
-//    if (error) {
-//        alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:NSLocalizedString(@"login.errorAutoLogin", @"Automatic logon failure") delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
-//    }
-//    else{
-//        alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:NSLocalizedString(@"login.endAutoLogin", @"End automatic login...") delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
-//    }
-//    
-//    [alertView show];
+    UIAlertView *alertView = nil;
+    if (error) {
+        alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:NSLocalizedString(@"login.errorAutoLogin", @"Automatic logon failure") delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
+        
+        //发送自动登陆状态通知
+        [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@NO];
+    }
+    else{
+        //获取群组列表
+        [[EaseMob sharedInstance].chatManager asyncFetchMyGroupsList];
+        
+        alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:NSLocalizedString(@"login.endAutoLogin", @"End automatic login...") delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
+    }
+    
+    [alertView show];
 }
 
 // 好友申请回调
@@ -345,12 +359,12 @@
     }
 }
 
-//// 网络状态变化回调
-//- (void)didConnectionStateChanged:(EMConnectionState)connectionState
-//{
-//    _connectionState = connectionState;
-//    [self.mainController networkChanged:connectionState];
-//}
+// 网络状态变化回调
+- (void)didConnectionStateChanged:(EMConnectionState)connectionState
+{
+    _connectionState = connectionState;
+    [self.mainController networkChanged:connectionState];
+}
 
 // 打印收到的apns信息
 -(void)didReiveceRemoteNotificatison:(NSDictionary *)userInfo{

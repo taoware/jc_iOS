@@ -19,7 +19,6 @@ PODS:
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - CTAssetsPickerController (2.9.3)
-  - EaseMobSDKFull (2.1.5)
   - SSKeychain (1.2.3)
   - UITextView+Placeholder (1.0.8)
   - XLPagerTabStrip (1.1.1)
@@ -27,7 +26,6 @@ PODS:
 DEPENDENCIES:
   - AFNetworking (= 2.2.1)
   - CTAssetsPickerController (~> 2.9.0)
-  - EaseMobSDKFull
   - SSKeychain
   - UITextView+Placeholder
   - XLPagerTabStrip (~> 1.0)
@@ -35,7 +33,6 @@ DEPENDENCIES:
 SPEC CHECKSUMS:
   AFNetworking: 59a0b8e9ecd4e194d64b4967232cd2cc83490113
   CTAssetsPickerController: 56a4a228dcb48a9375ab8d4922e82ac74af74aa1
-  EaseMobSDKFull: 2a2617938192a53dd13ca67b99dd57b98de1a077
   SSKeychain: 3f42991739c6c60a9cf1bbd4dff6c0d3694bcf3d
   UITextView+Placeholder: f1de02b7304f2f061ee62fc4ba799afce808f803
   XLPagerTabStrip: 222995115ef0d3a7134073b02d38023592835c17

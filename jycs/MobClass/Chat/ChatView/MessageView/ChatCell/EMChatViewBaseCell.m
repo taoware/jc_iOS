@@ -27,7 +27,11 @@ NSString *const kRouterEventChatHeadImageTapEventName = @"kRouterEventChatHeadIm
     if (self) {
         // Initialization code
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(headImagePressed:)];
-        _headImageView = [[UIImageView alloc] initWithFrame:CGRectMake(HEAD_PADDING, CELLPADDING, HEAD_SIZE, HEAD_SIZE)];
+        CGFloat originX = HEAD_PADDING;
+        if (model.isSender) {
+            originX = self.bounds.size.width - HEAD_SIZE - HEAD_PADDING;
+        }
+        _headImageView = [[UIImageView alloc] initWithFrame:CGRectMake(originX, CELLPADDING, HEAD_SIZE, HEAD_SIZE)];
         [_headImageView addGestureRecognizer:tap];
         _headImageView.userInteractionEnabled = YES;
         _headImageView.multipleTouchEnabled = YES;

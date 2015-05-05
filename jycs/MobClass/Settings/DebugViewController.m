@@ -100,17 +100,17 @@
 
 - (void)uploadLogAction
 {
-    __weak typeof(self) weakSelf = self;
-    [self showHudInView:self.view hint:NSLocalizedString(@"setting.uploading", @"uploading...")];
-    [[EaseMob sharedInstance] asyncUploadLogToServerWithCompletion:^(EMError *error) {
-        [weakSelf hideHud];
-        if (error) {
-            [weakSelf showHint:error.description];
-        }
-        else{
-            [weakSelf showHint:NSLocalizedString(@"setting.uploadSuccess", @"uploaded successfully")];
-        }
-    }];
+//    __weak typeof(self) weakSelf = self;
+//    [self showHudInView:self.view hint:NSLocalizedString(@"setting.uploading", @"uploading...")];
+//    [[EaseMob sharedInstance] asyncUploadLogToServerWithCompletion:^(EMError *error) {
+//        [weakSelf hideHud];
+//        if (error) {
+//            [weakSelf showHint:error.description];
+//        }
+//        else{
+//            [weakSelf showHint:NSLocalizedString(@"setting.uploadSuccess", @"uploaded successfully")];
+//        }
+//    }];
 }
 
 @end

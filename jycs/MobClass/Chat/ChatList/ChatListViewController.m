@@ -324,13 +324,26 @@
     }
     else{
         NSString *imageName = @"groupPublicHeader";
-        NSArray *groupArray = [[EaseMob sharedInstance].chatManager groupList];
-        for (EMGroup *group in groupArray) {
-            if ([group.groupId isEqualToString:conversation.chatter]) {
-                cell.name = group.groupSubject;
-                imageName = group.isPublic ? @"groupPublicHeader" : @"groupPrivateHeader";
-                break;
+        if (![conversation.ext objectForKey:@"groupSubject"] || ![conversation.ext objectForKey:@"isPublic"])
+        {
+            NSArray *groupArray = [[EaseMob sharedInstance].chatManager groupList];
+            for (EMGroup *group in groupArray) {
+                if ([group.groupId isEqualToString:conversation.chatter]) {
+                    cell.name = group.groupSubject;
+                    imageName = group.isPublic ? @"groupPublicHeader" : @"groupPrivateHeader";
+
+                    NSMutableDictionary *ext = [NSMutableDictionary dictionaryWithDictionary:conversation.ext];
+                    [ext setObject:group.groupSubject forKey:@"groupSubject"];
+                    [ext setObject:[NSNumber numberWithBool:group.isPublic] forKey:@"isPublic"];
+                    conversation.ext = ext;
+                    break;
+                }
             }
+        }
+        else
+        {
+            cell.name = [conversation.ext objectForKey:@"groupSubject"];
+            imageName = [[conversation.ext objectForKey:@"isPublic"] boolValue] ? @"groupPublicHeader" : @"groupPrivateHeader";
         }
         cell.placeholderImage = [UIImage imageNamed:imageName];
     }
@@ -507,6 +520,11 @@
 
 - (void)willReceiveOfflineMessages{
     NSLog(NSLocalizedString(@"message.beginReceiveOffine", @"Begin to receive offline messages"));
+}
+
+- (void)didReceiveOfflineMessages:(NSArray *)offlineMessages
+{
+    [self refreshDataSource];
 }
 
 - (void)didFinishedReceiveOfflineMessages:(NSArray *)offlineMessages{

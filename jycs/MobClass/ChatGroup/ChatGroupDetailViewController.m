@@ -1,14 +1,14 @@
 /************************************************************
-  *  * EaseMob CONFIDENTIAL 
-  * __________________ 
-  * Copyright (C) 2013-2014 EaseMob Technologies. All rights reserved. 
-  *  
-  * NOTICE: All information contained herein is, and remains 
-  * the property of EaseMob Technologies.
-  * Dissemination of this information or reproduction of this material 
-  * is strictly forbidden unless prior written permission is obtained
-  * from EaseMob Technologies.
-  */
+ *  * EaseMob CONFIDENTIAL
+ * __________________
+ * Copyright (C) 2013-2014 EaseMob Technologies. All rights reserved.
+ *
+ * NOTICE: All information contained herein is, and remains
+ * the property of EaseMob Technologies.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden unless prior written permission is obtained
+ * from EaseMob Technologies.
+ */
 
 #import "ChatGroupDetailViewController.h"
 
@@ -91,7 +91,7 @@
     }
     
     if (chatGroup == nil) {
-        chatGroup = [[EMGroup alloc] initWithGroupId:chatGroupId];
+        chatGroup = [EMGroup groupWithId:chatGroupId];
     }
     
     self = [self initWithGroup:chatGroup];
@@ -121,12 +121,12 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(groupBansChanged) name:@"GroupBansChanged" object:nil];
     
-//    [[EaseMob sharedInstance].chatManager asyncChangeGroupSubject:@"xieyajie test345678" forGroup:@"1409903855656" completion:^(EMGroup *group, EMError *error) {
-//        NSLog(@"%@", group.groupSubject);
-//        if (!error) {
-//            [self fetchGroupInfo];
-//        }
-//    } onQueue:nil];
+    //    [[EaseMob sharedInstance].chatManager asyncChangeGroupSubject:@"xieyajie test345678" forGroup:@"1409903855656" completion:^(EMGroup *group, EMError *error) {
+    //        NSLog(@"%@", group.groupSubject);
+    //        if (!error) {
+    //            [self fetchGroupInfo];
+    //        }
+    //    } onQueue:nil];
     
     [self fetchGroupInfo];
 }
@@ -358,36 +358,36 @@
                 weakSelf.chatGroup = group;
                 [weakSelf reloadDataSource];
                 
-//                NSString *tmp = [group.members objectAtIndex:0];
-//                NSString *tmp = @"zxcvbn";
-//                [[EaseMob sharedInstance].chatManager asyncBlockOccupants:@[tmp] fromGroup:group.groupId completion:^(EMGroup *group, EMError *error){
-//                    if (!error) {
-//                        //
-//                    }
-//                    
-//                } onQueue:nil];
+                //                NSString *tmp = [group.members objectAtIndex:0];
+                //                NSString *tmp = @"zxcvbn";
+                //                [[EaseMob sharedInstance].chatManager asyncBlockOccupants:@[tmp] fromGroup:group.groupId completion:^(EMGroup *group, EMError *error){
+                //                    if (!error) {
+                //                        //
+                //                    }
+                //
+                //                } onQueue:nil];
                 
-//                [[EaseMob sharedInstance].chatManager asyncUnblockOccupants:@[tmp] forGroup:group.groupId completion:^(EMGroup *group, EMError *error) {
-//                    if (!error) {
-//                        //
-//                    }
-//                } onQueue:nil];
+                //                [[EaseMob sharedInstance].chatManager asyncUnblockOccupants:@[tmp] forGroup:group.groupId completion:^(EMGroup *group, EMError *error) {
+                //                    if (!error) {
+                //                        //
+                //                    }
+                //                } onQueue:nil];
                 
-//                [[EaseMob sharedInstance].chatManager asyncFetchGroupBansList:group.groupId completion:^(NSArray *groupBans, EMError *error) {
-//                    if (!error) {
-//                        //
-//                    }
-//                } onQueue:nil];
+                //                [[EaseMob sharedInstance].chatManager asyncFetchGroupBansList:group.groupId completion:^(NSArray *groupBans, EMError *error) {
+                //                    if (!error) {
+                //                        //
+                //                    }
+                //                } onQueue:nil];
                 
-//                [[EaseMob sharedInstance].chatManager asyncLeaveGroup:@"1413452243774" completion:^(EMGroup *group, EMGroupLeaveReason reason, EMError *error) {
-//                    if (!error) {
-//                        //
-//                    }
-//                } onQueue:nil];
+                //                [[EaseMob sharedInstance].chatManager asyncLeaveGroup:@"1413452243774" completion:^(EMGroup *group, EMGroupLeaveReason reason, EMError *error) {
+                //                    if (!error) {
+                //                        //
+                //                    }
+                //                } onQueue:nil];
             }
             else{
                 [weakSelf showHint:NSLocalizedString(@"group.fetchInfoFail", @"failed to get the group details, please try again later")];
-//                [weakSelf reloadDataSource];
+                //                [weakSelf reloadDataSource];
             }
         });
     } onQueue:nil];
@@ -481,19 +481,19 @@
                             [weakSelf showHint:error.description];
                         }
                     } onQueue:nil];
-//                    [weakSelf showHudInView:weakSelf.view hint:@"正在将成员加入黑名单..."];
-//                    NSArray *occupants = [NSArray arrayWithObject:[weakSelf.dataSource objectAtIndex:index]];
-//                    [[EaseMob sharedInstance].chatManager asyncBlockOccupants:occupants fromGroup:weakSelf.chatGroup.groupId completion:^(EMGroup *group, EMError *error) {
-//                        [weakSelf hideHud];
-//                        if (!error) {
-//                            weakSelf.chatGroup = group;
-//                            [weakSelf.dataSource removeObjectAtIndex:index];
-//                            [weakSelf refreshScrollView];
-//                        }
-//                        else{
-//                            [weakSelf showHint:error.description];
-//                        }
-//                    } onQueue:nil];
+                    //                    [weakSelf showHudInView:weakSelf.view hint:@"正在将成员加入黑名单..."];
+                    //                    NSArray *occupants = [NSArray arrayWithObject:[weakSelf.dataSource objectAtIndex:index]];
+                    //                    [[EaseMob sharedInstance].chatManager asyncBlockOccupants:occupants fromGroup:weakSelf.chatGroup.groupId completion:^(EMGroup *group, EMError *error) {
+                    //                        [weakSelf hideHud];
+                    //                        if (!error) {
+                    //                            weakSelf.chatGroup = group;
+                    //                            [weakSelf.dataSource removeObjectAtIndex:index];
+                    //                            [weakSelf refreshScrollView];
+                    //                        }
+                    //                        else{
+                    //                            [weakSelf showHint:error.description];
+                    //                        }
+                    //                    } onQueue:nil];
                 }];
                 
                 [self.scrollView addSubview:contactView];
@@ -595,12 +595,15 @@
 - (void)clearAction
 {
     __weak typeof(self) weakSelf = self;
-    [WCAlertView showAlertWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:NSLocalizedString(@"sureToDelete", @"please make sure to delete") customizationBlock:nil completionBlock:
-     ^(NSUInteger buttonIndex, WCAlertView *alertView) {
-         if (buttonIndex == 1) {
-             [[NSNotificationCenter defaultCenter] postNotificationName:@"RemoveAllMessages" object:weakSelf.chatGroup.groupId];
-         }
-     } cancelButtonTitle:NSLocalizedString(@"cancel", @"Cancel") otherButtonTitles:NSLocalizedString(@"ok", @"OK"), nil];
+    [EMAlertView showAlertWithTitle:NSLocalizedString(@"prompt", @"Prompt")
+                            message:NSLocalizedString(@"sureToDelete", @"please make sure to delete")
+                    completionBlock:^(NSUInteger buttonIndex, EMAlertView *alertView) {
+                        if (buttonIndex == 1) {
+                            [[NSNotificationCenter defaultCenter] postNotificationName:@"RemoveAllMessages" object:weakSelf.chatGroup.groupId];
+                        }
+                    } cancelButtonTitle:NSLocalizedString(@"cancel", @"Cancel")
+                  otherButtonTitles:NSLocalizedString(@"ok", @"OK"), nil];
+    
 }
 
 //解散群组
@@ -618,15 +621,15 @@
         }
     } onQueue:nil];
     
-//    [[EaseMob sharedInstance].chatManager asyncLeaveGroup:_chatGroup.groupId];
+    //    [[EaseMob sharedInstance].chatManager asyncLeaveGroup:_chatGroup.groupId];
 }
 
 //设置群组
 - (void)configureAction {
-// todo
+    // todo
     [[[EaseMob sharedInstance] chatManager] asyncIgnoreGroupPushNotification:_chatGroup.groupId
                                                                     isIgnore:_chatGroup.isPushNotificationEnabled];
-
+    
     return;
     UIViewController *viewController = [[UIViewController alloc] init];
     [self.navigationController pushViewController:viewController animated:YES];
@@ -647,7 +650,7 @@
         }
     } onQueue:nil];
     
-//    [[EaseMob sharedInstance].chatManager asyncLeaveGroup:_chatGroup.groupId];
+    //    [[EaseMob sharedInstance].chatManager asyncLeaveGroup:_chatGroup.groupId];
 }
 
 //- (void)group:(EMGroup *)group didLeave:(EMGroupLeaveReason)reason error:(EMError *)error {
@@ -663,7 +666,7 @@
 //}
 
 - (void)didIgnoreGroupPushNotification:(NSArray *)ignoredGroupList error:(EMError *)error {
-// todo
+    // todo
     NSLog(@"ignored group list:%@.", ignoredGroupList);
 }
 

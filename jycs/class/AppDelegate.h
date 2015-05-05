@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "GXMainTabBarViewController.h"
+#import "ApplyViewController.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 {

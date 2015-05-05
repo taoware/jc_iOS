@@ -66,17 +66,17 @@
     [self.tableView addSubview:self.slimeView];
     [self searchController];
     
-    UIButton *publicButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 50, 44)];
-    [publicButton setImage:[UIImage imageNamed:@"nav_createGroup"] forState:UIControlStateNormal];
-    [publicButton addTarget:self action:@selector(showPublicGroupList) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *publicItem = [[UIBarButtonItem alloc] initWithCustomView:publicButton];
-    
-    UIButton *createButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 50, 44)];
-    [createButton setImage:[UIImage imageNamed:@"add.png"] forState:UIControlStateNormal];
-    [createButton addTarget:self action:@selector(createGroup) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *createGroupItem = [[UIBarButtonItem alloc] initWithCustomView:createButton];
-    
-    [self.navigationItem setRightBarButtonItems:@[createGroupItem, publicItem]];
+//    UIButton *publicButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 50, 44)];
+//    [publicButton setImage:[UIImage imageNamed:@"nav_createGroup"] forState:UIControlStateNormal];
+//    [publicButton addTarget:self action:@selector(showPublicGroupList) forControlEvents:UIControlEventTouchUpInside];
+//    UIBarButtonItem *publicItem = [[UIBarButtonItem alloc] initWithCustomView:publicButton];
+//    
+//    UIButton *createButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 50, 44)];
+//    [createButton setImage:[UIImage imageNamed:@"add.png"] forState:UIControlStateNormal];
+//    [createButton addTarget:self action:@selector(createGroup) forControlEvents:UIControlEventTouchUpInside];
+//    UIBarButtonItem *createGroupItem = [[UIBarButtonItem alloc] initWithCustomView:createButton];
+//    
+//    [self.navigationItem setRightBarButtonItems:@[createGroupItem, publicItem]];
     
     UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
     [backButton setImage:[UIImage imageNamed:@"back.png"] forState:UIControlStateNormal];
@@ -177,12 +177,15 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
+    if (section == 0) {
+        return 2;
+    }
     return [self.dataSource count];
 }
 
@@ -196,14 +199,30 @@
         cell = [[BaseTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
-    EMGroup *group = [self.dataSource objectAtIndex:indexPath.row];
-    NSString *imageName = group.isPublic ? @"groupPublicHeader" : @"groupPrivateHeader";
-    cell.imageView.image = [UIImage imageNamed:imageName];
-    if (group.groupSubject && group.groupSubject.length > 0) {
-        cell.textLabel.text = group.groupSubject;
-    }
-    else {
-        cell.textLabel.text = group.groupId;
+    if (indexPath.section == 0) {
+        switch (indexPath.row) {
+            case 0:
+                cell.textLabel.text = NSLocalizedString(@"group.create.group",@"Create a group");
+                cell.imageView.image = [UIImage imageNamed:@"group_creategroup"];
+                break;
+            case 1:
+                cell.textLabel.text = NSLocalizedString(@"group.create.join",@"Join public group");
+                cell.imageView.image = [UIImage imageNamed:@"group_joinpublicgroup"];
+                break;
+            default:
+                break;
+        }
+    } else {
+        EMGroup *group = [self.dataSource objectAtIndex:indexPath.row];
+        NSString *imageName = @"group_header";
+//        NSString *imageName = group.isPublic ? @"groupPublicHeader" : @"groupPrivateHeader";
+        cell.imageView.image = [UIImage imageNamed:imageName];
+        if (group.groupSubject && group.groupSubject.length > 0) {
+            cell.textLabel.text = group.groupSubject;
+        }
+        else {
+            cell.textLabel.text = group.groupId;
+        }
     }
     
     return cell;
@@ -225,10 +244,46 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    EMGroup *group = [self.dataSource objectAtIndex:indexPath.row];
-    ChatViewController *chatController = [[ChatViewController alloc] initWithChatter:group.groupId isGroup:YES];
-    chatController.title = group.groupSubject;
-    [self.navigationController pushViewController:chatController animated:YES];
+    if (indexPath.section == 0) {
+        switch (indexPath.row) {
+            case 0:
+                [self createGroup];
+                break;
+            case 1:
+                [self showPublicGroupList];
+                break;
+            default:
+                break;
+        }
+    } else {
+        EMGroup *group = [self.dataSource objectAtIndex:indexPath.row];
+        ChatViewController *chatController = [[ChatViewController alloc] initWithChatter:group.groupId isGroup:YES];
+        chatController.title = group.groupSubject;
+        [self.navigationController pushViewController:chatController animated:YES];
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    if (section == 0)
+    {
+        return 0;
+    }
+    else{
+        return 22;
+    }
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    if (section == 0)
+    {
+        return nil;
+    }
+    
+    UIView *contentView = [[UIView alloc] init];
+    [contentView setBackgroundColor:[UIColor colorWithRed:0.88 green:0.88 blue:0.88 alpha:1.0]];
+    return contentView;
 }
 
 #pragma mark - UISearchBarDelegate

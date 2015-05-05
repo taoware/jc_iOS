@@ -16,7 +16,7 @@
 #import "PushNotificationViewController.h"
 #import "BlackListViewController.h"
 #import "DebugViewController.h"
-#import "WCAlertView.h"
+#import "EditNicknameViewController.h"
 
 @interface SettingsViewController ()
 
@@ -24,6 +24,7 @@
 
 @property (strong, nonatomic) UISwitch *autoLoginSwitch;
 @property (strong, nonatomic) UISwitch *ipSwitch;
+@property (strong, nonatomic) UISwitch *delConversationSwitch;
 
 @property (strong, nonatomic) UISwitch *beInvitedSwitch;
 @property (strong, nonatomic) UILabel *beInvitedLabel;
@@ -81,6 +82,17 @@
     return _ipSwitch;
 }
 
+- (UISwitch *)delConversationSwitch
+{
+    if (!_delConversationSwitch)
+    {
+//        _delConversationSwitch = [[UISwitch alloc] init];
+//        _delConversationSwitch.on = [EaseMob sharedInstance].chatManager.isAutoDeleteConversationWhenLeaveGroup;
+//        [_delConversationSwitch addTarget:self action:@selector(delConversationChanged:) forControlEvents:UIControlEventValueChanged];
+    }
+    return _delConversationSwitch;
+}
+
 - (UISwitch *)beInvitedSwitch
 {
 //    if (_beInvitedSwitch == nil) {
@@ -114,7 +126,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 5;
+    return 7;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -153,7 +165,15 @@
             self.ipSwitch.frame = CGRectMake(self.tableView.frame.size.width - (self.ipSwitch.frame.size.width + 10), (cell.contentView.frame.size.height - self.ipSwitch.frame.size.height) / 2, self.ipSwitch.frame.size.width, self.ipSwitch.frame.size.height);
             [cell.contentView addSubview:self.ipSwitch];
         }
-
+        else if (indexPath.row == 5){
+            cell.textLabel.text = @"退群时删除会话";
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            self.delConversationSwitch.frame = CGRectMake(self.tableView.frame.size.width - (self.delConversationSwitch.frame.size.width + 10), (cell.contentView.frame.size.height - self.delConversationSwitch.frame.size.height) / 2, self.delConversationSwitch.frame.size.width, self.delConversationSwitch.frame.size.height);
+            [cell.contentView addSubview:self.delConversationSwitch];
+        } else if (indexPath.row == 6){
+            cell.textLabel.text = NSLocalizedString(@"setting.iospushname", @"iOS push nickname");
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        }
 //        else if (indexPath.row == 3)
 //        {
 //            cell.textLabel.text = @"被邀请人权限";
@@ -192,6 +212,9 @@
     {
         DebugViewController *debugController = [[DebugViewController alloc] initWithStyle:UITableViewStylePlain];
         [self.navigationController pushViewController:debugController animated:YES];
+    } else if (indexPath.row == 6) {
+        EditNicknameViewController *editName = [[EditNicknameViewController alloc] initWithNibName:nil bundle:nil];
+        [self.navigationController pushViewController:editName animated:YES];
     }
 }
 
@@ -208,7 +231,7 @@
         [_footerView addSubview:line];
         
         UIButton *logoutButton = [[UIButton alloc] initWithFrame:CGRectMake(40, 20, _footerView.frame.size.width - 80, 40)];
-        [logoutButton setBackgroundColor:[UIColor colorWithRed:191 / 255.0 green:48 / 255.0 blue:49 / 255.0 alpha:1.0]];
+        [logoutButton setBackgroundColor:RGBACOLOR(0xfe, 0x64, 0x50, 1)];
         NSDictionary *loginInfo = [[EaseMob sharedInstance].chatManager loginInfo];
         NSString *username = [loginInfo objectForKey:kSDKUsername];
         NSString *logoutButtonTitle = [[NSString alloc] initWithFormat:NSLocalizedString(@"setting.loginUser", @"log out(%@)"), username];
@@ -231,6 +254,11 @@
 - (void)useIpChanged:(UISwitch *)ipSwitch
 {
     [[EaseMob sharedInstance].chatManager setIsUseIp:ipSwitch.isOn];
+}
+
+- (void)delConversationChanged:(UISwitch *)control
+{
+//    [EaseMob sharedInstance].chatManager.isAutoDeleteConversationWhenLeaveGroup = control.isOn;
 }
 
 - (void)beInvitedChanged:(UISwitch *)beInvitedSwitch

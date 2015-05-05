@@ -14,17 +14,15 @@
 #import "GXContactListViewController.h"
 #import "GXSquareTableViewController.h"
 #import "ApplyViewController.h"
-#import "CallSessionViewController.h"
+#import "CallViewController.h"
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
 
-@interface GXMainTabBarViewController () <UIAlertViewDelegate, IChatManagerDelegate, ICallManagerDelegate>
+@interface GXMainTabBarViewController () <UIAlertViewDelegate, IChatManagerDelegate, EMCallManagerDelegate>
 @property (nonatomic, strong)UIViewController* infoVC;
 @property (nonatomic, strong)UIViewController* contactVC;
 @property (nonatomic, strong)GXSquareTableViewController* squareVC;
-
-@property (nonatomic, strong)CallSessionViewController* callController;
 
 @property (nonatomic, strong)UIBarButtonItem* showItem;
 @property (nonatomic, strong)UIBarButtonItem* addItem;
@@ -88,42 +86,6 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     [self unregisterNotifications];
 }
 
-
-#pragma mark - UIAlertViewDelegate
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (alertView.tag == 99) {
-        if (buttonIndex != [alertView cancelButtonIndex]) {
-            [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES completion:^(NSDictionary *info, EMError *error) {
-                [[ApplyViewController shareController] clear];
-                [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@NO];
-            } onQueue:nil];
-        }
-    }
-    else if (alertView.tag == 100) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@NO];
-    } else if (alertView.tag == 101) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@NO];
-    }
-}
-
-#pragma mark - private
-
--(void)registerNotifications
-{
-    [self unregisterNotifications];
-    
-    [[EaseMob sharedInstance].chatManager addDelegate:self delegateQueue:nil];
-    [[EMSDKFull sharedInstance].callManager addDelegate:self delegateQueue:nil];
-}
-
--(void)unregisterNotifications
-{
-    [[EaseMob sharedInstance].chatManager removeDelegate:self];
-    [[EMSDKFull sharedInstance].callManager removeDelegate:self];
-}
-
 - (void)setupTabBarappearance {
     UITabBarController *tabBarController = self;
     UITabBar *tabBar = tabBarController.tabBar;
@@ -170,6 +132,58 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     }
 }
 
+
+#pragma mark - UIAlertViewDelegate
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (alertView.tag == 99) {
+        if (buttonIndex != [alertView cancelButtonIndex]) {
+            [[EaseMob sharedInstance].chatManager asyncLogoffWithUnbindDeviceToken:YES completion:^(NSDictionary *info, EMError *error) {
+                [[ApplyViewController shareController] clear];
+                [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@NO];
+            } onQueue:nil];
+        }
+    }
+    else if (alertView.tag == 100) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@NO];
+    } else if (alertView.tag == 101) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@NO];
+    }
+}
+
+#pragma mark - private
+
+-(void)registerNotifications
+{
+    [self unregisterNotifications];
+    
+    [[EaseMob sharedInstance].chatManager addDelegate:self delegateQueue:nil];
+    [[EMSDKFull sharedInstance].callManager addDelegate:self delegateQueue:nil];
+}
+
+-(void)unregisterNotifications
+{
+    [[EaseMob sharedInstance].chatManager removeDelegate:self];
+    [[EMSDKFull sharedInstance].callManager removeDelegate:self];
+}
+
+
+-(void)unSelectedTapTabBarItems:(UITabBarItem *)tabBarItem
+{
+    [tabBarItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                        [UIFont systemFontOfSize:14], UITextAttributeFont,[UIColor whiteColor],UITextAttributeTextColor,
+                                        nil] forState:UIControlStateNormal];
+}
+
+-(void)selectedTapTabBarItems:(UITabBarItem *)tabBarItem
+{
+    [tabBarItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                        [UIFont systemFontOfSize:14],
+                                        UITextAttributeFont,RGBACOLOR(0x00, 0xac, 0xff, 1),UITextAttributeTextColor,
+                                        nil] forState:UIControlStateSelected];
+}
+
 // 统计未读消息数
 -(void)setupUnreadMessageCount
 {
@@ -211,39 +225,53 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 - (void)callOutWithChatter:(NSNotification *)notification
 {
     id object = notification.object;
-    if ([object isKindOfClass:[NSString class]]) {
-        NSString *chatter = (NSString *)object;
-        
-        if (_callController == nil) {
-            EMError *error = nil;
-            EMCallSession *callSession = [[EMSDKFull sharedInstance].callManager asyncCallAudioWithChatter:chatter timeout:50 error:&error];
-            
-            if (callSession) {
-                [[EMSDKFull sharedInstance].callManager removeDelegate:self];
-                _callController = [[CallSessionViewController alloc] initCallOutWithSession:callSession];
-                [self presentViewController:_callController animated:YES completion:nil];
-            }
-            else{
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"error", @"error") message:error.description delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
-                [alertView show];
-            }
+    if ([object isKindOfClass:[NSDictionary class]]) {
+        EMError *error = nil;
+        NSString *chatter = [object objectForKey:@"chatter"];
+        EMCallSessionType type = [[object objectForKey:@"type"] intValue];
+        EMCallSession *callSession = nil;
+        if (type == eCallSessionTypeAudio) {
+            callSession = [[EMSDKFull sharedInstance].callManager asyncMakeVoiceCall:chatter timeout:50 error:&error];
         }
-        else{
-            [self showHint:@"正在通话中"];
+        else if (type == eCallSessionTypeVideo){
+            callSession = [[EMSDKFull sharedInstance].callManager asyncMakeVideoCall:chatter timeout:50 error:&error];
+        }
+        
+        if (callSession && !error) {
+            [[EMSDKFull sharedInstance].callManager removeDelegate:self];
+            
+            //            _callController = nil;
+            CallViewController *callController = [[CallViewController alloc] initWithSession:callSession isIncoming:NO];
+            callController.modalPresentationStyle = UIModalPresentationOverFullScreen;
+            //            _callController = callController;
+            [self presentViewController:callController animated:NO completion:nil];
+        }
+        
+        if (error) {
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"error", @"error") message:error.description delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
+            [alertView show];
         }
     }
 }
 
 - (void)callControllerClose:(NSNotification *)notification
 {
+    //    [_callController dismissViewControllerAnimated:NO completion:nil];
+    //    [[EMSDKFull sharedInstance].callManager removeDelegate:_callController];
+    //    _callController = nil;
+    
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+    [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
+    [audioSession setActive:YES error:nil];
+    
     [[EMSDKFull sharedInstance].callManager addDelegate:self delegateQueue:nil];
-    _callController = nil;
 }
 
 #pragma mark - IChatManagerDelegate 消息变化
 
 - (void)didUpdateConversationList:(NSArray *)conversationList
 {
+    [self setupUnreadMessageCount];
     [_chatListVC refreshDataSource];
 }
 
@@ -429,6 +457,16 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
             changedBuddies:(NSArray *)changedBuddies
                      isAdd:(BOOL)isAdd
 {
+    if (!isAdd)
+    {
+        NSMutableArray *deletedBuddies = [NSMutableArray array];
+        for (EMBuddy *buddy in changedBuddies)
+        {
+            [deletedBuddies addObject:buddy.username];
+        }
+        [[EaseMob sharedInstance].chatManager removeConversationsByChatters:deletedBuddies deleteMessages:YES append2Chat:YES];
+        [_chatListVC refreshDataSource];
+    }
     [_contactListVC reloadDataSource];
 }
 
@@ -548,9 +586,24 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 {
     if (callSession.status == eCallSessionStatusConnected)
     {
-        if (_callController == nil) {
-            _callController = [[CallSessionViewController alloc] initCallInWithSession:callSession];
-            [self presentViewController:_callController animated:YES completion:nil];
+        EMError *error = nil;
+        BOOL isShowPicker = [[[NSUserDefaults standardUserDefaults] objectForKey:@"isShowPicker"] boolValue];
+        
+#warning 在后台不能进行视频通话
+        if(callSession.type == eCallSessionTypeVideo && [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground){
+            error = [EMError errorWithCode:EMErrorInitFailure andDescription:@"后台不能进行视频通话"];
+        }
+        else if (!isShowPicker){
+            [[EMSDKFull sharedInstance].callManager removeDelegate:self];
+            //            _callController = nil;
+            CallViewController *callController = [[CallViewController alloc] initWithSession:callSession isIncoming:YES];
+            callController.modalPresentationStyle = UIModalPresentationOverFullScreen;
+            //            _callController = callController;
+            [self presentViewController:callController animated:NO completion:nil];
+        }
+        
+        if (error || isShowPicker) {
+            [[EMSDKFull sharedInstance].callManager asyncEndCall:callSession.sessionId reason:eCallReason_Hangup];
         }
     }
 }
@@ -565,5 +618,6 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
         [self setSelectedViewController:_chatListVC];
     }
 }
+
 
 @end

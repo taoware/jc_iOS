@@ -17,17 +17,17 @@
 #import "ContactsViewController.h"
 #import "SettingsViewController.h"
 #import "ApplyViewController.h"
-#import "CallSessionViewController.h"
+#import "CallViewController.h"
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
 
-@interface MainViewController () <UIAlertViewDelegate, IChatManagerDelegate, ICallManagerDelegate>
+@interface MainViewController () <UIAlertViewDelegate, IChatManagerDelegate, EMCallManagerDelegate>
 {
     ChatListViewController *_chatListVC;
     ContactsViewController *_contactsVC;
     SettingsViewController *_settingsVC;
-    CallSessionViewController *_callController;
+//    __weak CallViewController *_callController;
     
     UIBarButtonItem *_addFriendItem;
 }
@@ -57,7 +57,7 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     self.title = NSLocalizedString(@"title.conversation", @"Conversations");
     
     //获取未读消息数，此时并没有把self注册为SDK的delegate，读取出的未读数是上次退出程序时的
-    [self didUnreadMessagesCountChanged];
+//    [self didUnreadMessagesCountChanged];
 #warning 把self注册为SDK的delegate
     [self registerNotifications];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupUntreatedApplyCount) name:@"setupUntreatedApplyCount" object:nil];
@@ -187,7 +187,7 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 {
     [tabBarItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                         [UIFont systemFontOfSize:14],
-                                        UITextAttributeFont,[UIColor colorWithRed:0.393 green:0.553 blue:1.000 alpha:1.000],UITextAttributeTextColor,
+                                        UITextAttributeFont,RGBACOLOR(0x00, 0xac, 0xff, 1),UITextAttributeTextColor,
                                         nil] forState:UIControlStateSelected];
 }
 
@@ -232,39 +232,53 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 - (void)callOutWithChatter:(NSNotification *)notification
 {
     id object = notification.object;
-    if ([object isKindOfClass:[NSString class]]) {
-        NSString *chatter = (NSString *)object;
-        
-        if (_callController == nil) {
-            EMError *error = nil;
-            EMCallSession *callSession = [[EMSDKFull sharedInstance].callManager asyncCallAudioWithChatter:chatter timeout:50 error:&error];
-            
-            if (callSession) {
-                [[EMSDKFull sharedInstance].callManager removeDelegate:self];
-                _callController = [[CallSessionViewController alloc] initCallOutWithSession:callSession];
-                [self presentViewController:_callController animated:YES completion:nil];
-            }
-            else{
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"error", @"error") message:error.description delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
-                [alertView show];
-            }
+    if ([object isKindOfClass:[NSDictionary class]]) {
+        EMError *error = nil;
+        NSString *chatter = [object objectForKey:@"chatter"];
+        EMCallSessionType type = [[object objectForKey:@"type"] intValue];
+        EMCallSession *callSession = nil;
+        if (type == eCallSessionTypeAudio) {
+            callSession = [[EMSDKFull sharedInstance].callManager asyncMakeVoiceCall:chatter timeout:50 error:&error];
         }
-        else{
-            [self showHint:@"正在通话中"];
+        else if (type == eCallSessionTypeVideo){
+            callSession = [[EMSDKFull sharedInstance].callManager asyncMakeVideoCall:chatter timeout:50 error:&error];
+        }
+        
+        if (callSession && !error) {
+            [[EMSDKFull sharedInstance].callManager removeDelegate:self];
+            
+//            _callController = nil;
+            CallViewController *callController = [[CallViewController alloc] initWithSession:callSession isIncoming:NO];
+            callController.modalPresentationStyle = UIModalPresentationOverFullScreen;
+//            _callController = callController;
+            [self presentViewController:callController animated:NO completion:nil];
+        }
+        
+        if (error) {
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"error", @"error") message:error.description delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
+            [alertView show];
         }
     }
 }
 
 - (void)callControllerClose:(NSNotification *)notification
 {
+//    [_callController dismissViewControllerAnimated:NO completion:nil];
+//    [[EMSDKFull sharedInstance].callManager removeDelegate:_callController];
+//    _callController = nil;
+    
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+    [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
+    [audioSession setActive:YES error:nil];
+ 
     [[EMSDKFull sharedInstance].callManager addDelegate:self delegateQueue:nil];
-    _callController = nil;
 }
 
 #pragma mark - IChatManagerDelegate 消息变化
 
 - (void)didUpdateConversationList:(NSArray *)conversationList
 {
+    [self setupUnreadMessageCount];
     [_chatListVC refreshDataSource];
 }
 
@@ -450,6 +464,16 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
             changedBuddies:(NSArray *)changedBuddies
                      isAdd:(BOOL)isAdd
 {
+    if (!isAdd)
+    {
+        NSMutableArray *deletedBuddies = [NSMutableArray array];
+        for (EMBuddy *buddy in changedBuddies)
+        {
+            [deletedBuddies addObject:buddy.username];
+        }
+        [[EaseMob sharedInstance].chatManager removeConversationsByChatters:deletedBuddies deleteMessages:YES append2Chat:YES];
+        [_chatListVC refreshDataSource];
+    }
     [_contactsVC reloadDataSource];
 }
 
@@ -569,9 +593,24 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 {
     if (callSession.status == eCallSessionStatusConnected)
     {
-        if (_callController == nil) {
-            _callController = [[CallSessionViewController alloc] initCallInWithSession:callSession];
-            [self presentViewController:_callController animated:YES completion:nil];
+        EMError *error = nil;
+        BOOL isShowPicker = [[[NSUserDefaults standardUserDefaults] objectForKey:@"isShowPicker"] boolValue];
+        
+#warning 在后台不能进行视频通话
+        if(callSession.type == eCallSessionTypeVideo && [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground){
+            error = [EMError errorWithCode:EMErrorInitFailure andDescription:@"后台不能进行视频通话"];
+        }
+        else if (!isShowPicker){
+            [[EMSDKFull sharedInstance].callManager removeDelegate:self];
+//            _callController = nil;
+            CallViewController *callController = [[CallViewController alloc] initWithSession:callSession isIncoming:YES];
+            callController.modalPresentationStyle = UIModalPresentationOverFullScreen;
+//            _callController = callController;
+            [self presentViewController:callController animated:NO completion:nil];
+        }
+        
+        if (error || isShowPicker) {
+            [[EMSDKFull sharedInstance].callManager asyncEndCall:callSession.sessionId reason:eCallReason_Hangup];
         }
     }
 }

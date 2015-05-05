@@ -11,7 +11,7 @@
 @interface PushNotificationViewController ()
 {
     EMPushNotificationDisplayStyle _pushDisplayStyle;
-    BOOL _isNoDisturbing;
+    EMPushNotificationNoDisturbStatus _noDisturbingStatus;
     NSInteger _noDisturbingStart;
     NSInteger _noDisturbingEnd;
     NSString *_nickName;
@@ -30,6 +30,7 @@
         // Custom initialization
         _noDisturbingStart = -1;
         _noDisturbingEnd = -1;
+        _noDisturbingStatus = -1;
     }
     return self;
 }
@@ -130,33 +131,17 @@
     {
         if (indexPath.row == 0) {
             cell.textLabel.text = NSLocalizedString(@"setting.open", @"Open");
-            
-            BOOL isOn = _isNoDisturbing;
-            if (_noDisturbingStart == 0 && _noDisturbingEnd == 24) {
-                isOn = YES;
-            }
-            else{
-                isOn = NO;
-            }
-            cell.accessoryType = isOn == YES ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+            cell.accessoryType = _noDisturbingStatus == ePushNotificationNoDisturbStatusDay ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
         }
         else if (indexPath.row == 1)
         {
             cell.textLabel.text = NSLocalizedString(@"setting.nightOpen", @"only open at night (22:00 - 7:00)");
-            
-            BOOL isOn = _isNoDisturbing;
-            if (_noDisturbingStart == 22 && _noDisturbingEnd == 7) {
-                isOn = YES;
-            }
-            else{
-                isOn = NO;
-            }
-            cell.accessoryType = isOn == YES ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+            cell.accessoryType = _noDisturbingStatus == ePushNotificationNoDisturbStatusCustom ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
         }
         else if (indexPath.row == 2)
         {
             cell.textLabel.text = NSLocalizedString(@"setting.close", @"Close");
-            cell.accessoryType = _isNoDisturbing == YES ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark;
+            cell.accessoryType = _noDisturbingStatus == ePushNotificationNoDisturbStatusClose ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
         }
     }
     
@@ -191,34 +176,36 @@
             case 0:
             {
                 needReload = NO;
-                [WCAlertView showAlertWithTitle:NSLocalizedString(@"prompt", @"Prompt")
+                [EMAlertView showAlertWithTitle:NSLocalizedString(@"prompt", @"Prompt")
                                         message:NSLocalizedString(@"setting.sureNotDisturb", @"this setting will cause all day in the don't disturb mode, will no longer receive push messages. Whether or not to continue?")
-                             customizationBlock:^(WCAlertView *alertView) {
-                             } completionBlock:^(NSUInteger buttonIndex, WCAlertView *alertView) {
-                                 switch (buttonIndex) {
-                                     case 0: {
-                                     } break;
-                                     default: {
-                                         self->_noDisturbingStart = 0;
-                                         self->_noDisturbingEnd = 24;
-                                         self->_isNoDisturbing = YES;
-                                         [tableView reloadData];
-                                     } break;
-                                 }
-                             } cancelButtonTitle:NSLocalizedString(@"no", @"NO") otherButtonTitles:NSLocalizedString(@"yes", @"YES"), nil];
+                                completionBlock:^(NSUInteger buttonIndex, EMAlertView *alertView) {
+                                    switch (buttonIndex) {
+                                        case 0: {
+                                        } break;
+                                        default: {
+                                            self->_noDisturbingStart = 0;
+                                            self->_noDisturbingEnd = 24;
+                                            self->_noDisturbingStatus = ePushNotificationNoDisturbStatusDay;
+                                            [tableView reloadData];
+                                        } break;
+                                    }
+                                    
+                                } cancelButtonTitle:NSLocalizedString(@"no", @"NO")
+                              otherButtonTitles:NSLocalizedString(@"yes", @"YES"), nil];
+                
             } break;
             case 1:
             {
                 _noDisturbingStart = 22;
                 _noDisturbingEnd = 7;
-                _isNoDisturbing = YES;
+                _noDisturbingStatus = ePushNotificationNoDisturbStatusCustom;
             }
                 break;
             case 2:
             {
                 _noDisturbingStart = -1;
                 _noDisturbingEnd = -1;
-                _isNoDisturbing = NO;
+                _noDisturbingStatus = ePushNotificationNoDisturbStatusClose;
             }
                 break;
                 
@@ -248,9 +235,9 @@
         options.nickname = _nickName;
         isUpdate = YES;
     }
-    if (_isNoDisturbing != options.noDisturbing || options.noDisturbingStartH != _noDisturbingStart || options.noDisturbingEndH != _noDisturbingEnd){
+    if (options.noDisturbingStartH != _noDisturbingStart || options.noDisturbingEndH != _noDisturbingEnd){
         isUpdate = YES;
-        options.noDisturbing = _isNoDisturbing;
+        options.noDisturbStatus = _noDisturbingStatus;
         options.noDisturbingStartH = _noDisturbingStart;
         options.noDisturbingEndH = _noDisturbingEnd;
     }
@@ -278,8 +265,8 @@
     EMPushNotificationOptions *options = [[EaseMob sharedInstance].chatManager pushNotificationOptions];
     _nickName = options.nickname;
     _pushDisplayStyle = options.displayStyle;
-    _isNoDisturbing = options.noDisturbing;
-    if (_isNoDisturbing) {
+    _noDisturbingStatus = options.noDisturbStatus;
+    if (_noDisturbingStatus != ePushNotificationNoDisturbStatusClose) {
         _noDisturbingStart = options.noDisturbingStartH;
         _noDisturbingEnd = options.noDisturbingEndH;
     }

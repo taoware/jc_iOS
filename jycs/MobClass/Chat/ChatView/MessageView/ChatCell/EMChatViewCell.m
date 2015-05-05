@@ -45,6 +45,7 @@ NSString *const kShouldResendCell = @"kShouldResendCell";
     if (self.messageModel.isSender) {
         bubbleFrame.origin.y = self.headImageView.frame.origin.y;
         // 菊花状态 （因不确定菊花具体位置，要在子类中实现位置的修改）
+        _hasRead.hidden = YES;
         switch (self.messageModel.status) {
             case eMessageDeliveryState_Delivering:
             {
@@ -57,10 +58,19 @@ NSString *const kShouldResendCell = @"kShouldResendCell";
             case eMessageDeliveryState_Delivered:
             {
                 [_activtiy stopAnimating];
-                [_activityView setHidden:YES];
-                
+                [_retryButton setHidden:YES];
+                if (self.messageModel.message.isReadAcked)
+                {
+                    _activityView.hidden = NO;
+                    _hasRead.hidden = NO;
+                }
+                else
+                {
+                    [_activityView setHidden:YES];
+                }
             }
                 break;
+            case eMessageDeliveryState_Pending:
             case eMessageDeliveryState_Failure:
             {
                 [_activityView setHidden:NO];
@@ -75,8 +85,16 @@ NSString *const kShouldResendCell = @"kShouldResendCell";
         
         bubbleFrame.origin.x = self.headImageView.frame.origin.x - bubbleFrame.size.width - HEAD_PADDING;
         _bubbleView.frame = bubbleFrame;
-        
+
         CGRect frame = self.activityView.frame;
+        if (_hasRead.hidden)
+        {
+            frame.size.width = SEND_STATUS_SIZE;
+        }
+        else
+        {
+            frame.size.width = _hasRead.frame.size.width;
+        }
         frame.origin.x = bubbleFrame.origin.x - frame.size.width - ACTIVTIYVIEW_BUBBLE_PADDING;
         frame.origin.y = _bubbleView.center.y - frame.size.height / 2;
         self.activityView.frame = frame;
@@ -141,6 +159,14 @@ NSString *const kShouldResendCell = @"kShouldResendCell";
         _activtiy = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         _activtiy.backgroundColor = [UIColor clearColor];
         [_activityView addSubview:_activtiy];
+
+        //已读
+        _hasRead = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, SEND_STATUS_SIZE, SEND_STATUS_SIZE)];
+        _hasRead.text = @"已读";
+        _hasRead.textAlignment = NSTextAlignmentCenter;
+        _hasRead.font = [UIFont systemFontOfSize:12];
+        [_hasRead sizeToFit];
+        [_activityView addSubview:_hasRead];
     }
     
     _bubbleView = [self bubbleViewForMessageModel:messageModel];

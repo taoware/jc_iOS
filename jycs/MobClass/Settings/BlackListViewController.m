@@ -123,10 +123,16 @@
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         NSString *username = [[self.dataSource objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
-        [[EaseMob sharedInstance].chatManager unblockBuddy:username];
-        
-        [[self.dataSource objectAtIndex:indexPath.section] removeObjectAtIndex:indexPath.row];
-        [tableView reloadData];
+        EMError *error = [[EaseMob sharedInstance].chatManager unblockBuddy:username];
+        if (!error)
+        {
+            [[self.dataSource objectAtIndex:indexPath.section] removeObjectAtIndex:indexPath.row];
+            [tableView reloadData];
+        }
+        else
+        {
+            [self showHint:error.description];
+        }
     }
 }
 

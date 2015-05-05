@@ -13,7 +13,6 @@
 #import "MessageModelManager.h"
 #import "ConvertToCommonEmoticonsHelper.h"
 #import "MessageModel.h"
-#import "EaseMob.h"
 
 @implementation MessageModelManager
 
@@ -29,7 +28,6 @@
     model.messageBody = messageBody;
     model.message = message;
     model.type = messageBody.messageBodyType;
-    model.messageId = message.messageId;
     model.isSender = isSender;
     model.isPlaying = NO;
     model.isChatGroup = message.isGroup;
@@ -42,11 +40,9 @@
     
     if (isSender) {
         model.headImageURL = nil;
-        model.status = message.deliveryState;
     }
     else{
         model.headImageURL = nil;
-        model.status = eMessageDeliveryState_Delivered;
     }
     
     switch (messageBody.messageBodyType) {

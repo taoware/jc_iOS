@@ -48,9 +48,12 @@
     BOOL autologin = [[defaults objectForKey:@"autoLogin"] boolValue];
 
     NSNotification* loginNotification = [NSNotification notificationWithName:@"autoLogin" object:@(YES)];
-    if (autologin) {
-            NSString* username = [defaults objectForKey:@"userLoggedIn"];
-            NSString* password = [SSKeychain passwordForService:SERVICENAME account:username];
+    NSString* username = [defaults objectForKey:@"userLoggedIn"];
+    NSString* password = [SSKeychain passwordForService:SERVICENAME account:username];
+    if (autologin && username && password) {
+            if (!username.length || !password.length) {
+                [self loginStateChange:nil];
+            }
 
             [[GXUserEngine sharedEngine] asyncLoginWithUsername:username password:password completion:^(NSDictionary *loginInfo, GXError *error) {
                 if (!error) {

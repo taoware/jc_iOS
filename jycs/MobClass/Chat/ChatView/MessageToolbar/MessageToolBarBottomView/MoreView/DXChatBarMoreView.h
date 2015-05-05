@@ -27,6 +27,7 @@ typedef enum{
 @property (nonatomic, strong) UIButton *locationButton;
 @property (nonatomic, strong) UIButton *videoButton;
 @property (nonatomic, strong) UIButton *audioCallButton;
+@property (nonatomic, strong) UIButton *videoCallButton;
 
 - (instancetype)initWithFrame:(CGRect)frame typw:(ChatMoreType)type;
 
@@ -42,5 +43,6 @@ typedef enum{
 - (void)moreViewLocationAction:(DXChatBarMoreView *)moreView;
 - (void)moreViewVideoAction:(DXChatBarMoreView *)moreView;
 - (void)moreViewAudioCallAction:(DXChatBarMoreView *)moreView;
+- (void)moreViewVideoCallAction:(DXChatBarMoreView *)moreView;
 
 @end

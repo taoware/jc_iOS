@@ -11,7 +11,7 @@
   */
 
 #import <UIKit/UIKit.h>
-#import <mapkit/mapkit.h>
+#import <MapKit/MapKit.h>
 
 @protocol LocationViewDelegate <NSObject>
 

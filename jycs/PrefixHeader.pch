@@ -23,7 +23,7 @@
 #import "AFNetworking.h"
 #import "UIKit+AFNetworking.h"
 
-#import "WCAlertView.h"
+#import "EMAlertView.h"
 //    #import "EaseMob.h"
 #import "EMSDKFull.h"
 
