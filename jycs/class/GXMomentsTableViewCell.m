@@ -40,9 +40,11 @@ alpha:1.0]
 @property (nonatomic,strong) NSArray         * urlThumbnailArray;
 
 @property (nonatomic,strong ) NSMutableArray * imageViewArray;
+@property (nonatomic, strong) NSArray* thumbnailViewArray;
 
 //对于每个cell 用一个bool值去标识是否已设置约束
 @property (nonatomic, assign) BOOL           didSetupConstraints;
+@property (nonatomic, strong) NSDateFormatter *dateFormatter;
 @end
 
 @implementation GXMomentsTableViewCell
@@ -61,6 +63,11 @@ alpha:1.0]
         [self.contentView addSubview:self.userNameLabel];
         [self.contentView addSubview:self.timeLabel];
         [self.contentView addSubview:self.resendButton];
+        
+        self.dateFormatter = [[NSDateFormatter alloc] init];
+        [self.dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"GMT-8"]];
+        [self.dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+        [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     }
     return self;
 }
@@ -99,7 +106,6 @@ alpha:1.0]
         [self.resendButton autoPinEdge:ALEdgeLeading toEdge:ALEdgeRight ofView:self.headImageView withOffset:15.f];
         self.resendButton.hidden = YES;
         [self.resendButton setTitle:@"点击重新发送" forState:UIControlStateNormal];
-//        [self.resendButton addGestureRecognizer:[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(resendButtonTapped)]];
         [self.resendButton addTarget:self action:@selector(resendButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self.resendButton sizeToFit];
         
@@ -155,21 +161,20 @@ alpha:1.0]
     
     _urlThumbnailArray =[[NSArray alloc]initWithArray:urlsOfThumbnail];
     [self.imageViewArray makeObjectsPerformSelector:@selector(removeFromSuperview)];
-    [self.imageViewArray removeAllObjects];
-    
-    [_urlThumbnailArray enumerateObjectsUsingBlock:^(NSString* url, NSUInteger idx, BOOL *stop) {
-        UIImageView* imgV=[[UIImageView alloc]initForAutoLayout];
-        imgV.tag = idx;
-        
-        imgV.backgroundColor=[UIColor lightGrayColor];
-        imgV.contentMode=UIViewContentModeScaleAspectFill;
-        imgV.clipsToBounds = YES;
-        imgV.userInteractionEnabled=YES;
-        [imgV addGestureRecognizer:[self addTapGestureRecognizer]];
-        
-        [imgV setImageWithURL:[NSURL URLWithString:url]];
-        
-        [self.imageViewArray addObject:imgV];
+
+    self.thumbnailViewArray = [self.imageViewArray subarrayWithRange:NSMakeRange(0, urlsOfThumbnail.count)];
+
+    [urlsOfThumbnail enumerateObjectsUsingBlock:^(NSString* url, NSUInteger idx, BOOL *stop) {
+        __weak UIImageView* imgV = [self.imageViewArray objectAtIndex:idx];
+//        [imgV setImageWithURL:[NSURL URLWithString:url] placeholderImage:[UIImage imageNamed:@"placeholder.jpg"]];
+        NSURLRequest* imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        [imgV setImageWithURLRequest:imageRequest placeholderImage:[UIImage imageNamed:@"placeholder.jpg"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+            if ([request.URL.absoluteString isEqualToString:request.URL.absoluteString]) {
+                imgV.image = image;
+            }   
+        } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+            imgV.image = nil;
+        }];
     }];
 }
 
@@ -184,7 +189,7 @@ alpha:1.0]
 {
     UIImageView *iv = (UIImageView *)tapGestureRecognizer.view;
     if (iv.image != nil) {
-        [SFPhotoBrowser animateShowBigPhotosFromThumbImageViews:self.imageViewArray fromViewController:self.fromViewController bigPhotoesURL:self.urlArray curIndex:iv.tag didEndShowing:^{
+        [SFPhotoBrowser animateShowBigPhotosFromThumbImageViews:self.thumbnailViewArray fromViewController:self.fromViewController bigPhotoesURL:self.urlArray curIndex:(int)iv.tag didEndShowing:^{
             
         } didEndDismissing:^{
         }];
@@ -196,24 +201,24 @@ alpha:1.0]
 #pragma mark - Layout Method
 -(void)layoutImagesInContentView
 {
-    NSInteger imageCount=_imageViewArray.count;
+    NSInteger imageCount=_thumbnailViewArray.count;
     
     //如果没有图片数组则不对此进行布局
     if (imageCount==0) return;
     
     
-    for (UIImageView* imgV in _imageViewArray)
+    for (UIImageView* imgV in _thumbnailViewArray)
     {
         [self.contentView addSubview:imgV];
     }
     
-    prototypeImage=[_imageViewArray firstObject];
+    prototypeImage=[_thumbnailViewArray firstObject];
     
     //一张图
     if (imageCount==1)
     {
         
-        UIImageView* imgView=[_imageViewArray firstObject];
+        UIImageView* imgView=[_thumbnailViewArray firstObject];
         
         
         [imgView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.bodyLabel withOffset:5.f];
@@ -257,8 +262,8 @@ alpha:1.0]
         [prototypeImage autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f relation:NSLayoutRelationGreaterThanOrEqual];
         
         //图片等宽高
-        [_imageViewArray autoMatchViewsDimension:ALDimensionWidth];
-        [_imageViewArray autoMatchViewsDimension:ALDimensionHeight];
+        [_thumbnailViewArray autoMatchViewsDimension:ALDimensionWidth];
+        [_thumbnailViewArray autoMatchViewsDimension:ALDimensionHeight];
         // [_imageViewArray autoAlignViewsToAxis:ALAxisHorizontal];
         
         //判断有几行
@@ -266,7 +271,7 @@ alpha:1.0]
         NSInteger count=0;
         
         UIView *previousView = nil;
-        for (UIView *view in _imageViewArray)
+        for (UIView *view in _thumbnailViewArray)
         {
             if (previousView)
             {
@@ -408,8 +413,44 @@ alpha:1.0]
     if (!_imageViewArray)
     {
         _imageViewArray=[[NSMutableArray alloc]init];
+        for (int i = 0; i < 9; i++) {
+            UIImageView* imgV = [[UIImageView alloc]initForAutoLayout];
+            [_imageViewArray addObject:imgV];
+            imgV.tag = i;
+            
+            imgV.backgroundColor=[UIColor lightGrayColor];
+            imgV.contentMode=UIViewContentModeScaleAspectFill;
+            imgV.clipsToBounds = YES;
+            imgV.userInteractionEnabled=YES;
+            [imgV addGestureRecognizer:[self addTapGestureRecognizer]];
+        }
     }
     return _imageViewArray;
+}
+
+- (void)setMomentToDisplay:(Moment *)momentToDisplay {
+    _momentToDisplay = momentToDisplay;
+    [self updateUI];
+}
+
+- (void)updateUI {
+    self.userNameLabel.text= self.momentToDisplay.sender.name;
+    self.timeLabel.text= [self.dateFormatter stringFromDate:self.momentToDisplay.createTime];
+    self.bodyLabel.text = self.momentToDisplay.text;
+    [self.headImageView setImageWithURL:[NSURL URLWithString:self.momentToDisplay.sender.avatar.thumbnailURL]];
+    self.syncStatus = [self.momentToDisplay.syncStatus intValue];
+    
+    NSMutableArray* thumbnailUrls = [[NSMutableArray alloc]init];
+    NSMutableArray* imageUrls = [[NSMutableArray alloc]init];
+    for (Photo* photo in [self.momentToDisplay.photo allObjects]) {
+        [thumbnailUrls addObject:photo.thumbnailURL];
+        [imageUrls addObject:photo.imageURL];
+    }
+    
+    [self setImageswithThumbnailURLs:thumbnailUrls];
+    [self setImageswithURLs:imageUrls];
+    
+    [self setNeedsLayout];
 }
 
 @end

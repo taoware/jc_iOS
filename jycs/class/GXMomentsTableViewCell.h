@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "Moment.h"
+#import "User.h"
+#import "Photo.h"
 #import "GXSyncEngine.h"
 
 @protocol GXMomentsTableViewCellDelegate  <NSObject>

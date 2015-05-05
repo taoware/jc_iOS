@@ -30,8 +30,6 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 @property (nonatomic, strong) SRRefreshView *slimeView;
 @property (nonatomic, strong) NSDateFormatter *dateFormatter;
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic, strong) NSMutableArray* thumbnailUrlArray;
-@property (nonatomic, strong) NSMutableArray* imageUrlArry;
 
 @end
 
@@ -42,6 +40,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
+    self.tableView.allowsSelection = NO;
     
     self.offscreenCells = [NSMutableDictionary dictionary];
     [self.tableView registerClass:[GXMomentsTableViewCell class] forCellReuseIdentifier:CellIdentifier];
@@ -67,19 +66,6 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
         [request setSortDescriptors:[NSArray arrayWithObject:
                                      [NSSortDescriptor sortDescriptorWithKey:@"createTime" ascending:NO]]];
         self.moments = [self.managedObjectContext executeFetchRequest:request error:&error];
-        
-        self.thumbnailUrlArray = [[NSMutableArray alloc]init];
-        self.imageUrlArry = [[NSMutableArray alloc]init];
-        for (Moment* moment in self.moments) {
-            NSMutableArray* thumbnails = [[NSMutableArray alloc]init];
-            NSMutableArray* images = [[NSMutableArray alloc]init];
-            for (Photo* photo  in moment.photo) {
-                [thumbnails addObject:photo.thumbnailURL];
-                [images addObject:photo.imageURL];
-            }
-            [self.thumbnailUrlArray addObject:thumbnails];
-            [self.imageUrlArry addObject:images];
-        }
         
     }];
 }
@@ -188,16 +174,8 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     cell.delegate = self;
     
     Moment* moment = self.moments[indexPath.row];
-    cell.momentToDisplay = moment;
-    cell.userNameLabel.text= moment.sender.name;
-    cell.timeLabel.text= [self.dateFormatter stringFromDate:moment.createTime];
-    cell.bodyLabel.text = moment.text;
-    [cell.headImageView setImageWithURL:[NSURL URLWithString:moment.sender.avatar.thumbnailURL]];
     cell.fromViewController = self;
-    cell.syncStatus = [moment.syncStatus intValue];
-    
-    [cell setImageswithThumbnailURLs:self.thumbnailUrlArray[indexPath.row]];
-    [cell setImageswithURLs:self.imageUrlArry[indexPath.row]];
+    cell.momentToDisplay = moment;
     
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
