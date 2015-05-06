@@ -99,7 +99,7 @@
                  [self enableUserAutoLogin];
                  [self saveUserPasswordInKeychainWithUsername:username andPassword:password];
                  
-                 [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:NO];
+                 [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
                  //将旧版的coredata数据导入新的数据库
                  EMError *error = [[EaseMob sharedInstance].chatManager importDataToNewDatabase];
                  if (!error) {

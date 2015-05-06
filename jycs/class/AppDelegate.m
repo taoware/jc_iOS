@@ -60,7 +60,6 @@
                     [self loginStateChange:loginNotification];
                 } else {
                     switch (error.errorCode) {
-                        NSLog(error.description);
                         case GXErrorAuthenticationFailure:
                             [[GXUserEngine sharedEngine] clearAutoLoginFlagInUserDefault];
                             [self loginStateChange:nil];
@@ -71,11 +70,12 @@
                             break;
                         
                         case GXErrorEaseMobSeverError:
-                            TTAlert(@"即时通信功能暂时不可用");
+                            // had to enable easemob autologin, otherwise some callcack didn't get called
+//                            TTAlert(@"即时通信功能暂时不可用");
                             [self loginStateChange:loginNotification];
                             break;
                         case GXErrorEaseMobAuthenticationFailure:
-                            TTAlert(@"即时通信通能故障，请联系管理员");
+                            TTAlert(@"即时通信通能故障，请联系管理员");   
                             [self loginStateChange:loginNotification];
                             
                         default: {

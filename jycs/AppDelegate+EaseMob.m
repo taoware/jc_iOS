@@ -14,7 +14,7 @@
 
 @implementation AppDelegate (EaseMob)
 - (void)easemobApplication:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-
+    
     if (launchOptions) {
         NSDictionary*userInfo = [launchOptions objectForKey:@"UIApplicationLaunchOptionsRemoteNotificationKey"];
         if(userInfo)
@@ -34,7 +34,7 @@
 #else
     apnsCertName = @"chatdemoui";
 #endif
-
+    
     [[EaseMob sharedInstance] registerSDKWithAppKey:@"gxcm#jycs"
                                        apnsCertName:apnsCertName
                                         otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:NO]}];
@@ -169,14 +169,14 @@
 - (void)registerRemoteNotification{
     UIApplication *application = [UIApplication sharedApplication];
     application.applicationIconBadgeNumber = 0;
-
+    
     if([application respondsToSelector:@selector(registerUserNotificationSettings:)])
     {
         UIUserNotificationType notificationTypes = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
         UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
         [application registerUserNotificationSettings:settings];
     }
-
+    
 #if !TARGET_IPHONE_SIMULATOR
     //iOS8 注册APNS
     if ([application respondsToSelector:@selector(registerForRemoteNotifications)]) {
@@ -223,8 +223,8 @@
             error = [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
         }
     }
-    
-    [alertView show];
+    // hide auto login prompt
+//    [alertView show];
 }
 
 // 结束自动登录回调
@@ -243,8 +243,8 @@
         
         alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:NSLocalizedString(@"login.endAutoLogin", @"End automatic login...") delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
     }
-    
-    [alertView show];
+    // hide auto login prompt
+//    [alertView show];
 }
 
 // 好友申请回调
@@ -379,7 +379,8 @@
                                           cancelButtonTitle:NSLocalizedString(@"ok", @"OK")
                                           otherButtonTitles:nil];
     [alert show];
-
+    
 }
+
 
 @end
