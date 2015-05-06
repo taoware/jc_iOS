@@ -35,7 +35,6 @@
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) EMSearchBar *searchBar;
 @property (strong, nonatomic) SRRefreshView *slimeView;
-@property (strong, nonatomic) GroupListViewController *groupController;
 
 @property (strong, nonatomic) EMSearchDisplayController *searchController;
 
@@ -212,8 +211,8 @@
 {
     // Return the number of rows in the section.
     if (section == 0) {
-        return 2;
-        //        return 1;
+//        return 2;
+        return 1;
     }
     
     return [[self.dataSource objectAtIndex:(section - 1)] count];
@@ -243,16 +242,17 @@
         }
         
         cell.indexPath = indexPath;
-        if (indexPath.section == 0 && indexPath.row == 1) {
-            cell.imageView.image = [UIImage imageNamed:@"groupPrivateHeader"];
-            cell.textLabel.text = NSLocalizedString(@"title.group", @"Group");
-        }
-        else{
+        // show group vc in sibling VC
+//        if (indexPath.section == 0 && indexPath.row == 1) {
+//            cell.imageView.image = [UIImage imageNamed:@"groupPrivateHeader"];
+//            cell.textLabel.text = NSLocalizedString(@"title.group", @"Group");
+//        }
+//        else{
             EMBuddy *buddy = [[self.dataSource objectAtIndex:(indexPath.section - 1)] objectAtIndex:indexPath.row];
 //            cell.imageView.image = [UIImage imageNamed:@"chatListCellHead.png"];
             [cell.imageView setImageWithURL:[NSURL URLWithString:buddy.avatarUrl] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
             cell.textLabel.text = buddy.realName;
-        }
+//        }
     }
     
     return cell;
@@ -363,7 +363,7 @@
         else if (indexPath.row == 1)
         {
             if (_groupController == nil) {
-                _groupController = [[GroupListViewController alloc] initWithStyle:UITableViewStylePlain];
+                _groupController = [[GXGroupListViewController alloc] initWithStyle:UITableViewStylePlain];
             }
             else{
                 [_groupController reloadDataSource];

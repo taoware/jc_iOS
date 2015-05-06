@@ -35,6 +35,7 @@
     // create child view controllers that will be managed by XLPagerTabStripViewController
     GXContactListViewController * child_1 = [[GXContactListViewController alloc] init];
     GXGroupListViewController * child_2 = [[GXGroupListViewController alloc] init];
+    child_1.groupController = child_2;
     
     AppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
     appDelegate.mainController.contactListVC = child_1;
