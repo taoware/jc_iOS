@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SZTextView.h"
 
 @protocol AddMomentCellDelegate <NSObject>
 
@@ -17,7 +18,7 @@
 @end
 
 @interface AddMomentTableViewCell : UITableViewCell
-@property (nonatomic, strong)UITextView* momentTextView;
+@property (nonatomic, strong)SZTextView* momentTextView;
 @property (nonatomic, strong)NSMutableArray* imagesForMoment;     // type of UIImage
 @property (nonatomic, strong)id<AddMomentCellDelegate> delegate;
 @end

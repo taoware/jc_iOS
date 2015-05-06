@@ -15,6 +15,7 @@
 #import "GXSquareTableViewController.h"
 #import "ApplyViewController.h"
 #import "CallViewController.h"
+#import "GXUserEngine.h"
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
@@ -42,6 +43,7 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     
     self.infoVC = self.viewControllers[0];
     self.contactVC = self.viewControllers[1];
+    [self.contactVC performSelector:@selector(view)];   // force load contactListVC
     self.squareVC = self.viewControllers[2];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setChatListVC:) name:@"chatListViewControllerSetted" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setContactListVC:) name:@"contactViewControllerSetted" object:nil];
@@ -124,7 +126,8 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     }else if (index == 2){
         self.title = @"广场";
         self.navigationItem.rightBarButtonItem = nil;
-        [self.navigationItem setRightBarButtonItems:@[self.sendItem, self.giftItem]];
+        self.navigationItem.rightBarButtonItem = self.sendItem;
+//        [self.navigationItem setRightBarButtonItems:@[self.sendItem, self.giftItem]];
     }else if (index == 3){
         self.title = @"我";
         self.navigationItem.rightBarButtonItem = nil;
@@ -457,17 +460,19 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
             changedBuddies:(NSArray *)changedBuddies
                      isAdd:(BOOL)isAdd
 {
-    if (!isAdd)
-    {
-        NSMutableArray *deletedBuddies = [NSMutableArray array];
-        for (EMBuddy *buddy in changedBuddies)
+    [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:[buddyList valueForKey:@"username"] completion:^(GXError *error) {
+        if (!isAdd)
         {
-            [deletedBuddies addObject:buddy.username];
+            NSMutableArray *deletedBuddies = [NSMutableArray array];
+            for (EMBuddy *buddy in changedBuddies)
+            {
+                [deletedBuddies addObject:buddy.username];
+            }
+            [[EaseMob sharedInstance].chatManager removeConversationsByChatters:deletedBuddies deleteMessages:YES append2Chat:YES];
+            [_chatListVC refreshDataSource];
         }
-        [[EaseMob sharedInstance].chatManager removeConversationsByChatters:deletedBuddies deleteMessages:YES append2Chat:YES];
-        [_chatListVC refreshDataSource];
-    }
-    [_contactListVC reloadDataSource];
+        [_contactListVC reloadDataSource];
+    }];
 }
 
 - (void)didRemovedByBuddy:(NSString *)username

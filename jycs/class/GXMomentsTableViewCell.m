@@ -166,15 +166,15 @@ alpha:1.0]
 
     [urlsOfThumbnail enumerateObjectsUsingBlock:^(NSString* url, NSUInteger idx, BOOL *stop) {
         __weak UIImageView* imgV = [self.imageViewArray objectAtIndex:idx];
-//        [imgV setImageWithURL:[NSURL URLWithString:url] placeholderImage:[UIImage imageNamed:@"placeholder.jpg"]];
-        NSURLRequest* imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-        [imgV setImageWithURLRequest:imageRequest placeholderImage:[UIImage imageNamed:@"placeholder.jpg"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-            if ([request.URL.absoluteString isEqualToString:request.URL.absoluteString]) {
-                imgV.image = image;
-            }
-        } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-            imgV.image = nil;
-        }];
+        [imgV setImageWithURL:[NSURL URLWithString:url] placeholderImage:[UIImage imageNamed:@"placeholder.jpg"]];
+//        NSURLRequest* imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+//        [imgV setImageWithURLRequest:imageRequest placeholderImage:[UIImage imageNamed:@"placeholder.jpg"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//            if ([request.URL.absoluteString isEqualToString:request.URL.absoluteString]) {
+//                imgV.image = image;
+//            }
+//        } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+//            imgV.image = nil;
+//        }];
     }];
 }
 
@@ -252,11 +252,11 @@ alpha:1.0]
         /**
          *  不这么写会因为优先级的关系报错 可以尝试下看看
          */
-        [UIImageView autoSetPriority:UILayoutPriorityDefaultHigh forConstraints:^{
-            [prototypeImage autoSetDimensionsToSize:SquareImageSize];
-        }];
+//        [UIImageView autoSetPriority:UILayoutPriorityDefaultHigh forConstraints:^{
+//            [prototypeImage autoSetDimensionsToSize:SquareImageSize];
+//        }];
         [prototypeImage autoSetDimensionsToSize:SquareImageSize];
-        
+
         
         NSLayoutConstraint*  firtImageLayout=
         [prototypeImage autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f relation:NSLayoutRelationGreaterThanOrEqual];
@@ -333,11 +333,11 @@ alpha:1.0]
             self.resendButton.enabled = NO;
             [self.resendButton setTitle:@"正在发送" forState:UIControlStateNormal];
             break;
-        case GXObjectSyncFailed:
+        case GXObjectCreated:
             self.timeLabel.hidden = YES;
             self.resendButton.hidden = NO;
             self.resendButton.enabled = YES;
-            [self.resendButton setTitle:@"点击重新发送" forState:UIControlStateNormal];
+            [self.resendButton setTitle:@"点击发送" forState:UIControlStateNormal];
             break;
         default:
             break;
@@ -437,7 +437,7 @@ alpha:1.0]
     self.userNameLabel.text= self.momentToDisplay.sender.name;
     self.timeLabel.text= [self.dateFormatter stringFromDate:self.momentToDisplay.createTime];
     self.bodyLabel.text = self.momentToDisplay.text;
-    [self.headImageView setImageWithURL:[NSURL URLWithString:self.momentToDisplay.sender.avatar.thumbnailURL]];
+    [self.headImageView setImageWithURL:[NSURL URLWithString:self.momentToDisplay.sender.avatar.thumbnailURL] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
     self.syncStatus = [self.momentToDisplay.syncStatus intValue];
     
     NSMutableArray* thumbnailUrls = [[NSMutableArray alloc]init];
@@ -450,7 +450,6 @@ alpha:1.0]
     [self setImageswithThumbnailURLs:thumbnailUrls];
     [self setImageswithURLs:imageUrls];
     
-    [self setNeedsLayout];
 }
 
 @end

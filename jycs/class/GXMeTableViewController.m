@@ -37,7 +37,7 @@
     self.name.text = [GXUserEngine sharedEngine].userLoggedIn.name;
     self.phoneNum.text = [NSString stringWithFormat:@"手机号: %@", [GXUserEngine sharedEngine].userLoggedIn.mobile];
     NSString* avatarURL = [GXUserEngine sharedEngine].userLoggedIn.avatar.thumbnailURL;
-    [self.avatar setImageWithURL:[NSURL URLWithString:avatarURL]];
+    [self.avatar setImageWithURL:[NSURL URLWithString:avatarURL] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
 }
 
 - (void)didReceiveMemoryWarning {

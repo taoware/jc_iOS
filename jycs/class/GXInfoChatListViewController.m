@@ -16,6 +16,9 @@
 #import "EMSearchDisplayController.h"
 #import "ConvertToCommonEmoticonsHelper.h"
 #import "XLPagerTabStripViewController.h"
+#import "GXUserEngine.h"
+#import "User.h"
+#import "Photo.h"
 
 @interface GXInfoChatListViewController ()<UITableViewDelegate,UITableViewDataSource, UISearchDisplayDelegate,SRRefreshDelegate, UISearchBarDelegate, IChatManagerDelegate, XLPagerTabStripChildItem>
 @property (strong, nonatomic) NSMutableArray        *dataSource;
@@ -313,19 +316,35 @@
         cell = [[ChatListCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:identify];
     }
     EMConversation *conversation = [self.dataSource objectAtIndex:indexPath.row];
-    cell.name = conversation.chatter;
+//    cell.name = conversation.chatter;
+    User* sender = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:conversation.chatter];
+    cell.name = sender.name;
     if (!conversation.isGroup) {
         cell.placeholderImage = [UIImage imageNamed:@"chatListCellHead.png"];
+        cell.imageURL = [NSURL URLWithString:sender.avatar.thumbnailURL];
     }
     else{
         NSString *imageName = @"groupPublicHeader";
-        NSArray *groupArray = [[EaseMob sharedInstance].chatManager groupList];
-        for (EMGroup *group in groupArray) {
-            if ([group.groupId isEqualToString:conversation.chatter]) {
-                cell.name = group.groupSubject;
-                imageName = group.isPublic ? @"groupPublicHeader" : @"groupPrivateHeader";
-                break;
+        if (![conversation.ext objectForKey:@"groupSubject"] || ![conversation.ext objectForKey:@"isPublic"])
+        {
+            NSArray *groupArray = [[EaseMob sharedInstance].chatManager groupList];
+            for (EMGroup *group in groupArray) {
+                if ([group.groupId isEqualToString:conversation.chatter]) {
+                    cell.name = group.groupSubject;
+                    imageName = group.isPublic ? @"groupPublicHeader" : @"groupPrivateHeader";
+                    
+                    NSMutableDictionary *ext = [NSMutableDictionary dictionaryWithDictionary:conversation.ext];
+                    [ext setObject:group.groupSubject forKey:@"groupSubject"];
+                    [ext setObject:[NSNumber numberWithBool:group.isPublic] forKey:@"isPublic"];
+                    conversation.ext = ext;
+                    break;
+                }
             }
+        }
+        else
+        {
+            cell.name = [conversation.ext objectForKey:@"groupSubject"];
+            imageName = [[conversation.ext objectForKey:@"isPublic"] boolValue] ? @"groupPublicHeader" : @"groupPrivateHeader";
         }
         cell.placeholderImage = [UIImage imageNamed:imageName];
     }
@@ -502,6 +521,11 @@
 
 - (void)willReceiveOfflineMessages{
     NSLog(NSLocalizedString(@"message.beginReceiveOffine", @"Begin to receive offline messages"));
+}
+
+- (void)didReceiveOfflineMessages:(NSArray *)offlineMessages
+{
+    [self refreshDataSource];
 }
 
 - (void)didFinishedReceiveOfflineMessages:(NSArray *)offlineMessages{

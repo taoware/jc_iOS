@@ -9,7 +9,6 @@
 #import "AddMomentTableViewCell.h"
 #import "UIView+AutoLayout.h"
 #import "CTAssetsPageViewController.h"
-#import "UITextView+Placeholder.h"
 
 #define SquareImageSize   CGSizeMake(66.5f,  66.5f)
 
@@ -161,9 +160,9 @@
 
 #pragma mark - properties
 
-- (UITextView *)momentTextView {
+- (SZTextView *)momentTextView {
     if (!_momentTextView) {
-        _momentTextView = [[UITextView alloc]init];
+        _momentTextView = [[SZTextView alloc]init];
         _momentTextView.placeholder = @"说点什么吧...";
         _momentTextView.delegate = self;
     }

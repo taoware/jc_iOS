@@ -231,7 +231,7 @@
     NSUInteger numToDisplay = MIN(stores.count, 3);
     for (int i =0; i < numToDisplay; i++) {
         Store* store = stores[i];
-        UIImage* placeholderImage = [UIImage imageNamed:@"logo"];
+        UIImage* placeholderImage = [UIImage imageNamed:@"placeholder.jpg"];
         switch (i) {
             case 0:
                 cell.firstStoreLabel.text = store.storeName;
@@ -275,7 +275,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     GXCoverFlowCollectionViewCell *cell = (GXCoverFlowCollectionViewCell *)[collectionView dequeueReusableCellWithReuseIdentifier:@"CoverFlowCell" forIndexPath:indexPath];
     Store* store = self.slideStores[indexPath.row];
-    UIImage* placeholderImage = [UIImage imageNamed:@"logo"];
+    UIImage* placeholderImage = [UIImage imageNamed:@"placeholder.jpg"];
 
     [cell.imageView setImageWithURL:[NSURL URLWithString:store.photo.imageURL] placeholderImage:placeholderImage];
     

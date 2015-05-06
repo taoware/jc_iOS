@@ -70,7 +70,6 @@
 
     User* user = moment.sender;
     Unit* unit = moment.inUnit;
-    moment.syncStatus = @(GXObjectSyncing);
     NSDictionary* parameter = [moment JSONToCreateMomentOnServer];
     NSString* endpoint = [NSString stringWithFormat:@"square/%@/%@", user.objectId, unit.objectId];
     [[GXHTTPManager sharedManager] POST:endpoint parameters:parameter constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
@@ -105,7 +104,6 @@
             completion(nil, [GXError errorWithCode:GXErrorServerNotReachable andDescription:error.localizedDescription]);
         }
         
-        moment.syncStatus = @(GXObjectSyncFailed);
         [self executeSyncCompletedOperations];
     }];
 }

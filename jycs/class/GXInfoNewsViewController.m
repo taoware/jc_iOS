@@ -216,7 +216,7 @@
     }
     
     News* news = self.news[indexPath.row];
-    UIImage* placeholderImage = [UIImage imageNamed:@"logo"];
+    UIImage* placeholderImage = [UIImage imageNamed:@"placeholder.jpg"];
     [cell.icon setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:news.photo.thumbnailURL]] placeholderImage:placeholderImage success:NULL failure:NULL];
     
     cell.title.text = news.title;
@@ -253,7 +253,7 @@
     GXCoverFlowCollectionViewCell *cell = (GXCoverFlowCollectionViewCell *)[collectionView dequeueReusableCellWithReuseIdentifier:@"CoverFlowCell" forIndexPath:indexPath];
     
     News *news = self.slideNews[indexPath.item];
-    UIImage* placeholderImage = [UIImage imageNamed:@"logo"];
+    UIImage* placeholderImage = [UIImage imageNamed:@"placeholder.jpg"];
 
     [cell.imageView setImageWithURL:[NSURL URLWithString:news.photo.imageURL] placeholderImage:placeholderImage];
     

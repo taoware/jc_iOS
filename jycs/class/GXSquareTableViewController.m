@@ -44,8 +44,6 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     
     self.offscreenCells = [NSMutableDictionary dictionary];
     [self.tableView registerClass:[GXMomentsTableViewCell class] forCellReuseIdentifier:CellIdentifier];
-    self.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableView.estimatedRowHeight = 66;
     
     [self.tableView addSubview:self.slimeView];
     
@@ -55,7 +53,6 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     [self.dateFormatter setDateStyle:NSDateFormatterMediumStyle];
     [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     
-    [[GXMomentsEngine sharedEngine] startSync];
     [self.slimeView setLoadingWithExpansion];
 }
 
@@ -105,6 +102,8 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 
 - (void)resendButtonTappedWithMoment:(Moment *)moment {
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:[self.moments indexOfObject:moment] inSection:0];
+    GXMomentsTableViewCell* sendingCell = (GXMomentsTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+    sendingCell.syncStatus = GXObjectSyncing;
     
     [[GXMomentsEngine sharedEngine] sendMomentWithMoment:moment completion:^(NSDictionary *momentInfo, GXError *error) {
         if (error) {
@@ -180,47 +179,41 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
     
-    
     return cell;
 }
 
 #pragma mark - UITableViewDelegate
-//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-//
-//    NSString *reuseIdentifier = CellIdentifier;
-//    
-//    GXMomentsTableViewCell *cell = [self.offscreenCells objectForKey:reuseIdentifier];
-//    if (!cell) {
-//        cell = [[GXMomentsTableViewCell alloc] init];
-//        [self.offscreenCells setObject:cell forKey:reuseIdentifier];
-//    }
-//    
-//    Moment* moment =[self.moments objectAtIndex:indexPath.row];
-//    cell.userNameLabel.text= @"真相只有一个";
-//    cell.timeLabel.text=@"1个小时前";
-//    cell.bodyLabel.text = moment.text;
-//    cell.headImageView.image=[UIImage imageNamed:@"headImg_4"];
-//    
-//    [cell setImageswithThumbnailURLs:self.thumbnailUrlArray[indexPath.row]];
-//    
-//    [cell setNeedsUpdateConstraints];
-//    [cell updateConstraintsIfNeeded];
-//    
-//    cell.bounds = CGRectMake(0.0f, 0.0f, CGRectGetWidth(tableView.bounds), CGRectGetHeight(cell.bounds));
-//
-//    [cell setNeedsLayout];
-//    [cell layoutIfNeeded];
-//    
-//    // Get the actual height required for the cell
-//    CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
-//    height += 1;
-//    
-//    return height;
-//}
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 
-//- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
-//    return 66;
-//}
+    NSString *reuseIdentifier = CellIdentifier;
+    
+    GXMomentsTableViewCell *cell = [self.offscreenCells objectForKey:reuseIdentifier];
+    if (!cell) {
+        cell = [[GXMomentsTableViewCell alloc] init];
+        [self.offscreenCells setObject:cell forKey:reuseIdentifier];
+    }
+    
+    Moment* moment =[self.moments objectAtIndex:indexPath.row];
+    cell.momentToDisplay = moment;
+    
+    [cell setNeedsUpdateConstraints];
+    [cell updateConstraintsIfNeeded];
+    
+    cell.bounds = CGRectMake(0.0f, 0.0f, CGRectGetWidth(tableView.bounds), CGRectGetHeight(cell.bounds));
+
+    [cell setNeedsLayout];
+    [cell layoutIfNeeded];
+    
+    // Get the actual height required for the cell
+    CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+    height += 1;
+
+    return height;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 100;
+}
 
 
 
@@ -230,11 +223,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 
 - (void)sendSquareMomentWithMoment:(Moment *)moment {
     [self updateUI];
-    [[GXMomentsEngine sharedEngine] sendMomentWithMoment:moment completion:^(NSDictionary *momentInfo, GXError *error) {
-        if (error) {
-            TTAlert(@"发送失败");
-        }
-    }];
+    [self resendButtonTappedWithMoment:moment];
 }
 
 - (void)showGiftInfo {
@@ -246,7 +235,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
                                                              delegate:self
                                                     cancelButtonTitle:@"取消"
                                                destructiveButtonTitle:nil
-                                                    otherButtonTitles:@"拍照", @"从相册中选取", nil];
+                                                    otherButtonTitles:@"只发文字", @"拍照", @"从相册中选取", nil];
     
     [actionSheet showInView:self.view];
 }
@@ -254,7 +243,12 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 #pragma mark - action sheet delegate
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == 0) {   // take photo from camera
+    if (buttonIndex == 0) {  // only text
+        GXEditMomentTableViewController* addVC = [[GXEditMomentTableViewController alloc]initWithStyle:UITableViewStyleGrouped];
+        addVC.squareVC = self;
+        UINavigationController* navi = [[UINavigationController alloc]initWithRootViewController:addVC];
+        [self presentViewController:navi animated:YES completion:NULL];
+    } else if (buttonIndex == 1) {   // take photo from camera
         if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
             UIImagePickerController *imagePickController=[[UIImagePickerController alloc]init];
             imagePickController.sourceType=UIImagePickerControllerSourceTypeCamera;
@@ -264,7 +258,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
         } else {
             NSLog(@"Camera is not available.");
         }
-    } else if (buttonIndex == 1) {  // choose photo from album
+    } else if (buttonIndex == 2) {  // choose photo from album
         CTAssetsPickerController *picker = [[CTAssetsPickerController alloc] init];
         picker.assetsFilter         = [ALAssetsFilter allPhotos];
         picker.delegate             = self;

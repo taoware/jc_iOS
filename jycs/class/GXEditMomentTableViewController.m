@@ -395,7 +395,7 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
         
         ALAssetRepresentation *imageRep = [imageAsset defaultRepresentation];
         photo.photoDescription = [imageRep filename];
-        UIImage* photoImg = [UIImage imageWithCGImage:imageRep.fullResolutionImage scale:imageRep.scale orientation:(UIImageOrientation)imageRep.orientation];
+        UIImage* photoImg = [UIImage imageWithCGImage:imageRep.fullScreenImage scale:imageRep.scale orientation:(UIImageOrientation)imageRep.orientation];
         NSURL* photoURL = [self photoURLForImage:photoImg];
         photo.imageURL = [photoURL path];
         photo.thumbnailURL = [[self thumbnailURLForImage:photoImg andPhotoURL:photoURL] absoluteString];
