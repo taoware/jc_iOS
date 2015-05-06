@@ -44,6 +44,9 @@
     
     _connectionState = eEMConnectionConnected;
     
+    // 初始化环信SDK，详细内容在AppDelegate+EaseMob.m 文件中
+    [self easemobApplication:application didFinishLaunchingWithOptions:launchOptions];
+    
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     BOOL autologin = [[defaults objectForKey:@"autoLogin"] boolValue];
 
@@ -89,9 +92,6 @@
         [self loginStateChange:nil];
     }
     
-    
-    // 初始化环信SDK，详细内容在AppDelegate+EaseMob.m 文件中
-    [self easemobApplication:application didFinishLaunchingWithOptions:launchOptions];
     
     [self.window setFrame:[[UIScreen mainScreen]bounds]];
     [self.window makeKeyAndVisible];

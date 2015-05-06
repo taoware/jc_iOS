@@ -439,21 +439,23 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 - (void)didReceiveBuddyRequest:(NSString *)username
                        message:(NSString *)message
 {
+    [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:@[username] completion:^(GXError *error) {
 #if !TARGET_IPHONE_SIMULATOR
-    [self playSoundAndVibration];
-    
-    BOOL isAppActivity = [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive;
-    if (!isAppActivity) {
-        //发送本地推送
-        UILocalNotification *notification = [[UILocalNotification alloc] init];
-        notification.fireDate = [NSDate date]; //触发通知的时间
-        notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"friend.somebodyAddWithName", @"%@ add you as a friend"), username];
-        notification.alertAction = NSLocalizedString(@"open", @"Open");
-        notification.timeZone = [NSTimeZone defaultTimeZone];
-    }
+        [self playSoundAndVibration];
+        
+        BOOL isAppActivity = [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive;
+        if (!isAppActivity) {
+            //发送本地推送
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            notification.fireDate = [NSDate date]; //触发通知的时间
+            notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"friend.somebodyAddWithName", @"%@ add you as a friend"), username];
+            notification.alertAction = NSLocalizedString(@"open", @"Open");
+            notification.timeZone = [NSTimeZone defaultTimeZone];
+        }
 #endif
-    
-    [_contactListVC reloadApplyView];
+        
+        [_contactListVC reloadApplyView];
+    }];
 }
 
 - (void)didUpdateBuddyList:(NSArray *)buddyList
@@ -477,25 +479,33 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 
 - (void)didRemovedByBuddy:(NSString *)username
 {
-    [[EaseMob sharedInstance].chatManager removeConversationByChatter:username deleteMessages:YES append2Chat:YES];
-    [_chatListVC refreshDataSource];
-    [_contactListVC reloadDataSource];
+    [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:@[username] completion:^(GXError *error) {
+        [[EaseMob sharedInstance].chatManager removeConversationByChatter:username deleteMessages:YES append2Chat:YES];
+        [_chatListVC refreshDataSource];
+        [_contactListVC reloadDataSource];
+    }];
 }
 
 - (void)didAcceptedByBuddy:(NSString *)username
 {
-    [_contactListVC reloadDataSource];
+    [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:@[username] completion:^(GXError *error) {
+        [_contactListVC reloadDataSource];
+    }];
 }
 
 - (void)didRejectedByBuddy:(NSString *)username
 {
-    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"friend.beRefusedToAdd", @"you are shameless refused by '%@'"), username];
-    TTAlertNoTitle(message);
+    [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:@[username] completion:^(GXError *error) {
+        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"friend.beRefusedToAdd", @"you are shameless refused by '%@'"), username];
+        TTAlertNoTitle(message);
+    }];
 }
 
 - (void)didAcceptBuddySucceed:(NSString *)username
 {
-    [_contactListVC reloadDataSource];
+    [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:@[username] completion:^(GXError *error) {
+        [_contactListVC reloadDataSource];
+    }];
 }
 
 #pragma mark - IChatManagerDelegate 群组变化
@@ -504,11 +514,13 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
                               inviter:(NSString *)username
                               message:(NSString *)message
 {
+    [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:@[username] completion:^(GXError *error) {
 #if !TARGET_IPHONE_SIMULATOR
-    [self playSoundAndVibration];
+        [self playSoundAndVibration];
 #endif
-    
-    [_contactListVC reloadGroupView];
+        
+        [_contactListVC reloadGroupView];
+    }];
 }
 
 //接收到入群申请
@@ -518,21 +530,25 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
                             reason:(NSString *)reason
                              error:(EMError *)error
 {
-    if (!error) {
+    [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:@[username] completion:^(GXError *error) {
+        if (!error) {
 #if !TARGET_IPHONE_SIMULATOR
-        [self playSoundAndVibration];
+            [self playSoundAndVibration];
 #endif
-        
-        [_contactListVC reloadGroupView];
-    }
+            
+            [_contactListVC reloadGroupView];
+        }
+    }];
 }
 
 - (void)didReceiveGroupRejectFrom:(NSString *)groupId
                           invitee:(NSString *)username
                            reason:(NSString *)reason
 {
-    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"friend.beRefusedToAdd", @"you are shameless refused by '%@'"), username];
-    TTAlertNoTitle(message);
+    [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:@[username] completion:^(GXError *error) {
+        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"friend.beRefusedToAdd", @"you are shameless refused by '%@'"), username];
+        TTAlertNoTitle(message);
+    }];
 }
 
 

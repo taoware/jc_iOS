@@ -318,7 +318,7 @@
     EMConversation *conversation = [self.dataSource objectAtIndex:indexPath.row];
 //    cell.name = conversation.chatter;
     User* sender = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:conversation.chatter];
-    cell.name = sender.name;
+    cell.name = sender?sender.name:@"未知";
     if (!conversation.isGroup) {
         cell.placeholderImage = [UIImage imageNamed:@"chatListCellHead.png"];
         cell.imageURL = [NSURL URLWithString:sender.avatar.thumbnailURL];
