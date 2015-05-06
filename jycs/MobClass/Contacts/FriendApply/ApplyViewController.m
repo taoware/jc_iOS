@@ -14,6 +14,7 @@
 
 #import "ApplyFriendCell.h"
 #import "InvitationManager.h"
+#import "GXUserEngine.h"
 
 static ApplyViewController *controller = nil;
 
@@ -120,6 +121,7 @@ static ApplyViewController *controller = nil;
     if(self.dataSource.count > indexPath.row)
     {
         ApplyEntity *entity = [self.dataSource objectAtIndex:indexPath.row];
+        User* user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:entity.applicantUsername];
         if (entity) {
             cell.indexPath = indexPath;
             ApplyStyle applyStyle = [entity.style intValue];
@@ -133,10 +135,12 @@ static ApplyViewController *controller = nil;
                 cell.headerImageView.image = [UIImage imageNamed:@"groupPrivateHeader"];
             }
             else if(applyStyle == ApplyStyleFriend){
-                cell.titleLabel.text = entity.applicantUsername;
-                cell.headerImageView.image = [UIImage imageNamed:@"chatListCellHead"];
+//                cell.titleLabel.text = entity.applicantUsername;
+//                cell.headerImageView.image = [UIImage imageNamed:@"chatListCellHead"];
+                cell.titleLabel.text = user?user.name:@"未知";
+                [cell.headerImageView setImageWithURL:[NSURL URLWithString:user.avatar.thumbnailURL] placeholderImage:[UIImage imageNamed:@"chatListCellHead"]];
             }
-            cell.contentLabel.text = entity.reason;
+            cell.contentLabel.text = [entity.reason stringByReplacingOccurrencesOfString:entity.applicantUsername withString:user.name];
         }
     }
     

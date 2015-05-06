@@ -385,7 +385,7 @@
         }
         
         ChatViewController *chatVC = [[ChatViewController alloc] initWithChatter:buddy.username isGroup:NO];
-        chatVC.title = buddy.username;
+        chatVC.title = buddy.realName;
         [self.navigationController pushViewController:chatVC animated:YES];
     }
 }

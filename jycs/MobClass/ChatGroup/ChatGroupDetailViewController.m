@@ -18,6 +18,7 @@
 #import "ContactView.h"
 #import "GroupBansViewController.h"
 #import "GroupSubjectChangingViewController.h"
+#import "GXUserEngine.h"
 
 #pragma mark - ChatGroupDetailViewController
 
@@ -460,8 +461,12 @@
                 NSString *username = [self.dataSource objectAtIndex:index];
                 ContactView *contactView = [[ContactView alloc] initWithFrame:CGRectMake(j * kContactSize, i * kContactSize, kContactSize, kContactSize)];
                 contactView.index = i * kColOfRow + j;
-                contactView.image = [UIImage imageNamed:@"chatListCellHead.png"];
-                contactView.remark = username;
+//                contactView.image = [UIImage imageNamed:@"chatListCellHead.png"];
+//                contactView.remark = username;
+                User* user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:username];
+                contactView.remark = user?user.name:@"未知";
+                [contactView.imageView setImageWithURL:[NSURL URLWithString:user.avatar.thumbnailURL] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
+                
                 if (![username isEqualToString:loginUsername]) {
                     contactView.editing = isEditing;
                 }

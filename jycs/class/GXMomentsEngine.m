@@ -40,9 +40,9 @@
     NSManagedObjectContext* context = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
     
     User* user = [GXUserEngine sharedEngine].userLoggedIn;
-    NSDictionary* parameter = @{@"userId": user.objectId};
-    
-    [[GXHTTPManager sharedManager] GET:@"square" parameters:parameter success:^(NSURLSessionDataTask *task, id responseObject) {
+
+    NSString* endpoint = [NSString stringWithFormat:@"square/user/%@", user.objectId];
+    [[GXHTTPManager sharedManager] GET:endpoint parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
         if ([responseObject isKindOfClass:[NSDictionary class]]) {
             NSArray* moments = [responseObject objectForKey:API_RESULTS];
             [Moment loadMomentsFromMomentsArray:moments intoManagedObjectContext:context];
@@ -71,7 +71,7 @@
     User* user = moment.sender;
     Unit* unit = moment.inUnit;
     NSDictionary* parameter = [moment JSONToCreateMomentOnServer];
-    NSString* endpoint = [NSString stringWithFormat:@"square/%@/%@", user.objectId, unit.objectId];
+    NSString* endpoint = [NSString stringWithFormat:@"square/user/%@/unit/%@", user.objectId, unit.objectId];
     [[GXHTTPManager sharedManager] POST:endpoint parameters:parameter constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         NSArray* photos = moment.photo.allObjects;
         for (int i = 0; i < photos.count; i++) {

@@ -99,7 +99,12 @@
                  [self enableUserAutoLogin];
                  [self saveUserPasswordInKeychainWithUsername:username andPassword:password];
                  
-                 [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
+                 //获取群组列表
+                 [[EaseMob sharedInstance].chatManager asyncFetchMyGroupsList];
+                 [[EaseMob sharedInstance].chatManager asyncFetchBuddyList];
+
+                 //设置是否自动登录
+                 [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:NO];
                  //将旧版的coredata数据导入新的数据库
                  EMError *error = [[EaseMob sharedInstance].chatManager importDataToNewDatabase];
                  if (!error) {
@@ -210,8 +215,7 @@
 - (void)asyncUpdateUserAvatarwithImageData:(NSData *)imageData andImageName:(NSString *)imageName completion:(void (^)(NSDictionary *, GXError *))completion {
     
     User* user = self.userLoggedIn;
-    NSString* userId = [NSString stringWithFormat:@"%@", user.objectId];
-    NSString* endpoint = [@"users/avatar/" stringByAppendingString:userId];
+    NSString* endpoint = [NSString stringWithFormat:@"users/%@/avatar/", user.objectId];
     [[GXHTTPManager sharedManager] POST:endpoint parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileData:imageData name:@"file" fileName:imageName mimeType:@"image/jpeg"];
     } success:^(NSURLSessionDataTask *task, id responseObject) {

@@ -33,6 +33,8 @@
 #import "ChatViewController+Category.h"
 #define KPageCount 20
 
+#import "GXUserEngine.h"
+
 @interface ChatViewController ()<UITableViewDataSource, UITableViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, SRRefreshDelegate, IChatManagerDelegate, DXChatBarMoreViewDelegate, DXMessageToolBarDelegate, LocationViewDelegate, IDeviceManagerDelegate>
 {
     UIMenuController *_menuController;
@@ -379,6 +381,8 @@
         }
         else{
             MessageModel *model = (MessageModel *)obj;
+            User* user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:model.username];
+            model.headImageURL = [NSURL URLWithString:user.avatar.thumbnailURL];
             NSString *cellIdentifier = [EMChatViewCell cellIdentifierForMessageModel:model];
             EMChatViewCell *cell = (EMChatViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
             if (cell == nil) {

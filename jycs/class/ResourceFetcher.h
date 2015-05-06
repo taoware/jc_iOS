@@ -42,7 +42,7 @@
 #define UNIT_CATEGORY @"category"
 
 // keypath to values in a photo dictionary
-#define PHOTO_ID @"fileId"
+#define PHOTO_ID @"id"
 #define PHOTO_URL @"url"
 #define PHOTO_THUMBNAIL_URL @"thumbnailUrl"
 #define PHOTO_DESCRIPTION @"photoDescription"

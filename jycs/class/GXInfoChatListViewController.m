@@ -374,6 +374,8 @@
     
     ChatViewController *chatController;
     NSString *title = conversation.chatter;
+    User* user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:conversation.chatter];
+    title = user.name;
     if (conversation.isGroup) {
         NSArray *groupArray = [[EaseMob sharedInstance].chatManager groupList];
         for (EMGroup *group in groupArray) {

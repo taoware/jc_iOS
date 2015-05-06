@@ -81,6 +81,19 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     
     [self setupUnreadMessageCount];
     [self setupUntreatedApplyCount];
+    
+    [self fetchBuddyList];
+}
+
+// force loadBuddyList, tried asyncFetchBuddyList method, but the callback didFetchedBuddyList:error not called
+- (void)fetchBuddyList {
+    [[EaseMob sharedInstance].chatManager asyncFetchBuddyListWithCompletion:^(NSArray *buddyList, EMError *error) {
+        if (!error && buddyList.count) {
+            [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:[buddyList valueForKey:@"username"] completion:^(GXError *error) {
+                [_contactListVC reloadDataSource];
+            }];
+        }
+    } onQueue:dispatch_get_main_queue()];
 }
 
 - (void)dealloc

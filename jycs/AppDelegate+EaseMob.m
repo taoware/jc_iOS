@@ -37,7 +37,7 @@
     
     [[EaseMob sharedInstance] registerSDKWithAppKey:@"gxcm#jycs"
                                        apnsCertName:apnsCertName
-                                        otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:YES]}];
+                                        otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:NO]}];
     
     // 登录成功后，自动去取好友列表
     // SDK获取结束后，会回调

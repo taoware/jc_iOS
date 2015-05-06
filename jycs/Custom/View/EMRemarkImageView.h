@@ -26,4 +26,6 @@
 @property (strong, nonatomic) NSString *remark;
 @property (strong, nonatomic) UIImage *image;
 
+@property (strong, nonatomic) UIImageView *imageView;  // exposed imageView for easier loading of afnetworking cached image
+
 @end
