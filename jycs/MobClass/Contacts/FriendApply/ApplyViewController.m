@@ -140,7 +140,10 @@ static ApplyViewController *controller = nil;
                 cell.titleLabel.text = user?user.name:@"未知";
                 [cell.headerImageView setImageWithURL:[NSURL URLWithString:user.avatar.thumbnailURL] placeholderImage:[UIImage imageNamed:@"chatListCellHead"]];
             }
-            cell.contentLabel.text = [entity.reason stringByReplacingOccurrencesOfString:entity.applicantUsername withString:user.name];
+            cell.contentLabel.text = entity.reason;
+            if (user) {
+                cell.contentLabel.text = [entity.reason stringByReplacingOccurrencesOfString:entity.applicantUsername withString:user.name];
+            }
         }
     }
     

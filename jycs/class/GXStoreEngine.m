@@ -42,6 +42,7 @@
         if ([responseObject isKindOfClass:[NSDictionary class]]) {
             NSArray* stores = [responseObject objectForKey:API_RESULTS];
             [Store loadStoresFromNewsArray:stores intoManagedObjectContext:context];
+            [self DeleteStoresRecoredNotInObjectIds:[stores valueForKey:RESOURCE_ID]];
         }
         [self executeSyncCompletedOperations];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -61,6 +62,25 @@
         [self executeSyncCompletedOperations];
     }];
     
+}
+
+- (void)DeleteStoresRecoredNotInObjectIds:(NSArray*)idArray {
+    __block NSArray *results = nil;
+    NSManagedObjectContext *managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Store"];
+    NSPredicate *predicate;
+    predicate = [NSPredicate predicateWithFormat:@"NOT (objectId IN %@)", idArray];
+    
+    [fetchRequest setPredicate:predicate];
+    [fetchRequest setSortDescriptors:[NSArray arrayWithObject:
+                                      [NSSortDescriptor sortDescriptorWithKey:@"objectId" ascending:YES]]];
+    [managedObjectContext performBlockAndWait:^{
+        NSError *error = nil;
+        results = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    }];
+    for (NSManagedObject *managedObject in results) {
+        [managedObjectContext deleteObject:managedObject];
+    }
 }
 
 - (void)executeSyncCompletedOperations {

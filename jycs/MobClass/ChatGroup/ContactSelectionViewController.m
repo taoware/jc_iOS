@@ -16,6 +16,7 @@
 #import "EMRemarkImageView.h"
 #import "EMSearchDisplayController.h"
 #import "RealtimeSearchUtil.h"
+#import "EMBuddy+JCuser.h"
 
 @interface ContactSelectionViewController ()<UISearchBarDelegate, UISearchDisplayDelegate>
 
@@ -242,8 +243,10 @@
     }
     
     EMBuddy *buddy = [[_dataSource objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
-    cell.imageView.image = [UIImage imageNamed:@"chatListCellHead.png"];
-    cell.textLabel.text = buddy.username;
+//    cell.imageView.image = [UIImage imageNamed:@"chatListCellHead.png"];
+//    cell.textLabel.text = buddy.username;
+    [cell.imageView setImageWithURL:[NSURL URLWithString:buddy.avatarUrl] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
+    cell.textLabel.text = buddy.realName;
     
     return cell;
 }
@@ -365,8 +368,10 @@
     for (int i = 0; i < count; i++) {
         EMBuddy *buddy = [self.selectedContacts objectAtIndex:i];
         EMRemarkImageView *remarkView = [[EMRemarkImageView alloc] initWithFrame:CGRectMake(i * imageSize, 0, imageSize, imageSize)];
-        remarkView.image = [UIImage imageNamed:@"chatListCellHead.png"];
-        remarkView.remark = buddy.username;
+//        remarkView.image = [UIImage imageNamed:@"chatListCellHead.png"];
+//        remarkView.remark = buddy.username;
+        [remarkView.imageView setImageWithURL:[NSURL URLWithString:buddy.avatarUrl] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
+        remarkView.remark = buddy.realName;
         [self.footerScrollView addSubview:remarkView];
     }
     

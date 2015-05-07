@@ -37,10 +37,7 @@
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0 && indexPath.row == 3) {
-        GXResetPasswordViewController* resetVC = [[GXResetPasswordViewController alloc]init];
-        [self.navigationController pushViewController:resetVC animated:YES];
-    } else if (indexPath.section == 1) {
+    if (indexPath.section == 1) {
         [[[UIAlertView alloc]initWithTitle:nil message:@"确定退出?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil]show];
     }
 }

@@ -47,6 +47,9 @@
 		1E4611A71A821C7400CA82D2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E46119D1A821C7400CA82D2 /* AppDelegate.m */; };
 		1E4611BF1A82446800CA82D2 /* add@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E4611BE1A82446800CA82D2 /* add@2x.png */; };
 		1E4611C61A82496100CA82D2 /* adminIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E4611C51A82496100CA82D2 /* adminIcon@2x.png */; };
+		1E5C50091AFA64E200958EBA /* JKCountDownButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E5C50081AFA64E200958EBA /* JKCountDownButton.m */; };
+		1E5C500C1AFB392300958EBA /* GXForgetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E5C500B1AFB392300958EBA /* GXForgetViewController.m */; };
+		1E5C500F1AFB393F00958EBA /* GXForgetResetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E5C500E1AFB393F00958EBA /* GXForgetResetViewController.m */; };
 		1E61751E1AC1417800CBFBCA /* bottom_bg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E61751D1AC1417800CBFBCA /* bottom_bg@2x.png */; };
 		1E61752A1AC18F6B00CBFBCA /* area.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1E6175291AC18F6B00CBFBCA /* area.plist */; };
 		1E61752C1AC255AA00CBFBCA /* login_btn_disabled@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E61752B1AC255AA00CBFBCA /* login_btn_disabled@2x.png */; };
@@ -435,7 +438,6 @@
 		1E9E36261AF7CB6C003BA9E1 /* GXPostViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1E9E35B21AF7CB6B003BA9E1 /* GXPostViewController.xib */; };
 		1E9E36271AF7CB6C003BA9E1 /* GXRegisterTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35B41AF7CB6B003BA9E1 /* GXRegisterTableViewController.m */; };
 		1E9E36281AF7CB6C003BA9E1 /* GXResetPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35B61AF7CB6B003BA9E1 /* GXResetPasswordViewController.m */; };
-		1E9E36291AF7CB6C003BA9E1 /* GXResetPasswordViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1E9E35B71AF7CB6B003BA9E1 /* GXResetPasswordViewController.xib */; };
 		1E9E362A1AF7CB6C003BA9E1 /* GXSelectTypeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35B91AF7CB6B003BA9E1 /* GXSelectTypeTableViewController.m */; };
 		1E9E362B1AF7CB6C003BA9E1 /* GXSelectUnitTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35BB1AF7CB6B003BA9E1 /* GXSelectUnitTableViewController.m */; };
 		1E9E362C1AF7CB6C003BA9E1 /* GXSettingTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35BD1AF7CB6B003BA9E1 /* GXSettingTableViewController.m */; };
@@ -562,6 +564,12 @@
 		1E46119D1A821C7400CA82D2 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = class/AppDelegate.m; sourceTree = "<group>"; };
 		1E4611BE1A82446800CA82D2 /* add@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "add@2x.png"; sourceTree = "<group>"; };
 		1E4611C51A82496100CA82D2 /* adminIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "adminIcon@2x.png"; sourceTree = "<group>"; };
+		1E5C50071AFA64E200958EBA /* JKCountDownButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JKCountDownButton.h; sourceTree = "<group>"; };
+		1E5C50081AFA64E200958EBA /* JKCountDownButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JKCountDownButton.m; sourceTree = "<group>"; };
+		1E5C500A1AFB392300958EBA /* GXForgetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXForgetViewController.h; sourceTree = "<group>"; };
+		1E5C500B1AFB392300958EBA /* GXForgetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXForgetViewController.m; sourceTree = "<group>"; };
+		1E5C500D1AFB393F00958EBA /* GXForgetResetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXForgetResetViewController.h; sourceTree = "<group>"; };
+		1E5C500E1AFB393F00958EBA /* GXForgetResetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXForgetResetViewController.m; sourceTree = "<group>"; };
 		1E61751D1AC1417800CBFBCA /* bottom_bg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bottom_bg@2x.png"; sourceTree = "<group>"; };
 		1E6175291AC18F6B00CBFBCA /* area.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = area.plist; sourceTree = "<group>"; };
 		1E61752B1AC255AA00CBFBCA /* login_btn_disabled@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "login_btn_disabled@2x.png"; sourceTree = "<group>"; };
@@ -1206,7 +1214,6 @@
 		1E9E35B41AF7CB6B003BA9E1 /* GXRegisterTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXRegisterTableViewController.m; sourceTree = "<group>"; };
 		1E9E35B51AF7CB6B003BA9E1 /* GXResetPasswordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXResetPasswordViewController.h; sourceTree = "<group>"; };
 		1E9E35B61AF7CB6B003BA9E1 /* GXResetPasswordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXResetPasswordViewController.m; sourceTree = "<group>"; };
-		1E9E35B71AF7CB6B003BA9E1 /* GXResetPasswordViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GXResetPasswordViewController.xib; sourceTree = "<group>"; };
 		1E9E35B81AF7CB6B003BA9E1 /* GXSelectTypeTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXSelectTypeTableViewController.h; sourceTree = "<group>"; };
 		1E9E35B91AF7CB6B003BA9E1 /* GXSelectTypeTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXSelectTypeTableViewController.m; sourceTree = "<group>"; };
 		1E9E35BA1AF7CB6B003BA9E1 /* GXSelectUnitTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXSelectUnitTableViewController.h; sourceTree = "<group>"; };
@@ -1517,6 +1524,15 @@
 			path = SlimeRefresh;
 			sourceTree = "<group>";
 		};
+		1E5C50061AFA64E200958EBA /* JKCountDownButton */ = {
+			isa = PBXGroup;
+			children = (
+				1E5C50071AFA64E200958EBA /* JKCountDownButton.h */,
+				1E5C50081AFA64E200958EBA /* JKCountDownButton.m */,
+			);
+			path = JKCountDownButton;
+			sourceTree = "<group>";
+		};
 		1E61752D1AC3D57600CBFBCA /* store */ = {
 			isa = PBXGroup;
 			children = (
@@ -1530,6 +1546,7 @@
 		1E6470891A848C05006CE6D9 /* 3rdParty */ = {
 			isa = PBXGroup;
 			children = (
+				1E5C50061AFA64E200958EBA /* JKCountDownButton */,
 				1E74B2D71AF90C3B00B8C0FA /* AFNetworking */,
 				1E74B2EB1AF90C3C00B8C0FA /* UIKit+AFNetworking */,
 				1E74B2D31AF8F88800B8C0FA /* SZTextView */,
@@ -2772,6 +2789,10 @@
 				1E9E35B41AF7CB6B003BA9E1 /* GXRegisterTableViewController.m */,
 				1E9E35A01AF7CB6B003BA9E1 /* GXLoginViewController.h */,
 				1E9E35A11AF7CB6B003BA9E1 /* GXLoginViewController.m */,
+				1E5C500A1AFB392300958EBA /* GXForgetViewController.h */,
+				1E5C500B1AFB392300958EBA /* GXForgetViewController.m */,
+				1E5C500D1AFB393F00958EBA /* GXForgetResetViewController.h */,
+				1E5C500E1AFB393F00958EBA /* GXForgetResetViewController.m */,
 			);
 			name = Login;
 			sourceTree = "<group>";
@@ -2871,7 +2892,6 @@
 				1E9E35B21AF7CB6B003BA9E1 /* GXPostViewController.xib */,
 				1E9E35B51AF7CB6B003BA9E1 /* GXResetPasswordViewController.h */,
 				1E9E35B61AF7CB6B003BA9E1 /* GXResetPasswordViewController.m */,
-				1E9E35B71AF7CB6B003BA9E1 /* GXResetPasswordViewController.xib */,
 				1E9E35751AF7CB6B003BA9E1 /* GXAdminAdminViewController.h */,
 				1E9E35761AF7CB6B003BA9E1 /* GXAdminAdminViewController.m */,
 				1E9E35771AF7CB6B003BA9E1 /* GXAdminEmplyeeViewController.h */,
@@ -3140,7 +3160,6 @@
 				1E9E32DB1AF7BA96003BA9E1 /* chat_location_preview@2x.png in Resources */,
 				1E9E32C21AF7BA96003BA9E1 /* call_out_h.png in Resources */,
 				1E9E32FB1AF7BA96003BA9E1 /* chatBar_colorMore_photoSelected@2x.png in Resources */,
-				1E9E36291AF7CB6C003BA9E1 /* GXResetPasswordViewController.xib in Resources */,
 				1E9E33011AF7BA96003BA9E1 /* chatBar_more_camera@2x.png in Resources */,
 				1E9E32EE1AF7BA96003BA9E1 /* chatBar_recordBg.png in Resources */,
 				1E6C36A81AC984E90070DD38 /* carousel_bg1@2x.png in Resources */,
@@ -3467,6 +3486,7 @@
 				1E9E360F1AF7CB6C003BA9E1 /* GXContactListViewController.m in Sources */,
 				1E9E31D31AF7BA00003BA9E1 /* NSDateFormatter+Category.m in Sources */,
 				1E9E31921AF7B83D003BA9E1 /* MWPhoto.m in Sources */,
+				1E5C500F1AFB393F00958EBA /* GXForgetResetViewController.m in Sources */,
 				1E9E36241AF7CB6C003BA9E1 /* GXPostedViewController.m in Sources */,
 				1E9E31B41AF7B83D003BA9E1 /* PSTGridLayoutSection.m in Sources */,
 				1E9E31911AF7B83D003BA9E1 /* MWGridViewController.m in Sources */,
@@ -3491,6 +3511,7 @@
 				1E9E36411AF7CB6C003BA9E1 /* Permission.m in Sources */,
 				1E9E33C31AF7BB2F003BA9E1 /* ConvertToCommonEmoticonsHelper.m in Sources */,
 				1E9E33E71AF7BB2F003BA9E1 /* InvitationManager.m in Sources */,
+				1E5C500C1AFB392300958EBA /* GXForgetViewController.m in Sources */,
 				1E9E36341AF7CB6C003BA9E1 /* GXUserEngine.m in Sources */,
 				1E9E319D1AF7B83D003BA9E1 /* EMSDWebImageManager.m in Sources */,
 				1E3D73FF1ABB36120003A963 /* BaseTableViewCell.m in Sources */,
@@ -3516,6 +3537,7 @@
 				1E9E33E41AF7BB2F003BA9E1 /* ApplyFriendCell.m in Sources */,
 				1E9E36311AF7CB6C003BA9E1 /* GXStoreTableViewController.m in Sources */,
 				1E9E31B11AF7B83D003BA9E1 /* PSTGridLayoutInfo.m in Sources */,
+				1E5C50091AFA64E200958EBA /* JKCountDownButton.m in Sources */,
 				1E9E364D1AF7CB6C003BA9E1 /* User.m in Sources */,
 				1E9E31971AF7B83D003BA9E1 /* DACircularProgressView.m in Sources */,
 				1E3D74041ABB36120003A963 /* EMChooseViewController.m in Sources */,

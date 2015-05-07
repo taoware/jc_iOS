@@ -44,8 +44,9 @@
     [[GXHTTPManager sharedManager] GET:@"news" parameters:parameter success:^(NSURLSessionDataTask *task, id responseObject) {
         if ([responseObject isKindOfClass:[NSDictionary class]]) {
             NSArray* news = [responseObject objectForKey:API_RESULTS];
-            [News deleteAllRecordsInManagedObjectContext:context];
+//            [News deleteAllRecordsInManagedObjectContext:context];
             [News loadNewsFromNewsArray:news intoManagedObjectContext:context];
+            [self DeleteNewsRecoredNotInObjectIds:[news valueForKey:RESOURCE_ID]];
         }
         [self executeSyncCompletedOperations];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -64,6 +65,25 @@
         
         [self executeSyncCompletedOperations];
     }];
+}
+
+- (void)DeleteNewsRecoredNotInObjectIds:(NSArray*)idArray {
+    __block NSArray *results = nil;
+    NSManagedObjectContext *managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"News"];
+    NSPredicate *predicate;
+    predicate = [NSPredicate predicateWithFormat:@"NOT (objectId IN %@)", idArray];
+    
+    [fetchRequest setPredicate:predicate];
+    [fetchRequest setSortDescriptors:[NSArray arrayWithObject:
+                                      [NSSortDescriptor sortDescriptorWithKey:@"objectId" ascending:YES]]];
+    [managedObjectContext performBlockAndWait:^{
+        NSError *error = nil;
+        results = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    }];
+    for (NSManagedObject *managedObject in results) {
+        [managedObjectContext deleteObject:managedObject];
+    }
 }
 
 - (void)downloadDataForNews {

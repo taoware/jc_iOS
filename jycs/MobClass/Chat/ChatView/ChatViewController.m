@@ -382,6 +382,7 @@
         else{
             MessageModel *model = (MessageModel *)obj;
             User* user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:model.username];
+            model.nickName = user?user.name:@"未知";
             model.headImageURL = [NSURL URLWithString:user.avatar.thumbnailURL];
             NSString *cellIdentifier = [EMChatViewCell cellIdentifierForMessageModel:model];
             EMChatViewCell *cell = (EMChatViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];

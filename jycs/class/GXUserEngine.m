@@ -198,6 +198,29 @@
     }];
 }
 
+- (void)asyncPasswordForgotWithNewPass:(NSString *)newPass completion:(void (^)(GXError *))completion {
+    NSDictionary *parameter = [NSDictionary dictionaryWithObjectsAndKeys:
+                               newPass, @"password",
+                               nil];
+    NSString* userId = [NSString stringWithFormat:@"%@", self.userLoggedIn.objectId];
+    NSString* endpoint = [NSString stringWithFormat:@"users/%@/forgetPass", userId];
+    [[GXHTTPManager sharedManager] POST:endpoint parameters:parameter success:^(NSURLSessionDataTask *task, id responseObject) {
+        completion(nil);
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        // api error handling
+        id responseObject = error.userInfo[@"kErrorResponseObjectKey"];
+        if ([responseObject isKindOfClass:[NSDictionary class]]&&responseObject) {
+            NSString* apiError = [responseObject objectForKey:@"msg"];
+            if (apiError) {
+                completion([GXError errorWithCode:GXErrorPasswordResetFailure andDescription:apiError]);
+            }
+        } else {
+            // AFNetworking error handling
+            completion([GXError errorWithCode:GXErrorServerNotReachable andDescription:error.localizedDescription]);
+        }
+    }];
+}
+
 
 - (void)executeCompletedOperations {
     dispatch_async(dispatch_get_main_queue(), ^{

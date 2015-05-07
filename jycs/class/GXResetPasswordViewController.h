@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface GXResetPasswordViewController : UIViewController
+@interface GXResetPasswordViewController : UITableViewController
 
 @end

@@ -8,6 +8,7 @@
 
 #import "GXRegisterTableViewController.h"
 #import "GXUserEngine.h"
+#import "JKCountDownButton.h"
 
 #define PROVINCE_COMPONENT  0
 #define CITY_COMPONENT      1
@@ -28,6 +29,8 @@
 @property (nonatomic)NSInteger currentProvince;
 @property (nonatomic)NSInteger currentCity;
 @property (nonatomic)NSInteger currentDistrict;
+
+@property (nonatomic, strong)NSString* verificationCode;
 
 @property (weak, nonatomic) IBOutlet UIButton *gender_Btn;
 @property (weak, nonatomic) IBOutlet UIButton *category_Btn;
@@ -174,6 +177,7 @@
     NSString* mobile = self.fourthTextField.text;
     NSString* validationCode = self.fifthTextField.text;
     NSString* password = self.sixthTextField.text;
+    NSString* conformPass = self.seventhTextField.text;
     NSString* notes = self.eighthTextField.text;
     
     if (![self verifyCode:validationCode]) {
@@ -181,7 +185,19 @@
         return;
     }
     
-    if (name.length>0 && gender.length>0 && category.length>0 && job.length>0 && locaction.length>0 && address.length>0 && mobile.length>0 && password.length>0) {
+    if (!name.length || !gender.length || !category.length>0 || !job.length>0 || !locaction.length>0 || !address.length>0 || !mobile.length>0 || !password.length>0) {
+        TTAlert(@"注册信息不完整");
+        return;
+    } else if (![password isEqualToString:conformPass]) {
+        TTAlert(@"两次密码不相同");
+        return ;
+    } else if (![self validatePassword:password]) {  // password validation
+        TTAlert(@"密码要求6-16位，至少1个数字，1个字母");
+        return;
+    } else if (![self verificationCode]) {  // vefication code validation
+        TTAlert(@"验证码错误");
+        return;
+    } else {
         [self showHudInView:self.view hint:@"正在注册"];
         [[GXUserEngine sharedEngine] asyncUserRegisterWithRealName:name andGender:gender andCategory:category andJob:job andArea:locaction andAddress:address andPhoneNumber:mobile andValidationCode:validationCode andPassword:password andRemark:notes completion:^(NSDictionary *registerInfo, GXError *error) {
             [self hideHud];
@@ -203,18 +219,27 @@
                 }
             }
         }];
-    } else {
-        TTAlert(@"信息不全");
-        return;
     }
     
     
 }
 
 - (BOOL)verifyCode:(NSString *)code {
+    BOOL result = NO;
+    
+    if ([self.verificationCode isEqualToString:code]) {
+        result = YES;
+    }
+    
+    return result;
+}
+
+- (BOOL)validatePassword:(NSString *)password {
     BOOL result;
     
-    result = YES;
+    NSString *passwordRegex =@"^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+){6,16}$";
+    NSPredicate *passwordPred = [NSPredicate predicateWithFormat:@"%@ MATCHES %@", password, passwordRegex];
+    result = [passwordPred evaluateWithObject:passwordRegex];
     
     return result;
 }
@@ -322,6 +347,28 @@
     [self presentViewController:alert animated:YES completion:^{
         
     }];
+}
+
+- (IBAction)countDownXibTouched:(JKCountDownButton*)sender {
+    sender.enabled = NO;
+    //button type要 设置成custom 否则会闪动
+    [sender startWithSecond:60];
+    self.verificationCode = [self generateRandom4DigitCode];
+    
+    [sender didChange:^NSString *(JKCountDownButton *countDownButton,int second) {
+        NSString *title = [NSString stringWithFormat:@"剩余%d秒",second];
+        return title;
+    }];
+    [sender didFinished:^NSString *(JKCountDownButton *countDownButton, int second) {
+        countDownButton.enabled = YES;
+        return @"点击重新获取";
+        
+    }];
+}
+
+- (NSString *)generateRandom4DigitCode {
+    int randomNum = arc4random_uniform(10000);
+    return [NSString stringWithFormat:@"%04d", randomNum];
 }
 
 #pragma mark- Picker Data Source Methods

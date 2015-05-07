@@ -21,40 +21,45 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(comfirmReset)];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-- (IBAction)comfirmReset:(id)sender {
+- (void)comfirmReset {
     NSString* oldPass = self.oldPassField.text;
     NSString* newPass = self.PassField.text;
     NSString* comfirmPass = self.comfirmField.text;
     
     if (!oldPass.length || !newPass || !comfirmPass) {
-        [[[UIAlertView alloc]initWithTitle:@"Missing Information" message:@"Make sure you fill out all of the information!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        [[[UIAlertView alloc]initWithTitle:@"警告" message:@"信息不完整!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+    } else if (![newPass isEqualToString:comfirmPass]) {
+        TTAlert(@"密码不一致");
+    } else {
+        [self showHudInView:self.view hint:@"正在重置"];
+        [[GXUserEngine sharedEngine] asyncResetPasswordWithOldPass:oldPass andNewPass:newPass  completion:^(NSDictionary *resetInfo, GXError *error) {
+            [self hideHud];
+            if (!error) {
+                [self.navigationController popViewControllerAnimated:YES];
+            } else {
+                switch (error.errorCode) {
+                    case GXErrorOldPasswordInvalid:
+                        TTAlert(@"原密码错误");
+                        break;
+                    case GXErrorServerNotReachable:
+                        TTAlert(@"服务器连接失败");
+                        break;
+                    default:
+                        TTAlert(@"密码重置失败");
+                        break;
+                }
+            }
+        }];
     }
     
-    [self showHudInView:self.view hint:@"正在重置"];
-    [[GXUserEngine sharedEngine] asyncResetPasswordWithOldPass:oldPass andNewPass:newPass  completion:^(NSDictionary *resetInfo, GXError *error) {
-        [self hideHud];
-        if (!error) {
-            [self.navigationController popViewControllerAnimated:YES];
-        } else {
-            switch (error.errorCode) {
-                case GXErrorOldPasswordInvalid:
-                    TTAlert(@"原密码错误");
-                    break;
-                case GXErrorServerNotReachable:
-                    TTAlert(@"服务器连接失败");
-                    break;
-                default:
-                    TTAlert(@"密码重置失败");
-                    break;
-            }
-        }
-    }];
 }
 
 /*

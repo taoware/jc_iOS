@@ -46,6 +46,7 @@
         if ([responseObject isKindOfClass:[NSDictionary class]]) {
             NSArray* moments = [responseObject objectForKey:API_RESULTS];
             [Moment loadMomentsFromMomentsArray:moments intoManagedObjectContext:context];
+            [self DeleteMomentRecoredNotInObjectIds:[moments valueForKey:RESOURCE_ID]];
         }
         [self executeSyncCompletedOperations];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -64,6 +65,25 @@
         
         [self executeSyncCompletedOperations];
     }];
+}
+
+- (void)DeleteMomentRecoredNotInObjectIds:(NSArray*)idArray {
+    __block NSArray *results = nil;
+    NSManagedObjectContext *managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Moment"];
+    NSPredicate *predicate;
+    predicate = [NSPredicate predicateWithFormat:@"NOT (objectId IN %@)", idArray];
+    
+    [fetchRequest setPredicate:predicate];
+    [fetchRequest setSortDescriptors:[NSArray arrayWithObject:
+                                      [NSSortDescriptor sortDescriptorWithKey:@"objectId" ascending:YES]]];
+    [managedObjectContext performBlockAndWait:^{
+        NSError *error = nil;
+        results = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    }];
+    for (NSManagedObject *managedObject in results) {
+        [managedObjectContext deleteObject:managedObject];
+    }
 }
 
 - (void)sendMomentWithMoment:(Moment *)moment completion:(void (^)(NSDictionary *, GXError *))completion{
