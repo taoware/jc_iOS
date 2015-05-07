@@ -145,6 +145,10 @@ alpha:1.0]
     [self.delegate resendButtonTappedWithMoment:self.momentToDisplay];
 }
 
+- (void)userInfoTapped {
+    [self.delegate userInfoTappedWithMoment:self.momentToDisplay];
+}
+
 
 #pragma mark- Outside Method
 -(void)setImageswithURLs:(NSArray *)urls
@@ -345,6 +349,12 @@ alpha:1.0]
     
 }
 
+- (UITapGestureRecognizer *)addTapGestureForUser {
+    UITapGestureRecognizer* tapGesture=[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(userInfoTapped)];
+    
+    return tapGesture;
+}
+
 -(UIImageView *)headImageView
 {
     if (!_headImageView)
@@ -352,6 +362,8 @@ alpha:1.0]
         _headImageView=[[UIImageView alloc]initForAutoLayout];
         _headImageView.backgroundColor=[UIColor lightGrayColor];
         _headImageView.contentMode=UIViewContentModeScaleToFill;
+        _headImageView.userInteractionEnabled = YES;
+        [_headImageView addGestureRecognizer:[self addTapGestureForUser]];
         _headImageView.clipsToBounds=YES;
         _headImageView.layer.cornerRadius=5.f;
     }
@@ -380,6 +392,8 @@ alpha:1.0]
     {
         _userNameLabel=[[UILabel alloc]initForAutoLayout];
         _userNameLabel.textColor=UserNameColor;
+        _userNameLabel.userInteractionEnabled = YES;
+        [_userNameLabel addGestureRecognizer:[self addTapGestureForUser]];
         _userNameLabel.font=[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
         
     }
@@ -434,7 +448,7 @@ alpha:1.0]
 }
 
 - (void)updateUI {
-    self.userNameLabel.text= self.momentToDisplay.sender.name;
+    self.userNameLabel.text= self.momentToDisplay.screenName;
     self.timeLabel.text= [self.dateFormatter stringFromDate:self.momentToDisplay.createTime];
     self.bodyLabel.text = self.momentToDisplay.text;
     [self.headImageView setImageWithURL:[NSURL URLWithString:self.momentToDisplay.sender.avatar.thumbnailURL] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];

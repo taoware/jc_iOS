@@ -19,6 +19,7 @@
 #import "GroupBansViewController.h"
 #import "GroupSubjectChangingViewController.h"
 #import "GXUserEngine.h"
+#import "Photo.h"
 
 #pragma mark - ChatGroupDetailViewController
 

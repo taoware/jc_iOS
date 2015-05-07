@@ -31,7 +31,7 @@
 // keys to values in a moment dictionary
 #define MOMENT_TEXT @"information"
 #define MOMENT_TYPE @"type"
-#define MOMENT_SCREENNAME @"name"
+#define MOMENT_SCREENNAME @"squareName"
 #define MOMENT_SENDER @"user"
 #define MOMENT_UNIT @"unit"
 #define MOMENT_PHOTOS @"photos"
@@ -53,6 +53,7 @@
 // keys to values in a user dictionary
 #define USER_NAME @"name"
 #define USER_MOBILE @"mobile"
+#define USER_LOCATION @"location"
 #define USER_AVATAR @"avatar"
 #define USER_UNITS @"units"
 #define USER_PERMISSIONS @"permissions"

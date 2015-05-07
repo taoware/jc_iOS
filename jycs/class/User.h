@@ -2,13 +2,12 @@
 //  User.h
 //  jycs
 //
-//  Created by appleseed on 4/23/15.
+//  Created by appleseed on 5/7/15.
 //  Copyright (c) 2015 appleseed. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "Photo.h"
 
 @class Permission, Photo, Unit;
 
@@ -16,12 +15,13 @@
 
 @property (nonatomic, retain) NSDate * createTime;
 @property (nonatomic, retain) NSDate * deleteTime;
+@property (nonatomic, retain) NSString * imPassword;
+@property (nonatomic, retain) NSString * imUsername;
 @property (nonatomic, retain) NSString * mobile;
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSNumber * objectId;
 @property (nonatomic, retain) NSDate * updateTime;
-@property (nonatomic, retain) NSString * imUsername;
-@property (nonatomic, retain) NSString * imPassword;
+@property (nonatomic, retain) NSString * location;
 @property (nonatomic, retain) Photo *avatar;
 @property (nonatomic, retain) NSSet *hasPermisson;
 @property (nonatomic, retain) NSSet *inUnit;

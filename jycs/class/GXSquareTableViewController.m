@@ -17,6 +17,7 @@
 #import "CTAssetsPickerController.h"
 #import "GXEditMomentTableViewController.h"
 #import "GXAssetsManager.h"
+#import "GXUserInfoViewController.h"
 
 static NSString *CellIdentifier = @"MomentsCellIdentifier";
 
@@ -41,6 +42,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
     self.tableView.allowsSelection = NO;
+//    self.tableView.separatorStyle = UITableViewCellSelectionStyleNone;
     
     self.offscreenCells = [NSMutableDictionary dictionary];
     [self.tableView registerClass:[GXMomentsTableViewCell class] forCellReuseIdentifier:CellIdentifier];
@@ -116,6 +118,20 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     [self.tableView beginUpdates];
     [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
     [self.tableView endUpdates];
+}
+
+- (void)userInfoTappedWithMoment:(Moment *)moment {
+    [self performSegueWithIdentifier:@"go user info" sender:moment];
+}
+
+#pragma mark - Navigation
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"go user info"]) {
+        GXUserInfoViewController* userInfoVC = (GXUserInfoViewController *)segue.destinationViewController;
+        Moment* moment = sender;
+        userInfoVC.moment = moment;
+    }
 }
 
 - (void)setMoment:(Moment *)moment WithStatus:(GXObjectSyncStatus)syncStatus {

@@ -40,9 +40,8 @@
     NSManagedObjectContext* context = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
     
     User* user = [GXUserEngine sharedEngine].userLoggedIn;
-
-    NSString* endpoint = [NSString stringWithFormat:@"square/user/%@", user.objectId];
-    [[GXHTTPManager sharedManager] GET:endpoint parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+    NSDictionary* parameter = @{@"userId": user.objectId};
+    [[GXHTTPManager sharedManager] GET:@"jc/square" parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
         if ([responseObject isKindOfClass:[NSDictionary class]]) {
             NSArray* moments = [responseObject objectForKey:API_RESULTS];
             [Moment loadMomentsFromMomentsArray:moments intoManagedObjectContext:context];

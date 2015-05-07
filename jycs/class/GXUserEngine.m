@@ -33,21 +33,17 @@
 }
 
 - (User *)userLoggedIn {
-    if (!_userLoggedIn) {
-        NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-        NSString* mobile = [defaults objectForKey:@"userLoggedIn"];
-        
-        NSManagedObjectContext *managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
-        
-        NSFetchRequest* fetchRequest = [[NSFetchRequest alloc]initWithEntityName:@"User"];
-        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"mobile == %@", mobile];
-        fetchRequest.predicate = predicate;
-        NSError* error;
-        User* user = [[managedObjectContext executeFetchRequest:fetchRequest error:&error] firstObject];
-        
-        _userLoggedIn = user;
-    }
-    return _userLoggedIn;
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    NSString* mobile = [defaults objectForKey:@"userLoggedIn"];
+    
+    NSManagedObjectContext *managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+    
+    NSFetchRequest* fetchRequest = [[NSFetchRequest alloc]initWithEntityName:@"User"];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"mobile == %@", mobile];
+    fetchRequest.predicate = predicate;
+    NSError* error;
+    User* user = [[managedObjectContext executeFetchRequest:fetchRequest error:&error] firstObject];
+    return user;
 }
 
 - (void)updateUserLoggedInFlagWith:(NSString *)username {
@@ -104,7 +100,7 @@
                  [[EaseMob sharedInstance].chatManager asyncFetchBuddyList];
 
                  //设置是否自动登录
-                 [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:NO];
+                 [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
                  //将旧版的coredata数据导入新的数据库
                  EMError *error = [[EaseMob sharedInstance].chatManager importDataToNewDatabase];
                  if (!error) {

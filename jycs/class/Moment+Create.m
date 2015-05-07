@@ -10,6 +10,7 @@
 #import "ResourceFetcher.h"
 #import "Photo+Create.h"
 #import "GXSyncEngine.h"
+#import "User+Query.h"
 
 @implementation Moment (Create)
 
@@ -44,6 +45,8 @@
     moment.objectId = objectId;
     moment.text = [momentDictionary valueForKeyPath:MOMENT_TEXT];
     moment.type = [momentDictionary valueForKeyPath:MOMENT_TYPE];
+    moment.screenName = [momentDictionary valueForKey:MOMENT_SCREENNAME];
+    moment.sender = [User UserWithUserInfo:[momentDictionary valueForKey:MOMENT_SENDER] inManagedObjectContext:context];
     moment.updateTime = [ResourceFetcher dateUsingStringFromAPI:[momentDictionary valueForKeyPath:RESOURCE_UPDATED_DATE]];
     moment.createTime = [ResourceFetcher dateUsingStringFromAPI:[momentDictionary valueForKeyPath:RESOURCE_CREATED_DATE]];
     moment.deleteTime = [ResourceFetcher dateUsingStringFromAPI:[momentDictionary valueForKeyPath:RESOURCE_DELETED_DATE]];

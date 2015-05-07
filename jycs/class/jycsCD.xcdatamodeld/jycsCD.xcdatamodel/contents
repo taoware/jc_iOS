@@ -59,6 +59,7 @@
         <attribute name="deleteTime" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="imPassword" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="imUsername" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="location" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="mobile" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="objectId" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
@@ -74,6 +75,6 @@
         <element name="Photo" positionX="-6255" positionY="-1899" width="128" height="105"/>
         <element name="Store" positionX="-6068" positionY="-2115" width="128" height="223"/>
         <element name="Unit" positionX="-6282" positionY="-1998" width="128" height="105"/>
-        <element name="User" positionX="-6527" positionY="-1951" width="128" height="210"/>
+        <element name="User" positionX="-6527" positionY="-1951" width="128" height="30"/>
     </elements>
 </model>

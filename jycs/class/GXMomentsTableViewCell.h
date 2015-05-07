@@ -15,6 +15,7 @@
 @protocol GXMomentsTableViewCellDelegate  <NSObject>
 
 - (void)resendButtonTappedWithMoment:(Moment*)moment;
+- (void)userInfoTappedWithMoment:(Moment *)moment;
 
 @end
 

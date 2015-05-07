@@ -15,6 +15,7 @@
 #import "ApplyFriendCell.h"
 #import "InvitationManager.h"
 #import "GXUserEngine.h"
+#import "Photo.h"
 
 static ApplyViewController *controller = nil;
 
