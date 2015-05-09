@@ -16,6 +16,8 @@
 #import "Photo.h"
 #import "GXPostedViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
+#import "GXBookmarkedViewController.h"
+#import "GXPublishedViewController.h"
 
 @interface GXMeTableViewController () <UINavigationControllerDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *avatar;
@@ -53,6 +55,12 @@
                                                     otherButtonTitles:@"拍照", @"从相册中选取", nil];
     
     [actionSheet showInView:self.view];
+}
+
+- (IBAction)goToBookmark:(UITapGestureRecognizer *)sender {
+    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+    GXBookmarkedViewController* bookmarkVC = [story instantiateViewControllerWithIdentifier:@"bookmarkVC"];
+    [self.navigationController pushViewController:bookmarkVC animated:YES];
 }
 
 #pragma mark - action sheet delegate

@@ -72,11 +72,13 @@
     return user;
 }
 
-+ (void)loadUserFromUsersArray:(NSArray *)users // of Users NSDictionary
++ (NSArray *)loadUserFromUsersArray:(NSArray *)users // of Users NSDictionary
       intoManagedObjectContext:(NSManagedObjectContext *)context {
+    NSMutableArray* userArray = [[NSMutableArray alloc]init];
     for (NSDictionary *user in users) {
-        [self UserWithUserInfo:user inManagedObjectContext:context];
+        [userArray addObject:[self UserWithUserInfo:user inManagedObjectContext:context]];
     }
+    return userArray;
 }
 
 + (void)deleteAllUsersInManagedObjectContext:(NSManagedObjectContext *)context {

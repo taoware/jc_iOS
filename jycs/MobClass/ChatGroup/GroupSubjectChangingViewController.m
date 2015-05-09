@@ -48,7 +48,8 @@
     if (_isOwner)
     {
         UIBarButtonItem *saveItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"save", @"Save") style:UIBarButtonItemStylePlain target:self action:@selector(save:)];
-        saveItem.tintColor = [UIColor colorWithRed:32 / 255.0 green:134 / 255.0 blue:158 / 255.0 alpha:1.0];
+//        saveItem.tintColor = [UIColor colorWithRed:32 / 255.0 green:134 / 255.0 blue:158 / 255.0 alpha:1.0];
+        saveItem.tintColor = [UIColor whiteColor];
         [self.navigationItem setRightBarButtonItem:saveItem];
     }
 
@@ -57,7 +58,7 @@
     _subjectField.layer.cornerRadius = 5.0;
     _subjectField.layer.borderWidth = 1.0;
     _subjectField.placeholder = @"Please input group name";
-    _subjectField.text = _group.groupSubject;
+    _subjectField.text = [_group.groupSubject substringFromIndex:6];
     if (!_isOwner)
     {
         _subjectField.enabled = NO;
@@ -111,7 +112,7 @@
 
 - (void)saveSubject
 {
-    [[EaseMob sharedInstance].chatManager asyncChangeGroupSubject:_subjectField.text forGroup:_group.groupId];
+    [[EaseMob sharedInstance].chatManager asyncChangeGroupSubject:[NSString stringWithFormat:@"crowd_%@", _subjectField.text]  forGroup:_group.groupId];
 }
 
 @end

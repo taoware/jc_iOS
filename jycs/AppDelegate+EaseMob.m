@@ -30,14 +30,14 @@
 #warning SDK注册 APNS文件的名字, 需要与后台上传证书时的名字一一对应
     NSString *apnsCertName = nil;
 #if DEBUG
-    apnsCertName = @"chatdemoui_dev";
+    apnsCertName = @"jycsios";
 #else
     apnsCertName = @"chatdemoui";
 #endif
     
     [[EaseMob sharedInstance] registerSDKWithAppKey:@"gxcm#jycs"
                                        apnsCertName:apnsCertName
-                                        otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:NO]}];
+                                        otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:YES]}];
     
     // 登录成功后，自动去取好友列表
     // SDK获取结束后，会回调

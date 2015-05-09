@@ -41,7 +41,7 @@
     
     User* user = [GXUserEngine sharedEngine].userLoggedIn;
     NSDictionary* parameter = @{@"userId": user.objectId};
-    [[GXHTTPManager sharedManager] GET:@"jc/square" parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+    [[GXHTTPManager sharedManager] GET:@"square" parameters:parameter success:^(NSURLSessionDataTask *task, id responseObject) {
         if ([responseObject isKindOfClass:[NSDictionary class]]) {
             NSArray* moments = [responseObject objectForKey:API_RESULTS];
             [Moment loadMomentsFromMomentsArray:moments intoManagedObjectContext:context];

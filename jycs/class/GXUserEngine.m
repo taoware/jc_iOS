@@ -33,17 +33,21 @@
 }
 
 - (User *)userLoggedIn {
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-    NSString* mobile = [defaults objectForKey:@"userLoggedIn"];
-    
-    NSManagedObjectContext *managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
-    
-    NSFetchRequest* fetchRequest = [[NSFetchRequest alloc]initWithEntityName:@"User"];
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"mobile == %@", mobile];
-    fetchRequest.predicate = predicate;
-    NSError* error;
-    User* user = [[managedObjectContext executeFetchRequest:fetchRequest error:&error] firstObject];
-    return user;
+    if (!_userLoggedIn) {
+        NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+        NSString* mobile = [defaults objectForKey:@"userLoggedIn"];
+        
+        NSManagedObjectContext *managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+        
+        NSFetchRequest* fetchRequest = [[NSFetchRequest alloc]initWithEntityName:@"User"];
+        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"mobile == %@", mobile];
+        fetchRequest.predicate = predicate;
+        NSError* error;
+        User* user = [[managedObjectContext executeFetchRequest:fetchRequest error:&error] firstObject];
+        _userLoggedIn = user;
+    }
+
+    return _userLoggedIn;
 }
 
 - (void)updateUserLoggedInFlagWith:(NSString *)username {
@@ -265,6 +269,7 @@
     if (emError) {
         error = [GXError errorWithCode:emError.errorCode andDescription:emError.description];
     }
+    _userLoggedIn = nil;
     completion(nil, error);
 }
 
@@ -296,6 +301,18 @@
     NSError* error;
     User* user = [[managedObjectContext executeFetchRequest:fetchRequest error:&error] firstObject];
     return user;
+}
+
+- (void)queryUserInfoUsingMobile:(NSString *)mobile completion:(void (^)(NSArray *, GXError *))completion {NSManagedObjectContext *managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+    NSDictionary* parameter = @{@"mobile": mobile};
+    [[GXHTTPManager sharedManager] GET:@"users" parameters:parameter success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSArray* users = [responseObject valueForKeyPath:API_RESULTS];
+        NSArray* userArray = [User loadUserFromUsersArray:users intoManagedObjectContext:managedObjectContext]; // load user info into core data
+        [self executeCompletedOperations];
+        completion(userArray, nil);
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        completion(nil, [GXError errorWithCode:GXErrorUserQueryFailure andDescription:@"查询错误"]);
+    }];
 }
 
 @end

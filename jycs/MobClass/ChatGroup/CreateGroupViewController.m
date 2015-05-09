@@ -59,8 +59,9 @@
     UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
     addButton.titleLabel.font = [UIFont systemFontOfSize:14.0];
     [addButton setTitle:NSLocalizedString(@"group.create.addOccupant", @"add members") forState:UIControlStateNormal];
-    [addButton setTitleColor:[UIColor colorWithRed:32 / 255.0 green:134 / 255.0 blue:158 / 255.0 alpha:1.0] forState:UIControlStateNormal];
-    [addButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+    [addButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+//    [addButton setTitleColor:[UIColor colorWithRed:32 / 255.0 green:134 / 255.0 blue:158 / 255.0 alpha:1.0] forState:UIControlStateNormal];
+//    [addButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [addButton addTarget:self action:@selector(addContacts:) forControlEvents:UIControlEventTouchUpInside];
     _rightItem = [[UIBarButtonItem alloc] initWithCustomView:addButton];
     [self.navigationItem setRightBarButtonItem:_rightItem];
@@ -129,24 +130,24 @@
         _switchView.backgroundColor = [UIColor clearColor];
         
         CGFloat oY = 0;
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, oY, 100, 35)];
-        label.backgroundColor = [UIColor clearColor];
-        label.font = [UIFont systemFontOfSize:14.0];
-        label.text = NSLocalizedString(@"group.create.groupPermission", @"group permission");
-        [_switchView addSubview:label];
+//        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, oY, 100, 35)];
+//        label.backgroundColor = [UIColor clearColor];
+//        label.font = [UIFont systemFontOfSize:14.0];
+//        label.text = NSLocalizedString(@"group.create.groupPermission", @"group permission");
+//        [_switchView addSubview:label];
+//        
+//        UISwitch *switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(100, oY, 50, _switchView.frame.size.height)];
+//        [switchControl addTarget:self action:@selector(groupTypeChange:) forControlEvents:UIControlEventValueChanged];
+//        [_switchView addSubview:switchControl];
+//        
+//        _groupTypeLabel = [[UILabel alloc] initWithFrame:CGRectMake(switchControl.frame.origin.x + switchControl.frame.size.width + 5, oY, 100, 35)];
+//        _groupTypeLabel.backgroundColor = [UIColor clearColor];
+//        _groupTypeLabel.font = [UIFont systemFontOfSize:12.0];
+//        _groupTypeLabel.textColor = [UIColor grayColor];
+//        _groupTypeLabel.text = NSLocalizedString(@"group.create.private", @"private group");
+//        [_switchView addSubview:_groupTypeLabel];
         
-        UISwitch *switchControl = [[UISwitch alloc] initWithFrame:CGRectMake(100, oY, 50, _switchView.frame.size.height)];
-        [switchControl addTarget:self action:@selector(groupTypeChange:) forControlEvents:UIControlEventValueChanged];
-        [_switchView addSubview:switchControl];
-        
-        _groupTypeLabel = [[UILabel alloc] initWithFrame:CGRectMake(switchControl.frame.origin.x + switchControl.frame.size.width + 5, oY, 100, 35)];
-        _groupTypeLabel.backgroundColor = [UIColor clearColor];
-        _groupTypeLabel.font = [UIFont systemFontOfSize:12.0];
-        _groupTypeLabel.textColor = [UIColor grayColor];
-        _groupTypeLabel.text = NSLocalizedString(@"group.create.private", @"private group");
-        [_switchView addSubview:_groupTypeLabel];
-        
-        oY += (35 + 20);
+        oY += 0;
         _groupMemberTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, oY, 100, 35)];
         _groupMemberTitleLabel.font = [UIFont systemFontOfSize:14.0];
         _groupMemberTitleLabel.backgroundColor = [UIColor clearColor];
@@ -226,7 +227,8 @@
     NSDictionary *loginInfo = [[[EaseMob sharedInstance] chatManager] loginInfo];
     NSString *username = [loginInfo objectForKey:kSDKUsername];
     NSString *messageStr = [NSString stringWithFormat:NSLocalizedString(@"group.somebodyInvite", @"%@ invite you to join groups \'%@\'"), username, self.textField.text];
-    [[EaseMob sharedInstance].chatManager asyncCreateGroupWithSubject:self.textField.text description:self.textView.text invitees:source initialWelcomeMessage:messageStr styleSetting:setting completion:^(EMGroup *group, EMError *error) {
+    NSString* crowdName = [NSString stringWithFormat:@"crowd_%@", self.textField.text];
+    [[EaseMob sharedInstance].chatManager asyncCreateGroupWithSubject:crowdName description:self.textView.text invitees:source initialWelcomeMessage:messageStr styleSetting:setting completion:^(EMGroup *group, EMError *error) {
         [weakSelf hideHud];
         if (group && !error) {
             [weakSelf showHint:NSLocalizedString(@"group.create.success", @"create group success")];

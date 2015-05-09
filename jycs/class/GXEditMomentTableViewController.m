@@ -415,19 +415,19 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 }
 
 - (NSData *)downScaleToOneMega:(UIImage *)image {
-    NSData  *imageData    = UIImageJPEGRepresentation(image, 1.0);
+    NSData  *imageData    = UIImageJPEGRepresentation(image, 0.8);
     double   factor       = 1.0;
     double   adjustment   = 1.0 / sqrt(2.0);  // or use 0.8 or whatever you want
     CGSize   size         = image.size;
     CGSize   currentSize  = size;
     UIImage *currentImage = image;
 
-    while (imageData.length >= (1024 * 1024))
+    while (imageData.length >= (300 * 1024))
     {
         factor      *= adjustment;
         currentSize  = CGSizeMake(roundf(size.width * factor), roundf(size.height * factor));
         currentImage = [image imageByScalingToSize:currentSize];
-        imageData    = UIImageJPEGRepresentation(currentImage, 1.0);
+        imageData    = UIImageJPEGRepresentation(currentImage, 0.8);
     }
     return imageData;
 }

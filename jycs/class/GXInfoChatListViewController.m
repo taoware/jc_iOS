@@ -233,6 +233,7 @@
 {
     NSMutableArray *ret = nil;
     NSArray *conversations = [[EaseMob sharedInstance].chatManager conversations];
+    conversations = [self filterConversationPrefixedGroup:conversations];
     
     NSArray* sorte = [conversations sortedArrayUsingComparator:
                       ^(EMConversation *obj1, EMConversation* obj2){
@@ -247,6 +248,27 @@
     
     ret = [[NSMutableArray alloc] initWithArray:sorte];
     return ret;
+}
+
+- (NSArray *)filterConversationPrefixedGroup:(NSArray *)conversations {
+    NSMutableArray* filteredConversation = [[NSMutableArray alloc]init];
+    for (EMConversation* conversation in conversations) {
+        if (conversation.isGroup && [[self groupNameFromgroupId:conversation.chatter] hasPrefix:@"group_"]) {
+            continue;
+        }
+        [filteredConversation addObject:conversation];
+    }
+    return filteredConversation;
+}
+
+- (NSString *)groupNameFromgroupId:(NSString *)groupId {
+    NSArray *groupArray = [[EaseMob sharedInstance].chatManager groupList];
+    for (EMGroup* group in groupArray) {
+        if ([group.groupId isEqualToString:groupId]) {
+            return group.groupSubject;
+        }
+    }
+    return nil;
 }
 
 // 得到最后消息时间
@@ -330,7 +352,7 @@
             NSArray *groupArray = [[EaseMob sharedInstance].chatManager groupList];
             for (EMGroup *group in groupArray) {
                 if ([group.groupId isEqualToString:conversation.chatter]) {
-                    cell.name = group.groupSubject;
+                    cell.name = [group.groupSubject substringFromIndex:6];
                     imageName = group.isPublic ? @"groupPublicHeader" : @"groupPrivateHeader";
                     
                     NSMutableDictionary *ext = [NSMutableDictionary dictionaryWithDictionary:conversation.ext];
@@ -343,7 +365,7 @@
         }
         else
         {
-            cell.name = [conversation.ext objectForKey:@"groupSubject"];
+            cell.name = [[conversation.ext objectForKey:@"groupSubject"] substringFromIndex:6];
             imageName = [[conversation.ext objectForKey:@"isPublic"] boolValue] ? @"groupPublicHeader" : @"groupPrivateHeader";
         }
         cell.placeholderImage = [UIImage imageNamed:imageName];
@@ -380,7 +402,7 @@
         NSArray *groupArray = [[EaseMob sharedInstance].chatManager groupList];
         for (EMGroup *group in groupArray) {
             if ([group.groupId isEqualToString:conversation.chatter]) {
-                title = group.groupSubject;
+                title = [group.groupSubject substringFromIndex:6];
                 break;
             }
         }

@@ -16,6 +16,9 @@
 #import "UIViewController+HUD.h"
 #import "AddFriendCell.h"
 #import "InvitationManager.h"
+#import "User.h"
+#import "Photo.h"
+#import "GXUserEngine.h"
 
 @interface AddFriendViewController ()<UITextFieldDelegate, UIAlertViewDelegate>
 
@@ -58,7 +61,8 @@
     
     UIButton *searchButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
     [searchButton setTitle:NSLocalizedString(@"search", @"Search") forState:UIControlStateNormal];
-    [searchButton setTitleColor:[UIColor colorWithRed:32 / 255.0 green:134 / 255.0 blue:158 / 255.0 alpha:1.0] forState:UIControlStateNormal];
+//    [searchButton setTitleColor:[UIColor colorWithRed:32 / 255.0 green:134 / 255.0 blue:158 / 255.0 alpha:1.0] forState:UIControlStateNormal];
+    [searchButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [searchButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [searchButton addTarget:self action:@selector(searchAction) forControlEvents:UIControlEventTouchUpInside];
     [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc] initWithCustomView:searchButton]];
@@ -137,8 +141,12 @@
         cell = [[AddFriendCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
-    cell.imageView.image = [UIImage imageNamed:@"chatListCellHead.png"];
-    cell.textLabel.text = [self.dataSource objectAtIndex:indexPath.row];
+    User* user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:[self.dataSource objectAtIndex:indexPath.row]];
+    [cell.imageView setImageWithURL:[NSURL URLWithString:user.avatar.thumbnailURL] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
+    cell.textLabel.text = user.name;
+    
+//    cell.imageView.image = [UIImage imageNamed:@"chatListCellHead.png"];
+//    cell.textLabel.text = [self.dataSource objectAtIndex:indexPath.row];
     
     return cell;
 }
@@ -222,8 +230,18 @@
         }
         
         [self.dataSource removeAllObjects];
-        [self.dataSource addObject:_textField.text];
-        [self.tableView reloadData];
+        [[GXUserEngine sharedEngine] queryUserInfoUsingMobile:_textField.text completion:^(NSArray *users, GXError *error) {
+            if (error) {
+                TTAlert(@"查询错误");
+            } else if (!users.count) {
+                TTAlert(@"未查询到该用户");
+            } else {
+                self.dataSource = [[users valueForKey:@"imUsername"] mutableCopy];
+                [self.tableView reloadData];
+            }
+        }];
+//        [self.dataSource addObject:_textField.text];
+//        [self.tableView reloadData];
     }
 }
 

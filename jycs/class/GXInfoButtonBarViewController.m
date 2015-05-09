@@ -34,7 +34,8 @@
     // create child view controllers that will be managed by XLPagerTabStripViewController
     GXInfoNewsViewController * child_1 = [[GXInfoNewsViewController alloc] init];
     GXInfoChatListViewController * child_2 = [[GXInfoChatListViewController alloc] init];
-    GXInfoNotificationViewController * child_3 = [[GXInfoNotificationViewController alloc] init];
+    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+    GXInfoNotificationViewController * child_3 = [story instantiateViewControllerWithIdentifier:@"InfoNotificationViewController"];
     
     AppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
     appDelegate.mainController.chatListVC = child_2;

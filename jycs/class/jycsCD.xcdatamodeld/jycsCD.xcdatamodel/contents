@@ -24,6 +24,15 @@
         <attribute name="updateTime" optional="YES" attributeType="Date" syncable="YES"/>
         <relationship name="photo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Photo" syncable="YES"/>
     </entity>
+    <entity name="Notification" representedClassName="Notification" syncable="YES">
+        <attribute name="body" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="groupId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="isFavorite" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="isRead" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="messageId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <entity name="Permission" representedClassName="Permission" syncable="YES">
         <attribute name="objectId" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="permissonName" optional="YES" attributeType="String" syncable="YES"/>
@@ -71,6 +80,7 @@
     <elements>
         <element name="Moment" positionX="-6291" positionY="-2007" width="128" height="210"/>
         <element name="News" positionX="-6381" positionY="-2133" width="128" height="178"/>
+        <element name="Notification" positionX="-6318" positionY="-1980" width="128" height="150"/>
         <element name="Permission" positionX="-6327" positionY="-1989" width="128" height="75"/>
         <element name="Photo" positionX="-6255" positionY="-1899" width="128" height="105"/>
         <element name="Store" positionX="-6068" positionY="-2115" width="128" height="223"/>

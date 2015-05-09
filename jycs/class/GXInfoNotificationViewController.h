@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface GXInfoNotificationViewController : UIViewController
-
+@interface GXInfoNotificationViewController : UITableViewController
+- (void)reloadDataSource;
 @end

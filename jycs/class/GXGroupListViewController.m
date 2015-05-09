@@ -179,7 +179,7 @@
 {
     // Return the number of rows in the section.
     if (section == 0) {
-        return 2;
+        return 1;
     }
     return [self.dataSource count];
 }
@@ -213,7 +213,7 @@
         //        NSString *imageName = group.isPublic ? @"groupPublicHeader" : @"groupPrivateHeader";
         cell.imageView.image = [UIImage imageNamed:imageName];
         if (group.groupSubject && group.groupSubject.length > 0) {
-            cell.textLabel.text = group.groupSubject;
+            cell.textLabel.text = [group.groupSubject substringFromIndex:6];
         }
         else {
             cell.textLabel.text = group.groupId;
@@ -253,7 +253,7 @@
     } else {
         EMGroup *group = [self.dataSource objectAtIndex:indexPath.row];
         ChatViewController *chatController = [[ChatViewController alloc] initWithChatter:group.groupId isGroup:YES];
-        chatController.title = group.groupSubject;
+        chatController.title = [group.groupSubject substringFromIndex:6];
         [self.navigationController pushViewController:chatController animated:YES];
     }
 }
@@ -371,9 +371,20 @@
     [self.dataSource removeAllObjects];
     
     NSArray *rooms = [[EaseMob sharedInstance].chatManager groupList];
+    rooms = [self filterForCrowdPrefixedGroup:rooms];
     [self.dataSource addObjectsFromArray:rooms];
     
     [self.tableView reloadData];
+}
+
+- (NSArray*)filterForCrowdPrefixedGroup:(NSArray *)rooms {
+    NSMutableArray* crowds = [[NSMutableArray alloc]init];
+    for (EMGroup* room in rooms) {
+        if ([room.groupSubject hasPrefix:@"crowd"]) {
+            [crowds addObject:room];
+        }
+    }
+    return [crowds copy];
 }
 
 #pragma mark - action

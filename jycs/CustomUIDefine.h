@@ -20,6 +20,7 @@
 #define kNOTIFICATION_NEWSSYNCCOMPLETED @"newsSyncCompleted"
 #define kNOTIFICATION_STORESYNCCOMPLETED @"storeSyncCompleted"
 #define kNOTIFICATION_MOMENTSSYNCCOMPLETED @"momentsSyncCompleted"
+#define kNOTIFICATION_NOTIFICATIONRECEIVED @"notificationReceived"
 
 #define SERVICENAME @"com.gxcm.jycs"
 

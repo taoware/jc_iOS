@@ -27,5 +27,6 @@
 - (void)asyncPasswordForgotWithNewPass:(NSString *)newPass completion:(void (^)(GXError *error))completion;
 
 - (User *)queryUserInfoUsingEasmobUsername:(NSString* )easemobUsername;
+- (void)queryUserInfoUsingMobile:(NSString *)mobile completion:(void (^)(NSArray* users ,GXError *error))completion;
 
 @end

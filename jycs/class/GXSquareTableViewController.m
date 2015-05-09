@@ -47,6 +47,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     self.offscreenCells = [NSMutableDictionary dictionary];
     [self.tableView registerClass:[GXMomentsTableViewCell class] forCellReuseIdentifier:CellIdentifier];
     
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.tableView addSubview:self.slimeView];
     
     self.managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];

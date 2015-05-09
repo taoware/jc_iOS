@@ -16,6 +16,8 @@
 #import "ApplyViewController.h"
 #import "CallViewController.h"
 #import "GXUserEngine.h"
+#import "Notification+Create.h"
+#import "GXCoreDataController.h"
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
@@ -289,6 +291,7 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 {
     [self setupUnreadMessageCount];
     [_chatListVC refreshDataSource];
+    [_notificationVC reloadDataSource];
 }
 
 // 未读消息数量变化回调
@@ -324,6 +327,14 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 // 收到消息回调
 -(void)didReceiveMessage:(EMMessage *)message
 {
+    if (message.isGroup) {
+        EMGroup* group = [EMGroup groupWithId:message.from];
+        if ([group.groupSubject hasPrefix:@"group_"]) {
+            NSManagedObjectContext* context = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+            [Notification notificationWithEMMessage:message inManagedObjectContext:context];
+            [self executeNotificationReceviedOperations];
+        }
+    }
     BOOL needShowNotification = message.isGroup ? [self needShowNotification:message.conversationChatter] : YES;
     if (needShowNotification) {
 #if !TARGET_IPHONE_SIMULATOR
@@ -336,6 +347,34 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
         }
 #endif
     }
+}
+
+-(void)didReceiveOfflineMessages:(NSArray *)offlineMessages {
+    for (EMMessage* message in offlineMessages) {
+        if (message.isGroup) {
+            EMGroup* group = [EMGroup groupWithId:message.from];
+            if ([group.groupSubject hasPrefix:@"group_"]) {
+                NSManagedObjectContext* context = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+                [Notification notificationWithEMMessage:message inManagedObjectContext:context];
+            }
+        }
+    }
+    [self executeNotificationReceviedOperations];
+}
+
+- (void)executeNotificationReceviedOperations {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSError *error = nil;
+        [[GXCoreDataController sharedInstance] saveBackgroundContext];
+        if (error) {
+            NSLog(@"Error saving background context after creating objects on server: %@", error);
+        }
+        
+        [[GXCoreDataController sharedInstance] saveMasterContext];
+        [[NSNotificationCenter defaultCenter]
+         postNotificationName:kNOTIFICATION_NOTIFICATIONRECEIVED
+         object:nil];
+    });
 }
 
 -(void)didReceiveCmdMessage:(EMMessage *)message
@@ -461,7 +500,8 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
             //发送本地推送
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             notification.fireDate = [NSDate date]; //触发通知的时间
-            notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"friend.somebodyAddWithName", @"%@ add you as a friend"), username];
+            User* user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:username];
+            notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"friend.somebodyAddWithName", @"%@ add you as a friend"), user?user.name:@"未知"];
             notification.alertAction = NSLocalizedString(@"open", @"Open");
             notification.timeZone = [NSTimeZone defaultTimeZone];
         }
@@ -485,6 +525,7 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
             }
             [[EaseMob sharedInstance].chatManager removeConversationsByChatters:deletedBuddies deleteMessages:YES append2Chat:YES];
             [_chatListVC refreshDataSource];
+            [_notificationVC reloadDataSource];
         }
         [_contactListVC reloadDataSource];
     }];
@@ -493,8 +534,10 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 - (void)didRemovedByBuddy:(NSString *)username
 {
     [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:@[username] completion:^(GXError *error) {
-        [[EaseMob sharedInstance].chatManager removeConversationByChatter:username deleteMessages:YES append2Chat:YES];
+        User* user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:username];
+        [[EaseMob sharedInstance].chatManager removeConversationByChatter:user?user.name:@"未知" deleteMessages:YES append2Chat:YES];
         [_chatListVC refreshDataSource];
+        [_notificationVC reloadDataSource];
         [_contactListVC reloadDataSource];
     }];
 }
@@ -509,7 +552,8 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 - (void)didRejectedByBuddy:(NSString *)username
 {
     [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:@[username] completion:^(GXError *error) {
-        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"friend.beRefusedToAdd", @"you are shameless refused by '%@'"), username];
+        User* user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:username];
+        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"friend.beRefusedToAdd", @"you are shameless refused by '%@'"), user?user.name:@"未知"];
         TTAlertNoTitle(message);
     }];
 }

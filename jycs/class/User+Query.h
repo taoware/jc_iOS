@@ -12,7 +12,7 @@
 
 + (User *)UserWithUserInfo:(NSDictionary *)userDictionary
     inManagedObjectContext:(NSManagedObjectContext *)context;
-+ (void)loadUserFromUsersArray:(NSArray *)users // of Users NSDictionary
++ (NSArray *)loadUserFromUsersArray:(NSArray *)users // of Users NSDictionary
       intoManagedObjectContext:(NSManagedObjectContext *)context;
 
 + (void)deleteAllUsersInManagedObjectContext:(NSManagedObjectContext *)context;
