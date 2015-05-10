@@ -61,6 +61,7 @@ alpha:1.0]
         [self.contentView addSubview:self.headImageView];
         [self.contentView addSubview:self.bodyLabel];
         [self.contentView addSubview:self.userNameLabel];
+        [self.contentView addSubview:self.typeLabel];
         [self.contentView addSubview:self.timeLabel];
         [self.contentView addSubview:self.resendButton];
         
@@ -101,6 +102,10 @@ alpha:1.0]
         [self.timeLabel autoPinEdge:ALEdgeTop  toEdge:ALEdgeBottom ofView:self.userNameLabel withOffset:10.f];
         [self.timeLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeRight ofView:self.headImageView withOffset:15.f];
         [self.timeLabel sizeToFit];
+        
+        [self.typeLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.userNameLabel withOffset:10.f];
+        [self.typeLabel autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:15.f];
+        [self.typeLabel sizeToFit];
         
         [self.resendButton autoPinEdge:ALEdgeTop  toEdge:ALEdgeBottom ofView:self.userNameLabel withOffset:8.f];
         [self.resendButton autoPinEdge:ALEdgeLeading toEdge:ALEdgeRight ofView:self.headImageView withOffset:15.f];
@@ -406,16 +411,28 @@ alpha:1.0]
     {
         _timeLabel=[[UILabel alloc]initForAutoLayout];
         _timeLabel.textColor=[UIColor grayColor];
-        _timeLabel.font=[UIFont systemFontOfSize:12];
+        _timeLabel.font=[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     }
     return _timeLabel;
+}
+
+- (UILabel *)typeLabel {
+    if (!_typeLabel) {
+        _typeLabel = [[UILabel alloc]initForAutoLayout];
+        _typeLabel.textColor = [UIColor whiteColor];
+        _typeLabel.layer.cornerRadius = 3;
+        _typeLabel.clipsToBounds = YES;
+        _typeLabel.backgroundColor = [UIColor colorWithRed:222.0/255.0 green:73.0/255.0 blue:64.0/255.0 alpha:1.0];
+        _typeLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    }
+    return _typeLabel;
 }
 
 - (UIButton *)resendButton
 {
     if (!_resendButton) {
         _resendButton = [[UIButton alloc]initForAutoLayout];
-        _resendButton.titleLabel.font = [UIFont systemFontOfSize:12];
+        _resendButton.titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
         [_resendButton setTitleColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0] forState:UIControlStateNormal];
         [_resendButton setTintColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0]];
     }
@@ -450,6 +467,10 @@ alpha:1.0]
 - (void)updateUI {
     self.userNameLabel.text= self.momentToDisplay.screenName;
     self.timeLabel.text= [self.dateFormatter stringFromDate:self.momentToDisplay.createTime];
+    
+    NSString* typeText = [self.momentToDisplay.type stringByAppendingString:@"消息"];
+    typeText = [NSString stringWithFormat:@" %@ ", typeText];
+    self.typeLabel.text = typeText;
     self.bodyLabel.text = self.momentToDisplay.text;
     [self.headImageView setImageWithURL:[NSURL URLWithString:self.momentToDisplay.sender.avatar.thumbnailURL] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
     self.syncStatus = [self.momentToDisplay.syncStatus intValue];

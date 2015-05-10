@@ -34,10 +34,17 @@
 
 
 /**
+ *  用户名
+ */
+@property(nonatomic,strong)UILabel* typeLabel;
+
+/**
  *  多久发送的微博 e.g 1个小时前
  */
 @property(nonatomic,strong)UILabel* timeLabel;
 @property(nonatomic,strong)UIButton* resendButton;
+
+
 @property(nonatomic,strong)Moment* momentToDisplay;
 @property(nonatomic,strong)id<GXMomentsTableViewCellDelegate> delegate;
 
