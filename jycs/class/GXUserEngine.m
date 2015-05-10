@@ -32,22 +32,17 @@
     return sharedEngine;
 }
 
-- (User *)userLoggedIn {
-    if (!_userLoggedIn) {
-        NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-        NSString* mobile = [defaults objectForKey:@"userLoggedIn"];
-        
-        NSManagedObjectContext *managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
-        
-        NSFetchRequest* fetchRequest = [[NSFetchRequest alloc]initWithEntityName:@"User"];
-        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"mobile == %@", mobile];
-        fetchRequest.predicate = predicate;
-        NSError* error;
-        User* user = [[managedObjectContext executeFetchRequest:fetchRequest error:&error] firstObject];
-        _userLoggedIn = user;
-    }
-
-    return _userLoggedIn;
+- (void)initializeCurrentUser {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    NSString* mobile = [defaults objectForKey:@"userLoggedIn"];
+    
+    NSManagedObjectContext *managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+    
+    NSFetchRequest* fetchRequest = [[NSFetchRequest alloc]initWithEntityName:@"User"];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"mobile == %@", mobile];
+    fetchRequest.predicate = predicate;
+    NSError* error;
+    self.userLoggedIn = [[managedObjectContext executeFetchRequest:fetchRequest error:&error] firstObject];
 }
 
 - (void)updateUserLoggedInFlagWith:(NSString *)username {
@@ -83,7 +78,6 @@
         NSArray* users = [responseObject valueForKeyPath:API_RESULTS];
         NSDictionary* userDic = [users firstObject];
         User* user = [User UserWithUserInfo:userDic inManagedObjectContext:context]; // load user info into core data
-        
         if (!user.imUsername || !user.imPassword || user.imUsername.length == 0 || user.imPassword.length == 0) {
             completion(nil, [GXError errorWithCode:GXErrorEaseMobAuthenticationFailure andDescription:@"server error, this user have no easemob account"]);
             return ;

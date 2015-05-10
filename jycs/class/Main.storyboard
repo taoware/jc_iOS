@@ -206,6 +206,24 @@
             </objects>
             <point key="canvasLocation" x="524" y="80"/>
         </scene>
+        <!--Go To Login View Controller-->
+        <scene sceneID="nVg-iM-Rzg">
+            <objects>
+                <viewController id="gIt-rB-9Nt" customClass="GXGoToLoginViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="H4W-pm-fWK"/>
+                        <viewControllerLayoutGuide type="bottom" id="HYe-lC-iNd"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kAV-07-LDo">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hLt-uz-ORw" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="302" y="721"/>
+        </scene>
         <!--Main Tab Bar View Controller-->
         <scene sceneID="QIO-0L-6mf">
             <objects>
@@ -293,13 +311,13 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="15212341234" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xxc-la-fDV">
-                                                    <rect key="frame" x="60" y="34" width="144" height="17"/>
+                                                    <rect key="frame" x="60" y="34" width="252" height="17"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="me_bookmark.png" translatesAutoresizingMaskIntoConstraints="NO" id="6wh-f4-ZpQ">
-                                                    <rect key="frame" x="242" y="19" width="45" height="21"/>
+                                                    <rect key="frame" x="242" y="11" width="45" height="21"/>
                                                     <gestureRecognizers/>
                                                     <connections>
                                                         <outletCollection property="gestureRecognizers" destination="AXt-PM-X7M" appends="YES" id="9PT-wj-kgV"/>
@@ -533,6 +551,9 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="gAI-ay-qPw"/>
+                    <connections>
+                        <outlet property="logoutCell" destination="Rzo-Ye-gsH" id="NBu-Nh-3zP"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="upA-Hf-e1M" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

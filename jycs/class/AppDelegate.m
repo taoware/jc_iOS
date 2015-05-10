@@ -92,7 +92,6 @@
         [self loginStateChange:nil];
     }
     
-    
     [self.window setFrame:[[UIScreen mainScreen]bounds]];
     [self.window makeKeyAndVisible];
     return YES;
@@ -105,6 +104,7 @@
     
     UIStoryboard* story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
     if (loginSuccess) {
+        [[GXUserEngine sharedEngine] initializeCurrentUser];
         self.mainController = [story instantiateViewControllerWithIdentifier:@"mainVC"];
         nav = [[UINavigationController alloc]initWithRootViewController:self.mainController];
     } else {

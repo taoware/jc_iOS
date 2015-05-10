@@ -54,6 +54,7 @@
 
 // keys to values in a user dictionary
 #define USER_NAME @"name"
+#define USER_SCREENNAME @"screenName"
 #define USER_MOBILE @"mobile"
 #define USER_LOCATION @"location"
 #define USER_AVATAR @"avatar"

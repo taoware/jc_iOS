@@ -60,11 +60,13 @@
 		1E4B3F101AFE67A400322124 /* Store.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3F0F1AFE67A400322124 /* Store.m */; };
 		1E4B3F131AFF0EB700322124 /* GXPostedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3F121AFF0EB700322124 /* GXPostedViewController.m */; };
 		1E4B3F161AFF105400322124 /* GXPostedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3F151AFF105400322124 /* GXPostedTableViewCell.m */; };
+		1E4B3F191AFF3F1E00322124 /* User+Permission.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3F181AFF3F1E00322124 /* User+Permission.m */; };
+		1E4B3F1C1AFF95FD00322124 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3F1B1AFF95FD00322124 /* User.m */; };
+		1E4B3F1F1AFF9E9900322124 /* GXGoToLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3F1E1AFF9E9900322124 /* GXGoToLoginViewController.m */; };
 		1E5C50091AFA64E200958EBA /* JKCountDownButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E5C50081AFA64E200958EBA /* JKCountDownButton.m */; };
 		1E5C500C1AFB392300958EBA /* GXForgetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E5C500B1AFB392300958EBA /* GXForgetViewController.m */; };
 		1E5C500F1AFB393F00958EBA /* GXForgetResetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E5C500E1AFB393F00958EBA /* GXForgetResetViewController.m */; };
 		1E5C50121AFB612800958EBA /* GXUserInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E5C50111AFB612800958EBA /* GXUserInfoViewController.m */; };
-		1E5C50151AFB95DD00958EBA /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E5C50141AFB95DD00958EBA /* User.m */; };
 		1E5C501D1AFBC16900958EBA /* GXNotificationTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E5C501C1AFBC16900958EBA /* GXNotificationTableViewCell.m */; };
 		1E61751E1AC1417800CBFBCA /* bottom_bg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E61751D1AC1417800CBFBCA /* bottom_bg@2x.png */; };
 		1E61752A1AC18F6B00CBFBCA /* area.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1E6175291AC18F6B00CBFBCA /* area.plist */; };
@@ -592,6 +594,12 @@
 		1E4B3F121AFF0EB700322124 /* GXPostedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXPostedViewController.m; sourceTree = "<group>"; };
 		1E4B3F141AFF105400322124 /* GXPostedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXPostedTableViewCell.h; sourceTree = "<group>"; };
 		1E4B3F151AFF105400322124 /* GXPostedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXPostedTableViewCell.m; sourceTree = "<group>"; };
+		1E4B3F171AFF3F1E00322124 /* User+Permission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "User+Permission.h"; sourceTree = "<group>"; };
+		1E4B3F181AFF3F1E00322124 /* User+Permission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "User+Permission.m"; sourceTree = "<group>"; };
+		1E4B3F1A1AFF95FD00322124 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		1E4B3F1B1AFF95FD00322124 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
+		1E4B3F1D1AFF9E9900322124 /* GXGoToLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXGoToLoginViewController.h; sourceTree = "<group>"; };
+		1E4B3F1E1AFF9E9900322124 /* GXGoToLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXGoToLoginViewController.m; sourceTree = "<group>"; };
 		1E5C50071AFA64E200958EBA /* JKCountDownButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JKCountDownButton.h; sourceTree = "<group>"; };
 		1E5C50081AFA64E200958EBA /* JKCountDownButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JKCountDownButton.m; sourceTree = "<group>"; };
 		1E5C500A1AFB392300958EBA /* GXForgetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXForgetViewController.h; sourceTree = "<group>"; };
@@ -600,8 +608,6 @@
 		1E5C500E1AFB393F00958EBA /* GXForgetResetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXForgetResetViewController.m; sourceTree = "<group>"; };
 		1E5C50101AFB612800958EBA /* GXUserInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXUserInfoViewController.h; sourceTree = "<group>"; };
 		1E5C50111AFB612800958EBA /* GXUserInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXUserInfoViewController.m; sourceTree = "<group>"; };
-		1E5C50131AFB95DD00958EBA /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
-		1E5C50141AFB95DD00958EBA /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		1E5C501B1AFBC16900958EBA /* GXNotificationTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXNotificationTableViewCell.h; sourceTree = "<group>"; };
 		1E5C501C1AFBC16900958EBA /* GXNotificationTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXNotificationTableViewCell.m; sourceTree = "<group>"; };
 		1E61751D1AC1417800CBFBCA /* bottom_bg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bottom_bg@2x.png"; sourceTree = "<group>"; };
@@ -2761,6 +2767,8 @@
 		1E9E365B1AF85788003BA9E1 /* Core Data Model */ = {
 			isa = PBXGroup;
 			children = (
+				1E4B3F1A1AFF95FD00322124 /* User.h */,
+				1E4B3F1B1AFF95FD00322124 /* User.m */,
 				1E4B3F0E1AFE67A400322124 /* Store.h */,
 				1E4B3F0F1AFE67A400322124 /* Store.m */,
 				1E4B3F0B1AFE675F00322124 /* News.h */,
@@ -2769,8 +2777,8 @@
 				1E4B3F061AFE52E000322124 /* Notification.m */,
 				1E4B3EE01AFC5BE900322124 /* Notification+Create.h */,
 				1E4B3EE11AFC5BE900322124 /* Notification+Create.m */,
-				1E5C50131AFB95DD00958EBA /* User.h */,
-				1E5C50141AFB95DD00958EBA /* User.m */,
+				1E4B3F171AFF3F1E00322124 /* User+Permission.h */,
+				1E4B3F181AFF3F1E00322124 /* User+Permission.m */,
 				1E9E35CE1AF7CB6B003BA9E1 /* jycsCD.xcdatamodeld */,
 				1E9E35861AF7CB6B003BA9E1 /* GXCoreDataController.h */,
 				1E9E35871AF7CB6B003BA9E1 /* GXCoreDataController.m */,
@@ -2820,6 +2828,8 @@
 				1E5C500B1AFB392300958EBA /* GXForgetViewController.m */,
 				1E5C500D1AFB393F00958EBA /* GXForgetResetViewController.h */,
 				1E5C500E1AFB393F00958EBA /* GXForgetResetViewController.m */,
+				1E4B3F1D1AFF9E9900322124 /* GXGoToLoginViewController.h */,
+				1E4B3F1E1AFF9E9900322124 /* GXGoToLoginViewController.m */,
 			);
 			name = Login;
 			sourceTree = "<group>";
@@ -3475,6 +3485,8 @@
 				1E9E35FF1AF7CB6C003BA9E1 /* CollectionViewCell.m in Sources */,
 				1E9E31AA1AF7B83D003BA9E1 /* PSTCollectionViewCell.m in Sources */,
 				1E9E33D71AF7BB2F003BA9E1 /* ContactSelectionViewController.m in Sources */,
+				1E4B3F191AFF3F1E00322124 /* User+Permission.m in Sources */,
+				1E4B3F1C1AFF95FD00322124 /* User.m in Sources */,
 				1E9E36361AF7CB6C003BA9E1 /* MessageTableViewCell.m in Sources */,
 				1E9E33ED1AF7BB30003BA9E1 /* EditNicknameViewController.m in Sources */,
 				1E74B2FF1AF90C3C00B8C0FA /* AFHTTPSessionManager.m in Sources */,
@@ -3555,7 +3567,6 @@
 				1E9E33EB1AF7BB2F003BA9E1 /* BlackListViewController.m in Sources */,
 				1E9E361A1AF7CB6C003BA9E1 /* GXInfoNewsViewController.m in Sources */,
 				1E3D74011ABB36120003A963 /* EMTextView.m in Sources */,
-				1E5C50151AFB95DD00958EBA /* User.m in Sources */,
 				1E9E31AC1AF7B83D003BA9E1 /* PSTCollectionViewData.m in Sources */,
 				1E9E33C11AF7BB2F003BA9E1 /* ChatViewController+Category.m in Sources */,
 				1E9E362B1AF7CB6C003BA9E1 /* GXSelectUnitTableViewController.m in Sources */,
@@ -3588,6 +3599,7 @@
 				1E4B3F0A1AFE641300322124 /* GXArticleViewController.m in Sources */,
 				1E9E33D51AF7BB2F003BA9E1 /* MessageReadManager.m in Sources */,
 				1E9E33E11AF7BB2F003BA9E1 /* ContactsViewController.m in Sources */,
+				1E4B3F1F1AFF9E9900322124 /* GXGoToLoginViewController.m in Sources */,
 				1E9E319C1AF7B83D003BA9E1 /* EMSDWebImageDownloaderOperation.m in Sources */,
 				1E9E36331AF7CB6C003BA9E1 /* GXSyncEngine.m in Sources */,
 				1E9E36201AF7CB6C003BA9E1 /* GXMomentsEngine.m in Sources */,

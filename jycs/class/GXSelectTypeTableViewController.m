@@ -7,10 +7,11 @@
 //
 
 #import "GXSelectTypeTableViewController.h"
+#import "GXUserEngine.h"
+#import "User+Permission.h"
 
 @interface GXSelectTypeTableViewController ()
-@property (nonatomic, strong)NSArray* typeArray;
-@property (nonatomic, strong)NSArray* typeDescriptionArray;
+@property (nonatomic, strong)NSMutableArray* typeArray;
 @end
 
 @implementation GXSelectTypeTableViewController
@@ -38,9 +39,10 @@
     if (!cell) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
     }
-    cell.textLabel.text = [[self typeArray] objectAtIndex:indexPath.row];
+    NSString* type = [[self typeArray] objectAtIndex:indexPath.row];
+    cell.textLabel.text = type;
     cell.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:20];  // not working, maybe because of chinese character
-    cell.detailTextLabel.text = [[self typeDescriptionArray] objectAtIndex:indexPath.row];
+    cell.detailTextLabel.text = [self typeDescriptionForType:type];
     cell.detailTextLabel.textColor = [UIColor grayColor];
     
     if ([self.currentType isEqualToString:[[self typeArray] objectAtIndex:indexPath.row]]) {
@@ -83,20 +85,26 @@
 
 - (NSArray *)typeArray {
     if (!_typeArray) {
-        _typeArray = @[@"员工广场", @"联采广场", @"供应商广场"];
+        _typeArray = [[NSMutableArray alloc]init];
+        User* user = [GXUserEngine sharedEngine].userLoggedIn;
+        if ([user canSendMomentForEmployee]) {
+            [_typeArray addObject:@"员工广场"];
+        }
+        if ([user canSendMomentForPurchase]) {
+            [_typeArray addObject:@"联采广场"];
+        }
+        if ([user canSendMomentForSupplier]) {
+            [_typeArray addObject:@"供应商广场"];
+        }
     }
     return _typeArray;
 }
 
-- (NSArray *)typeDescriptionArray {
-    if (!_typeDescriptionArray) {
-        _typeDescriptionArray = @[
-                                  @"所选单位的员工均可见",
-                                  @"全国联采业务员均可见",
-                                  @"仅供应商可见"
-                                  ];
-    }
-    return _typeDescriptionArray;
+- (NSString *)typeDescriptionForType:(NSString *)type {
+    NSDictionary* typeDic = @{@"员工广场": @"所选单位的员工均可见",
+                              @"联采广场": @"全国联采业务员均可见",
+                              @"供应商广场": @"仅供应商可见"};
+    return typeDic[type];
 }
 
 #pragma mark - action

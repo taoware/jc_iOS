@@ -12,7 +12,7 @@
 #import "SSKeychain.h"
 
 @interface GXSettingTableViewController () <UIAlertViewDelegate>
-
+@property (weak, nonatomic) IBOutlet UITableViewCell *logoutCell;
 @end
 
 @implementation GXSettingTableViewController
@@ -27,6 +27,10 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.logoutCell.textLabel.text = [NSString stringWithFormat:@"%@ (%@)", self.logoutCell.textLabel.text, [GXUserEngine sharedEngine].userLoggedIn.mobile];
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

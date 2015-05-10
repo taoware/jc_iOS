@@ -107,7 +107,8 @@
         NSDictionary* momentDic = [moments firstObject];
         moment.syncStatus = @(GXObjectSynced);
         moment.objectId = [momentDic valueForKey:RESOURCE_ID];
-
+        [Moment momentWithMomentInfo:momentDic inManagedObjectContext:moment.managedObjectContext];
+        completion(nil,nil);
         [self executeSyncCompletedOperations];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         

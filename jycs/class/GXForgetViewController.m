@@ -14,6 +14,7 @@
 @property (nonatomic, strong)NSString* verificationCode;
 @property (weak, nonatomic) IBOutlet UITextField *phoneField;
 @property (weak, nonatomic) IBOutlet UITextField *verificationField;
+@property (strong, nonatomic) NSString* mobile;
 @end
 
 @implementation GXForgetViewController
@@ -36,8 +37,11 @@
     sender.enabled = NO;
     //button type要 设置成custom 否则会闪动
     [sender startWithSecond:60];
+    self.mobile = self.phoneField.text;
     self.verificationCode = [self generateRandom4DigitCode];
-    
+    NSString* message = [NSString stringWithFormat:@"您本次身份校验码是%@, 30分钟内有效，教育超市工作人员绝不会向您索取此校验码，切勿告知他人", self.verificationCode];
+    NSString* url = [NSString stringWithFormat:@"http://vps1.taoware.com/notify?mobile=%@&message=%@", self.mobile, message];
+    NSURLRequest* request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     [sender didChange:^NSString *(JKCountDownButton *countDownButton,int second) {
         NSString *title = [NSString stringWithFormat:@"剩余%d秒",second];
         return title;

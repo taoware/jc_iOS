@@ -28,6 +28,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 @property (strong, nonatomic) NSMutableDictionary *offscreenCells;
 
 @property (strong, nonatomic) NSArray* moments;
+@property (strong, nonatomic) NSMutableArray* momentsInProgress;
 @property (nonatomic, strong) SRRefreshView *slimeView;
 @property (nonatomic, strong) NSDateFormatter *dateFormatter;
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
@@ -55,7 +56,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     [self.dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"GMT-8"]];
     [self.dateFormatter setDateStyle:NSDateFormatterMediumStyle];
     [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    
+    self.momentsInProgress = [[NSMutableArray alloc]init];
     [self.slimeView setLoadingWithExpansion];
 }
 
@@ -104,21 +105,17 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 #pragma mark - GXMomentCell delegate
 
 - (void)resendButtonTappedWithMoment:(Moment *)moment {
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:[self.moments indexOfObject:moment] inSection:0];
-    GXMomentsTableViewCell* sendingCell = (GXMomentsTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
-    sendingCell.syncStatus = GXObjectSyncing;
-    
+    [self.momentsInProgress addObject:moment];
+    [self loadMomentsFromCoreData];
+    [self.tableView reloadData];
     [[GXMomentsEngine sharedEngine] sendMomentWithMoment:moment completion:^(NSDictionary *momentInfo, GXError *error) {
         if (error) {
             TTAlert(@"发送失败");
         }
-        [self.tableView beginUpdates];
-        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-        [self.tableView endUpdates];
+        [self.momentsInProgress removeObject:moment];
+        [self loadMomentsFromCoreData];
+        [self.tableView reloadData];
     }];
-    [self.tableView beginUpdates];
-    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-    [self.tableView endUpdates];
 }
 
 - (void)userInfoTappedWithMoment:(Moment *)moment {
@@ -192,6 +189,9 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     Moment* moment = self.moments[indexPath.row];
     cell.fromViewController = self;
     cell.momentToDisplay = moment;
+    if ([self.momentsInProgress containsObject:moment]) {
+        cell.syncStatus = GXObjectSyncing;
+    }
     
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
@@ -233,13 +233,9 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 }
 
 
-
-
-
 #pragma mark - public methods
 
 - (void)sendSquareMomentWithMoment:(Moment *)moment {
-    [self updateUI];
     [self resendButtonTappedWithMoment:moment];
 }
 

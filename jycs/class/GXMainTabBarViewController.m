@@ -18,6 +18,7 @@
 #import "GXUserEngine.h"
 #import "Notification+Create.h"
 #import "GXCoreDataController.h"
+#import "User+Permission.h"
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
@@ -141,7 +142,11 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     }else if (index == 2){
         self.title = @"广场";
         self.navigationItem.rightBarButtonItem = nil;
-        self.navigationItem.rightBarButtonItem = self.sendItem;
+        self.navigationItem.rightBarButtonItems = nil;
+        User* userLoggedIn = [GXUserEngine sharedEngine].userLoggedIn;
+        if ([userLoggedIn canSendMomentForEmployee] || [userLoggedIn canSendMomentForPurchase] || [userLoggedIn canSendMomentForSupplier]) {
+            self.navigationItem.rightBarButtonItem = self.sendItem;
+        }
 //        [self.navigationItem setRightBarButtonItems:@[self.sendItem, self.giftItem]];
     }else if (index == 3){
         self.title = @"我";
