@@ -567,7 +567,8 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
                            reason:(NSString *)reason
 {
     [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:@[username] completion:^(GXError *error) {
-        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"friend.beRefusedToAdd", @"you are shameless refused by '%@'"), username];
+        User* user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:username];
+        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"friend.beRefusedToAdd", @"you are shameless refused by '%@'"), user?user.name:@"未知"];
         TTAlertNoTitle(message);
     }];
 }

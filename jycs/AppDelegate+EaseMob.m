@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate+EaseMob.h"
+#import "GXUserEngine.h"
 
 /**
  *  本类中做了EaseMob初始化和推送等操作
@@ -280,7 +281,7 @@
     }
     
     if (reason == eGroupLeaveReason_BeRemoved) {
-        str = [NSString stringWithFormat:NSLocalizedString(@"group.beKicked", @"you have been kicked out from the group of \'%@\'"), tmpStr];
+        str = [NSString stringWithFormat:NSLocalizedString(@"group.beKicked", @"you have been kicked out from the group of \'%@\'"), [tmpStr substringToIndex:6]];
     }
     if (str.length > 0) {
         TTAlertNoTitle(str);
@@ -293,7 +294,7 @@
                                       reason:(NSString *)reason
                                        error:(EMError *)error{
     if (!reason || reason.length == 0) {
-        reason = [NSString stringWithFormat:NSLocalizedString(@"group.beRefusedToJoin", @"be refused to join the group\'%@\'"), groupname];
+        reason = [NSString stringWithFormat:NSLocalizedString(@"group.beRefusedToJoin", @"be refused to join the group\'%@\'"), [groupname substringFromIndex:6]];
     }
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:reason delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
     [alertView show];
@@ -309,6 +310,9 @@
     if (!groupId || !username) {
         return;
     }
+    User* user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:username];
+    username = user.name;
+    groupname = [groupname substringFromIndex:6];
     
     if (!reason || reason.length == 0) {
         reason = [NSString stringWithFormat:NSLocalizedString(@"group.applyJoin", @"%@ apply to join groups\'%@\'"), username, groupname];
@@ -345,7 +349,7 @@
         groupTag = group.groupId;
     }
     
-    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"group.agreedAndJoined", @"agreed and joined the group of \'%@\'"), groupTag];
+    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"group.agreedAndJoined", @"agreed and joined the group of \'%@\'"), [groupTag substringFromIndex:6]];
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:message delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
     [alertView show];
 }
@@ -368,17 +372,17 @@
 
 // 打印收到的apns信息
 -(void)didReiveceRemoteNotificatison:(NSDictionary *)userInfo{
-    NSError *parseError = nil;
-    NSData  *jsonData = [NSJSONSerialization dataWithJSONObject:userInfo
-                                                        options:NSJSONWritingPrettyPrinted error:&parseError];
-    NSString *str =  [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"推送内容"
-                                                    message:str
-                                                   delegate:nil
-                                          cancelButtonTitle:NSLocalizedString(@"ok", @"OK")
-                                          otherButtonTitles:nil];
-    [alert show];
+//    NSError *parseError = nil;
+//    NSData  *jsonData = [NSJSONSerialization dataWithJSONObject:userInfo
+//                                                        options:NSJSONWritingPrettyPrinted error:&parseError];
+//    NSString *str =  [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//    
+//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"推送内容"
+//                                                    message:str
+//                                                   delegate:nil
+//                                          cancelButtonTitle:NSLocalizedString(@"ok", @"OK")
+//                                          otherButtonTitles:nil];
+//    [alert show];
     
 }
 
