@@ -12,12 +12,9 @@
 
 @interface Notification : NSManagedObject
 
-@property (nonatomic, retain) NSString * body;
 @property (nonatomic, retain) NSNumber * isFavorite;
-@property (nonatomic, retain) NSNumber * isRead;
 @property (nonatomic, retain) NSString * messageId;
-@property (nonatomic, retain) NSDate * timestamp;
-@property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) NSString * groupId;
+@property (nonatomic, retain) NSNumber * timestamp;
 
 @end

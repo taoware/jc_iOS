@@ -48,6 +48,7 @@
     store.address = [storeDictionary valueForKey:STORE_ADDRESS];
     store.province = [storeDictionary valueForKey:STORE_PROVINCE];
     store.type = [storeDictionary valueForKeyPath:STORE_TYPE];
+    store.url = [storeDictionary valueForKeyPath:STORE_URL];
     store.updateTime = [ResourceFetcher dateUsingStringFromAPI:[storeDictionary valueForKeyPath:RESOURCE_UPDATED_DATE]];
     store.createTime = [ResourceFetcher dateUsingStringFromAPI:[storeDictionary valueForKeyPath:RESOURCE_CREATED_DATE]];
     store.deleteTime = [ResourceFetcher dateUsingStringFromAPI:[storeDictionary valueForKeyPath:RESOURCE_DELETED_DATE]];

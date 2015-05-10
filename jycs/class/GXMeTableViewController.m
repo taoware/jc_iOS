@@ -17,7 +17,6 @@
 #import "GXPostedViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "GXBookmarkedViewController.h"
-#import "GXPublishedViewController.h"
 
 @interface GXMeTableViewController () <UINavigationControllerDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *avatar;

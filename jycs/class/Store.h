@@ -2,7 +2,7 @@
 //  Store.h
 //  jycs
 //
-//  Created by appleseed on 4/17/15.
+//  Created by appleseed on 5/10/15.
 //  Copyright (c) 2015 appleseed. All rights reserved.
 //
 
@@ -24,6 +24,7 @@
 @property (nonatomic, retain) NSString * summary;
 @property (nonatomic, retain) NSString * type;
 @property (nonatomic, retain) NSDate * updateTime;
+@property (nonatomic, retain) NSString * url;
 @property (nonatomic, retain) Photo *photo;
 
 @end

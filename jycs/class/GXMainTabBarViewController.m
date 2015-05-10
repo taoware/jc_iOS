@@ -291,7 +291,7 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 {
     [self setupUnreadMessageCount];
     [_chatListVC refreshDataSource];
-    [_notificationVC reloadDataSource];
+    [_notificationVC refreshDataSource];
 }
 
 // 未读消息数量变化回调
@@ -327,14 +327,6 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 // 收到消息回调
 -(void)didReceiveMessage:(EMMessage *)message
 {
-    if (message.isGroup) {
-        EMGroup* group = [EMGroup groupWithId:message.from];
-        if ([group.groupSubject hasPrefix:@"group_"]) {
-            NSManagedObjectContext* context = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
-            [Notification notificationWithEMMessage:message inManagedObjectContext:context];
-            [self executeNotificationReceviedOperations];
-        }
-    }
     BOOL needShowNotification = message.isGroup ? [self needShowNotification:message.conversationChatter] : YES;
     if (needShowNotification) {
 #if !TARGET_IPHONE_SIMULATOR
@@ -347,34 +339,6 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
         }
 #endif
     }
-}
-
--(void)didReceiveOfflineMessages:(NSArray *)offlineMessages {
-    for (EMMessage* message in offlineMessages) {
-        if (message.isGroup) {
-            EMGroup* group = [EMGroup groupWithId:message.from];
-            if ([group.groupSubject hasPrefix:@"group_"]) {
-                NSManagedObjectContext* context = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
-                [Notification notificationWithEMMessage:message inManagedObjectContext:context];
-            }
-        }
-    }
-    [self executeNotificationReceviedOperations];
-}
-
-- (void)executeNotificationReceviedOperations {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSError *error = nil;
-        [[GXCoreDataController sharedInstance] saveBackgroundContext];
-        if (error) {
-            NSLog(@"Error saving background context after creating objects on server: %@", error);
-        }
-        
-        [[GXCoreDataController sharedInstance] saveMasterContext];
-        [[NSNotificationCenter defaultCenter]
-         postNotificationName:kNOTIFICATION_NOTIFICATIONRECEIVED
-         object:nil];
-    });
 }
 
 -(void)didReceiveCmdMessage:(EMMessage *)message
@@ -525,7 +489,7 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
             }
             [[EaseMob sharedInstance].chatManager removeConversationsByChatters:deletedBuddies deleteMessages:YES append2Chat:YES];
             [_chatListVC refreshDataSource];
-            [_notificationVC reloadDataSource];
+            [_notificationVC refreshDataSource];
         }
         [_contactListVC reloadDataSource];
     }];
@@ -537,7 +501,7 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
         User* user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:username];
         [[EaseMob sharedInstance].chatManager removeConversationByChatter:user?user.name:@"未知" deleteMessages:YES append2Chat:YES];
         [_chatListVC refreshDataSource];
-        [_notificationVC reloadDataSource];
+        [_notificationVC refreshDataSource];
         [_contactListVC reloadDataSource];
     }];
 }

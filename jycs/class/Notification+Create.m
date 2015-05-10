@@ -7,15 +7,15 @@
 //
 
 #import "Notification+Create.h"
-#import "ConvertToCommonEmoticonsHelper.h"
 
 @implementation Notification (Create)
 
 + (Notification *)notificationWithEMMessage:(EMMessage *)message inManagedObjectContext:(NSManagedObjectContext *)context {
     Notification* notificaion = nil;
     NSString* messageId = message.messageId;
+    NSString* groupId = message.from;
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Notification"];
-    request.predicate = [NSPredicate predicateWithFormat:@"messageId = %@", messageId];
+    request.predicate = [NSPredicate predicateWithFormat:@"messageId = %@ AND groupId = %@", messageId, groupId];
     
     NSError *error;
     NSArray *matches = [context executeFetchRequest:request error:&error];
@@ -28,29 +28,21 @@
     } else {
         notificaion = [NSEntityDescription insertNewObjectForEntityForName:@"Notification"
                                                inManagedObjectContext:context];
+        notificaion.messageId = messageId;
+        notificaion.timestamp = @(message.timestamp);
+        notificaion.groupId = groupId;
+        notificaion.isFavorite = @(NO);
     }
-    
-    notificaion.messageId = messageId;
-    EMGroup* group = [EMGroup groupWithId:message.from];
-    notificaion.title = group.groupSubject;
-    notificaion.groupId = message.from;
-    notificaion.timestamp = [NSDate dateWithTimeIntervalSince1970: message.timestamp/1000];
-    notificaion.isRead = @(message.isRead);
-    notificaion.isFavorite = @(NO);
-    
-    id<IEMMessageBody> messageBody = [message.messageBodies firstObject];
-    // 表情映射。
-    NSString *didReceiveText = [ConvertToCommonEmoticonsHelper
-                                convertToSystemEmoticons:((EMTextMessageBody *)messageBody).text];
-    notificaion.body = didReceiveText;
     
     return notificaion;
 }
 
-+ (void)loadNotificationsFromNotificationsArray:(NSArray *)messages intoManagedObjectContext:(NSManagedObjectContext *)context {
++ (NSArray*)loadNotificationsFromNotificationsArray:(NSArray *)messages intoManagedObjectContext:(NSManagedObjectContext *)context {
+    NSMutableArray* notificatons = [[NSMutableArray alloc]init];
     for (EMMessage* message in messages) {
-        [Notification notificationWithEMMessage:message inManagedObjectContext:context];
+        [notificatons addObject: [Notification notificationWithEMMessage:message inManagedObjectContext:context]];
     }
+    return notificatons;
 }
 
 @end

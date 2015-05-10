@@ -13,7 +13,7 @@
 
 + (Notification *)notificationWithEMMessage:(EMMessage *)message
           inManagedObjectContext:(NSManagedObjectContext *)context;
-+ (void)loadNotificationsFromNotificationsArray:(NSArray *)messages // of EMMessage
++ (NSArray*)loadNotificationsFromNotificationsArray:(NSArray *)messages // of EMMessage
            intoManagedObjectContext:(NSManagedObjectContext *)context;
 
 @end

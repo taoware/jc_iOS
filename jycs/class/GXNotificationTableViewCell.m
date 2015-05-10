@@ -8,6 +8,7 @@
 
 #import "GXNotificationTableViewCell.h"
 #import "GXCoreDataController.h"
+#import "ConvertToCommonEmoticonsHelper.h"
 
 @interface GXNotificationTableViewCell ()
 @property (nonatomic, strong)NSDateFormatter* dateFormatter;
@@ -31,13 +32,23 @@
 }
 
 - (void)updateUI {
-    self.titleLabel.text = [self.notification.title substringFromIndex:6];
-    self.bodyLabel.text = self.notification.body;
-
-    self.timeLabel.text = [self.dateFormatter stringFromDate:self.notification.timestamp];
+    EMGroup* group = [EMGroup groupWithId:self.notification.groupId];
+    EMConversation* conversation = [[EaseMob sharedInstance].chatManager conversationForChatter:self.notification.groupId isGroup:YES];
+    EMMessage* message = [conversation loadMessageWithId:self.notification.messageId];
+    
+    self.titleLabel.text = [group.groupSubject substringFromIndex:6];
+    NSDate* time = [NSDate dateWithTimeIntervalSince1970: message.timestamp/1000];
+    self.timeLabel.text = [self.dateFormatter stringFromDate:time];
+    
+    id<IEMMessageBody> messageBody = [message.messageBodies firstObject];
+    // 表情映射。
+    NSString *didReceiveText = [ConvertToCommonEmoticonsHelper
+                                convertToSystemEmoticons:((EMTextMessageBody *)messageBody).text];
+    self.bodyLabel.text = didReceiveText;
+    
     NSString* bookmarkImgName = [self.notification.isFavorite boolValue]?@"bookmarked.png":@"bookmark.png";
     [self.bookmarkButton setBackgroundImage:[UIImage imageNamed:bookmarkImgName] forState:UIControlStateNormal];
-    NSString* readImgName = [self.notification.isRead boolValue]?@"read_yes.png":@"read_no.png";
+    NSString* readImgName = message.isRead?@"read_yes.png":@"read_no.png";
     [self.readButton setBackgroundImage:[UIImage imageNamed:readImgName] forState:UIControlStateNormal];
 }
 
@@ -52,10 +63,8 @@
 }
 
 - (IBAction)readButtonTapped:(UIButton *)sender {
-    self.notification.isRead = @(YES);
-    NSString* readImgName = [self.notification.isRead boolValue]?@"read_yes.png":@"read_no.png";
+    NSString* readImgName = @"read_yes.png";
     [self.readButton setBackgroundImage:[UIImage imageNamed:readImgName] forState:UIControlStateNormal];
-    [self saveContext];
     
     EMConversation* conversation = [[EaseMob sharedInstance].chatManager conversationForChatter:self.notification.groupId isGroup:YES];
     [conversation markMessageWithId:self.notification.messageId asRead:YES];

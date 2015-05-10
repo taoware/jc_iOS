@@ -15,8 +15,9 @@
 #import "Store.h"
 #import "Photo.h"
 #import "ResourceFetcher.h"
+#import "GXArticleViewController.h"
 
-@interface GXStoreViewController () <UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UITableViewDataSource,UITableViewDelegate>
+@interface GXStoreViewController () <UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UITableViewDataSource,UITableViewDelegate,GXStoreShowTableViewCellDelegate>
 @property (nonatomic, strong) UIView* coverFlowContainer;
 @property (strong, nonatomic) UICollectionView *coverFlow;
 @property (strong, nonatomic) UIView *carouselShadow;
@@ -24,6 +25,7 @@
 @property (strong, nonatomic) UIPageControl *pageControl;
 @property (strong, nonatomic) UILabel *coverTitle;
 @property (nonatomic, strong)NSArray* slideStores;
+@property (nonatomic, strong)NSArray* originalSlideStores;
 @property (nonatomic, strong)NSArray* stores;
 @property (nonatomic, strong)NSArray* provinces;
 @property (nonatomic, strong)NSDictionary* storesInProvince;
@@ -65,7 +67,7 @@
             // scroll to the first page, note that this call will trigger scrollViewDidScroll: once and only once
             [self.coverFlow scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
         }
-        Store* firstSlideStore = [self.slideStores firstObject];
+        Store* firstSlideStore = [self.originalSlideStores firstObject];
         self.coverTitle.text = firstSlideStore.storeName;
         
     }];
@@ -113,6 +115,7 @@
     [request setSortDescriptors:[NSArray arrayWithObject:
                                  [NSSortDescriptor sortDescriptorWithKey:@"createTime" ascending:NO]]];
     self.slideStores = [self.managedObjectContext executeFetchRequest:request error:&error];
+    self.originalSlideStores = _slideStores;
 }
 
 - (void)loadDistinctProvinceFromCoreData {
@@ -225,8 +228,16 @@
     GXStoreShowTableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"storeShowCell" forIndexPath:indexPath];
     NSString* province = self.provinces[indexPath.section];
     NSArray* stores = [self.storesInProvince valueForKey:province];
-    
     cell.regionLabel.text = province;
+    cell.delegate = self;
+    cell.stores = stores;
+    
+    cell.firstStoreLabel.text = nil;
+    cell.firstStoreThumbnail.image = nil;
+    cell.secondStoreLabel.text = nil;
+    cell.secondStoreThumbnail.image = nil;
+    cell.thirdStoreLabel.text = nil;
+    cell.thirdStoreThumbnail.image = nil;
     
     NSUInteger numToDisplay = MIN(stores.count, 3);
     for (int i =0; i < numToDisplay; i++) {
@@ -235,15 +246,15 @@
         switch (i) {
             case 0:
                 cell.firstStoreLabel.text = store.storeName;
-                [cell.firstStoreThumbnail setImageForState:UIControlStateNormal withURL:[NSURL URLWithString:store.photo.thumbnailURL] placeholderImage:placeholderImage];
+                [cell.firstStoreThumbnail setImageWithURL:[NSURL URLWithString:store.photo.thumbnailURL] placeholderImage:placeholderImage];
                 break;
             case 1:
                 cell.secondStoreLabel.text = store.storeName;
-                [cell.secondStoreThumbnail setImageForState:UIControlStateNormal withURL:[NSURL URLWithString:store.photo.thumbnailURL] placeholderImage:placeholderImage];
+                [cell.secondStoreThumbnail setImageWithURL:[NSURL URLWithString:store.photo.thumbnailURL] placeholderImage:placeholderImage];
                 break;
             case 2:
                 cell.thirdStoreLabel.text = store.storeName;
-                [cell.thirdStoreThumbnail setImageForState:UIControlStateNormal withURL:[NSURL URLWithString:store.photo.thumbnailURL] placeholderImage:placeholderImage];
+                [cell.thirdStoreThumbnail setImageWithURL:[NSURL URLWithString:store.photo.thumbnailURL] placeholderImage:placeholderImage];
                 break;
             default:
                 break;
@@ -251,6 +262,12 @@
     }
 
     return cell;
+}
+
+- (void)didSelectStore:(Store *)store {
+    GXArticleViewController* articleVC = [[GXArticleViewController alloc]init];
+    articleVC.articleUrl = store.url;
+    [self.navigationController pushViewController:articleVC animated:YES];
 }
 
 #pragma mark - <UICollectionViewDelegateFlowLayout>
@@ -280,6 +297,13 @@
     [cell.imageView setImageWithURL:[NSURL URLWithString:store.photo.imageURL] placeholderImage:placeholderImage];
     
     return cell;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    Store* store = self.slideStores[indexPath.row];
+    GXArticleViewController* articleVC = [[GXArticleViewController alloc]init];
+    articleVC.articleUrl = store.url;
+    [self.navigationController pushViewController:articleVC animated:YES];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -318,7 +342,7 @@
             page--;
         }
         self.pageControl.currentPage = page;
-        Store* currentStore = self.slideStores[page];
+        Store* currentStore = self.originalSlideStores[page];
         self.coverTitle.text = currentStore.storeName;
         
         [self.timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:2]];
@@ -335,6 +359,8 @@
         } else {
             page--;
         }
+        Store* currentStore = self.originalSlideStores[page];
+        self.coverTitle.text = currentStore.storeName;
         self.pageControl.currentPage = page;
     }
 }
@@ -351,8 +377,6 @@
 - (void)changeCover {
     if (self.slideStores.count >= 2) {
         NSIndexPath* indexPath = (NSIndexPath*)[[self.coverFlow indexPathsForVisibleItems] firstObject];
-        Store* currentStore = self.slideStores[indexPath.item];
-        self.coverTitle.text = currentStore.storeName;
         if (indexPath.item == self.slideStores.count-1) {
             indexPath = [NSIndexPath indexPathForItem:1 inSection:0];
             [self.coverFlow scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];

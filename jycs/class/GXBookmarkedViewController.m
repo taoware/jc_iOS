@@ -42,6 +42,7 @@
         
         NSError *error = nil;
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Notification"];
+        
         NSPredicate* predicate = [NSPredicate predicateWithFormat:@"isFavorite = YES"];
         request.predicate = predicate;
         [request setSortDescriptors:[NSArray arrayWithObject:

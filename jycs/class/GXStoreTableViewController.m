@@ -10,6 +10,7 @@
 #import "GXStoreListTableViewCell.h"
 #import "Store.h"
 #import "Photo.h"
+#import "GXArticleViewController.h"
 
 @interface GXStoreTableViewController ()
 
@@ -26,6 +27,7 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     self.title = self.province;
+    self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectZero];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -52,7 +54,7 @@
     // Configure the cell...
     Store* store = self.storeInProvince[indexPath.row];
     
-    UIImage* placeholderImage = [UIImage imageNamed:@"logo"];
+    UIImage* placeholderImage = [UIImage imageNamed:@"placeholder.png"];
     [cell.storeThumnail setImageWithURL:[NSURL URLWithString:store.photo.thumbnailURL] placeholderImage:placeholderImage];
     [cell.storeThumnail.layer setCornerRadius:20];
     cell.storeThumnail.layer.masksToBounds = YES;
@@ -61,6 +63,12 @@
     return cell;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    Store* store = [self.storeInProvince objectAtIndex:indexPath.row];
+    GXArticleViewController* articleVC = [[GXArticleViewController alloc]init];
+    articleVC.articleUrl = store.url;
+    [self.navigationController pushViewController:articleVC animated:YES];
+}
 
 /*
 // Override to support conditional editing of the table view.

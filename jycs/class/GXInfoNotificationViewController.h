@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface GXInfoNotificationViewController : UITableViewController
-- (void)reloadDataSource;
+- (void)refreshDataSource;
 @end

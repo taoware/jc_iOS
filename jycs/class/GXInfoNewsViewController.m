@@ -15,6 +15,7 @@
 #import "GXNewsEngine.h"
 #import "SRRefreshView.h"
 #import "XLPagerTabStripViewController.h"
+#import "GXArticleViewController.h"
 
 @interface GXInfoNewsViewController () <UIScrollViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDataSource, UITableViewDelegate, XLPagerTabStripChildItem>
 @property (nonatomic, strong) UIView* coverFlowContainer;
@@ -26,6 +27,7 @@
 @property (nonatomic, strong) UITableView* newsTableView;
 @property (nonatomic, strong) SRRefreshView         *slimeView;
 @property (strong, nonatomic) NSArray *slideNews; // data source
+@property (strong, nonatomic) NSArray *originalSlideNews;
 @property (strong, nonatomic) NSArray* news;
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 @end
@@ -59,7 +61,7 @@
             // scroll to the first page, note that this call will trigger scrollViewDidScroll: once and only once
             [self.coverFlow scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
         }
-        News* firstSlideNews = [self.slideNews firstObject];
+        News* firstSlideNews = [self.originalSlideNews firstObject];
         self.coverTitle.text = firstSlideNews.title;
         
         [_slimeView endRefresh];
@@ -96,6 +98,7 @@
         [request setSortDescriptors:[NSArray arrayWithObject:
                                      [NSSortDescriptor sortDescriptorWithKey:@"createTime" ascending:NO]]];
         self.slideNews = [self.managedObjectContext executeFetchRequest:request error:&error];
+        self.originalSlideNews = _slideNews;
         
         if (self.slideNews.count>=2) {
             // duplicate the last item and put it at first
@@ -115,6 +118,7 @@
 - (UITableView *)newsTableView {
     if (!_newsTableView) {
         _newsTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
+        _newsTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         _newsTableView.tableHeaderView = self.coverFlowContainer;
         _newsTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
         _newsTableView.backgroundColor = NEWSBGCOLOR;
@@ -230,6 +234,16 @@
     return cell;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    News* news = self.news[indexPath.row];
+    
+    GXArticleViewController* articleVC = [[GXArticleViewController alloc]init];
+    articleVC.articleUrl = news.url;
+    [self.navigationController pushViewController:articleVC animated:YES];
+}
+
 #pragma mark - <UICollectionViewDelegateFlowLayout>
 
 - (CGSize)collectionView:(UICollectionView *)collectionView
@@ -260,6 +274,13 @@
     return cell;
 }
 
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    News* news = self.slideNews[indexPath.item];
+    
+    GXArticleViewController* articleVC = [[GXArticleViewController alloc]init];
+    articleVC.articleUrl = news.url;
+    [self.navigationController pushViewController:articleVC animated:YES];
+}
 
 #pragma mark - UIScrollViewDelegate
 
@@ -297,7 +318,7 @@
             page--;
         }
         self.pageControl.currentPage = page;
-        News* currentNew = self.slideNews[page];
+        News* currentNew = self.originalSlideNews[page];
         self.coverTitle.text = currentNew.title;
         
         [self.timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:2]];
@@ -314,7 +335,8 @@
         } else {
             page--;
         }
-        
+        News* currentNew = self.originalSlideNews[page];
+        self.coverTitle.text = currentNew.title;
         self.pageControl.currentPage = page;
     }
 }
@@ -363,8 +385,6 @@
 - (void)changeCover {
     if (self.slideNews.count >= 2) {
         NSIndexPath* indexPath = (NSIndexPath*)[[self.coverFlow indexPathsForVisibleItems] firstObject];
-        News* currentNews = self.slideNews[indexPath.item];
-        self.coverTitle.text = currentNews.title;
         if (indexPath.item == self.slideNews.count-1) {
             indexPath = [NSIndexPath indexPathForItem:1 inSection:0];
             [self.coverFlow scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];

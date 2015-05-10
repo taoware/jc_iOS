@@ -10,12 +10,12 @@
 #import "XLPagerTabStripViewController.h"
 #import "GXCoreDataController.h"
 #import "GXNotificationTableViewCell.h"
-#import "Notification.h"
+#import "Notification+Create.h"
 
-@interface GXInfoNotificationViewController () <XLPagerTabStripChildItem>
+@interface GXInfoNotificationViewController () <IChatManagerDelegate, XLPagerTabStripChildItem>
 @property (nonatomic, strong)NSManagedObjectContext* managedObjectContext;
 @property (nonatomic, strong)NSDateFormatter* dateFormatter;
-@property (nonatomic, strong)NSArray* notifications;
+@property (nonatomic, strong)NSMutableArray* dataSource;
 @end
 
 @implementation GXInfoNotificationViewController
@@ -33,44 +33,113 @@
     [self.dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"GMT-8"]];
     [self.dateFormatter setDateStyle:NSDateFormatterMediumStyle];
     [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    
-    [self loadNotificationFromCoreData];
-    [self.tableView reloadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserverForName:kNOTIFICATION_NOTIFICATIONRECEIVED object:nil queue:nil usingBlock:^(NSNotification *note) {
-        [self reloadDataSource];
-        [self.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
-    }];
+    [self refreshDataSource];
+    [self registerNotifications];
 }
 
-- (void)loadNotificationFromCoreData {
-    [self.managedObjectContext performBlockAndWait:^{
-        
-        NSError *error = nil;
-        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Notification"];
-        [request setSortDescriptors:[NSArray arrayWithObject:
-                                     [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO]]];
-        self.notifications = [self.managedObjectContext executeFetchRequest:request error:&error];
-        
-    }];
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [self unregisterNotifications];
 }
 
-- (void)reloadDataSource {
-    [self loadNotificationFromCoreData];
+#pragma mark - IChatMangerDelegate
+
+-(void)didUnreadMessagesCountChanged
+{
+    [self refreshDataSource];
+}
+
+- (void)didUpdateGroupList:(NSArray *)allGroups error:(EMError *)error
+{
+    [self refreshDataSource];
+}
+
+- (void)didReceiveOfflineMessages:(NSArray *)offlineMessages
+{
+    [self refreshDataSource];
+}
+
+- (void)didFinishedReceiveOfflineMessages:(NSArray *)offlineMessages{
+    NSLog(NSLocalizedString(@"message.endReceiveOffine", @"End to receive offline messages"));
+    [self refreshDataSource];
+}
+
+#pragma mark - registerNotifications
+-(void)registerNotifications{
+    [self unregisterNotifications];
+    [[EaseMob sharedInstance].chatManager addDelegate:self delegateQueue:nil];
+}
+
+-(void)unregisterNotifications{
+    [[EaseMob sharedInstance].chatManager removeDelegate:self];
+}
+
+- (void)dealloc{
+    [self unregisterNotifications];
+}
+
+-(void)refreshDataSource
+{
+    self.dataSource = [self loadDataSource];
     [self.tableView reloadData];
 }
 
+- (NSMutableArray *)loadDataSource {
+    NSMutableArray *ret = nil;
+    NSArray *conversations = [[EaseMob sharedInstance].chatManager conversations];
+    conversations = [self filterForConversationPrefixedGroup:conversations];
+    NSMutableArray* messages = [[NSMutableArray alloc]init];
+    for (EMConversation* conversation in conversations) {
+        [messages addObjectsFromArray:[conversation loadAllMessages]];
+    }
+    NSArray* sorte = [messages sortedArrayUsingComparator:^NSComparisonResult(EMMessage *message1, EMMessage *message2) {
+        if(message1.timestamp > message2.timestamp) {
+            return(NSComparisonResult)NSOrderedAscending;
+        }else {
+            return(NSComparisonResult)NSOrderedDescending;
+        }
+    }];
+    NSArray* notification = [Notification loadNotificationsFromNotificationsArray:sorte intoManagedObjectContext:self.managedObjectContext];
+    
+    ret = [[NSMutableArray alloc] initWithArray:notification];
+    return ret;
+}
+
+- (NSArray *)filterForConversationPrefixedGroup:(NSArray *)conversations {
+    NSMutableArray* filteredConversation = [[NSMutableArray alloc]init];
+    for (EMConversation* conversation in conversations) {
+        if (conversation.isGroup && [[self groupNameFromgroupId:conversation.chatter] hasPrefix:@"group_"]) {
+            [filteredConversation addObject:conversation];
+        }
+    }
+    return filteredConversation;
+}
+
+- (NSString *)groupNameFromgroupId:(NSString *)groupId {
+    NSArray *groupArray = [[EaseMob sharedInstance].chatManager groupList];
+    for (EMGroup* group in groupArray) {
+        if ([group.groupId isEqualToString:groupId]) {
+            return group.groupSubject;
+        }
+    }
+    return nil;
+}
+
+#pragma mark - table view delegate
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.notifications.count;
+    return self.dataSource.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     GXNotificationTableViewCell* cell = [self.tableView dequeueReusableCellWithIdentifier:@"notificationCell" forIndexPath:indexPath];
     
-    Notification* notification = [self.notifications objectAtIndex:indexPath.row];
+    Notification* notification = [self.dataSource objectAtIndex:indexPath.row];
     cell.notification = notification;
     cell.backgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"notification_back.png"]];
     return cell;

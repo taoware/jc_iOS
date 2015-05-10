@@ -46,6 +46,7 @@
     news.subtitle = [newsDictionary valueForKeyPath:NEWS_SUBTILTE];
     news.content = [newsDictionary valueForKeyPath:NEWS_CONTENT];
     news.type = [newsDictionary valueForKeyPath:NEWS_TYPE];
+    news.url = [newsDictionary valueForKeyPath:NEWS_URL];
     news.updateTime = [ResourceFetcher dateUsingStringFromAPI:[newsDictionary valueForKeyPath:RESOURCE_UPDATED_DATE]];
     news.createTime = [ResourceFetcher dateUsingStringFromAPI:[newsDictionary valueForKeyPath:RESOURCE_CREATED_DATE]];
     news.deleteTime = [ResourceFetcher dateUsingStringFromAPI:[newsDictionary valueForKeyPath:RESOURCE_DELETED_DATE]];

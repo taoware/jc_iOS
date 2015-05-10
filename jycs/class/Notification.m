@@ -11,12 +11,9 @@
 
 @implementation Notification
 
-@dynamic body;
 @dynamic isFavorite;
-@dynamic isRead;
 @dynamic messageId;
-@dynamic timestamp;
-@dynamic title;
 @dynamic groupId;
+@dynamic timestamp;
 
 @end

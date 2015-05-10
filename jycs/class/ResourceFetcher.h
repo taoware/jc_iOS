@@ -18,6 +18,7 @@
 #define NEWS_CONTENT @"content"
 #define NEWS_PHOTO @"photo"
 #define NEWS_TYPE @"type"
+#define NEWS_URL @"url"
 
 // keys to values in a store dictionary
 #define STORE_NAME  @"storeName"
@@ -27,6 +28,7 @@
 #define STORE_PROVINCE @"province"
 #define STORE_PHOTO @"photo"
 #define STORE_TYPE @"type"
+#define STORE_URL @"url"
 
 // keys to values in a moment dictionary
 #define MOMENT_TEXT @"information"
