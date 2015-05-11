@@ -57,7 +57,6 @@
             if (!username.length || !password.length) {
                 [self loginStateChange:nil];
             }
-
             [[GXUserEngine sharedEngine] asyncLoginWithUsername:username password:password completion:^(NSDictionary *loginInfo, GXError *error) {
                 if (!error) {
                     [self loginStateChange:loginNotification];
@@ -104,7 +103,6 @@
     
     UIStoryboard* story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
     if (loginSuccess) {
-        [[GXUserEngine sharedEngine] initializeCurrentUser];
         self.mainController = [story instantiateViewControllerWithIdentifier:@"mainVC"];
         nav = [[UINavigationController alloc]initWithRootViewController:self.mainController];
     } else {

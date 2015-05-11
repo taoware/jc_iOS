@@ -7,7 +7,14 @@
 //
 
 #import "GXGoToLoginViewController.h"
+#import "GXUserEngine.h"
 
 @implementation GXGoToLoginViewController
+
+- (IBAction)goToLoginPage:(UIButton *)sender {
+    [GXUserEngine sharedEngine].userLoggedIn = nil;
+    [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@(NO)];
+}
+
 
 @end

@@ -19,6 +19,7 @@
 #import "Notification+Create.h"
 #import "GXCoreDataController.h"
 #import "User+Permission.h"
+#import "GXGoToLoginViewController.h"
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
@@ -61,6 +62,8 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callOutWithChatter:) name:@"callOutWithChatter" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callControllerClose:) name:@"callControllerClose" object:nil];
     
+    [self setupSubviews];
+    
     UIButton *showButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
     [showButton setImage:[UIImage imageNamed:@"store.png"] forState:UIControlStateNormal];
     [showButton addTarget:_infoVC action:@selector(showStoreInfo) forControlEvents:UIControlEventTouchUpInside];
@@ -86,6 +89,25 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     [self setupUntreatedApplyCount];
     
     [self fetchBuddyList];
+}
+
+- (void)setupSubviews {
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
+    GXGoToLoginViewController *goToLoginVCForContact = [storyboard instantiateViewControllerWithIdentifier:@"goToLoginVC"];
+    goToLoginVCForContact.tabBarItem = [[UITabBarItem alloc]initWithTitle:@"通讯录" image:[UIImage imageNamed:@"tabbar_message.png"] selectedImage:[UIImage imageNamed:@"tabbar_messageHL.png"]];
+    GXGoToLoginViewController *goToLoginVCForSquare = [storyboard instantiateViewControllerWithIdentifier:@"goToLoginVC"];
+    goToLoginVCForSquare.tabBarItem = [[UITabBarItem alloc]initWithTitle:@"广场" image:[UIImage imageNamed:@"tabbar_square.png"] selectedImage:[UIImage imageNamed:@"tabbar_squareHL.png"]];
+    GXGoToLoginViewController *goToLoginVCForMe = [storyboard instantiateViewControllerWithIdentifier:@"goToLoginVC"];
+    goToLoginVCForMe.tabBarItem = [[UITabBarItem alloc]initWithTitle:@"我" image:[UIImage imageNamed:@"tabbar_me.png"] selectedImage:[UIImage imageNamed:@"tabbar_meHL.png"]];
+    NSMutableArray *tabbarViewControllers = [self.viewControllers mutableCopy];
+    if (![GXUserEngine sharedEngine].userLoggedIn.audit.boolValue) {
+        [tabbarViewControllers replaceObjectAtIndex:1 withObject:goToLoginVCForContact];
+        [tabbarViewControllers replaceObjectAtIndex:2 withObject:goToLoginVCForSquare];
+        if (![GXUserEngine sharedEngine].userLoggedIn) {
+            [tabbarViewControllers replaceObjectAtIndex:3 withObject:goToLoginVCForMe];
+        }
+    }
+    self.viewControllers = tabbarViewControllers;
 }
 
 // force loadBuddyList, tried asyncFetchBuddyList method, but the callback didFetchedBuddyList:error not called
@@ -130,28 +152,47 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 - (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item
 {
     NSInteger index = [tabBar.items indexOfObject:item];
-    
-    if (index == 0) {
-        self.title = @"信息";
-        self.navigationItem.rightBarButtonItem = nil;
-        self.navigationItem.rightBarButtonItem = self.showItem;
-    }else if (index == 1){
-        self.navigationItem.rightBarButtonItem = nil;
-        self.title = @"通讯录";
-        self.navigationItem.rightBarButtonItem = self.addItem;
-    }else if (index == 2){
-        self.title = @"广场";
-        self.navigationItem.rightBarButtonItem = nil;
-        self.navigationItem.rightBarButtonItems = nil;
-        User* userLoggedIn = [GXUserEngine sharedEngine].userLoggedIn;
-        if ([userLoggedIn canSendMomentForEmployee] || [userLoggedIn canSendMomentForPurchase] || [userLoggedIn canSendMomentForSupplier]) {
-            self.navigationItem.rightBarButtonItem = self.sendItem;
+
+    if (![GXUserEngine sharedEngine].userLoggedIn.audit.boolValue) {
+        if (index == 0) {
+            self.title = @"信息";
+            self.navigationItem.rightBarButtonItem = nil;
+            self.navigationItem.rightBarButtonItem = self.showItem;
+        }else if (index == 1){
+            self.navigationItem.rightBarButtonItem = nil;
+            self.title = @"通讯录";
+        }else if (index == 2){
+            self.title = @"广场";
+            self.navigationItem.rightBarButtonItem = nil;
+            self.navigationItem.rightBarButtonItems = nil;
+        }else if (index == 3){
+            self.title = @"我";
+            self.navigationItem.rightBarButtonItem = nil;
+            self.navigationItem.rightBarButtonItems = nil;
         }
-//        [self.navigationItem setRightBarButtonItems:@[self.sendItem, self.giftItem]];
-    }else if (index == 3){
-        self.title = @"我";
-        self.navigationItem.rightBarButtonItem = nil;
-        self.navigationItem.rightBarButtonItems = nil;
+    } else {
+        if (index == 0) {
+            self.title = @"信息";
+            self.navigationItem.rightBarButtonItem = nil;
+            self.navigationItem.rightBarButtonItem = self.showItem;
+        }else if (index == 1){
+            self.navigationItem.rightBarButtonItem = nil;
+            self.title = @"通讯录";
+            self.navigationItem.rightBarButtonItem = self.addItem;
+        }else if (index == 2){
+            self.title = @"广场";
+            self.navigationItem.rightBarButtonItem = nil;
+            self.navigationItem.rightBarButtonItems = nil;
+            User* userLoggedIn = [GXUserEngine sharedEngine].userLoggedIn;
+            if ([userLoggedIn canSendMomentForEmployee] || [userLoggedIn canSendMomentForPurchase] || [userLoggedIn canSendMomentForSupplier]) {
+                self.navigationItem.rightBarButtonItem = self.sendItem;
+            }
+            //        [self.navigationItem setRightBarButtonItems:@[self.sendItem, self.giftItem]];
+        }else if (index == 3){
+            self.title = @"我";
+            self.navigationItem.rightBarButtonItem = nil;
+            self.navigationItem.rightBarButtonItems = nil;
+        }
     }
 }
 

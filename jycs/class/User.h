@@ -23,6 +23,7 @@
 @property (nonatomic, retain) NSNumber * objectId;
 @property (nonatomic, retain) NSDate * updateTime;
 @property (nonatomic, retain) NSString * screenName;
+@property (nonatomic, retain) NSNumber * audit;
 @property (nonatomic, retain) Photo *avatar;
 @property (nonatomic, retain) NSSet *hasPermisson;
 @property (nonatomic, retain) NSSet *inUnit;

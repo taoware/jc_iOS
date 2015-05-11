@@ -14,7 +14,7 @@
 
 +(GXUserEngine *)sharedEngine;
 
-@property (nonatomic, readonly, strong)User* userLoggedIn;
+@property (nonatomic, strong)User* userLoggedIn;
 - (void)initializeCurrentUser;
 
 - (void)clearAutoLoginFlagInUserDefault;

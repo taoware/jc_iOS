@@ -84,6 +84,11 @@
 
 }
 
+- (IBAction)visitAsGuest:(UIButton *)sender {
+    [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@(YES)];
+}
+
+
 - (void)updateLoginButton {
     if (!self.usernameField.text.length && !self.passwordField.text.length) {
         self.login_Btn.enabled = NO;

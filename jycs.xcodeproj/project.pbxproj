@@ -61,8 +61,10 @@
 		1E4B3F131AFF0EB700322124 /* GXPostedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3F121AFF0EB700322124 /* GXPostedViewController.m */; };
 		1E4B3F161AFF105400322124 /* GXPostedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3F151AFF105400322124 /* GXPostedTableViewCell.m */; };
 		1E4B3F191AFF3F1E00322124 /* User+Permission.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3F181AFF3F1E00322124 /* User+Permission.m */; };
-		1E4B3F1C1AFF95FD00322124 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3F1B1AFF95FD00322124 /* User.m */; };
 		1E4B3F1F1AFF9E9900322124 /* GXGoToLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3F1E1AFF9E9900322124 /* GXGoToLoginViewController.m */; };
+		1E4B3F221AFFA43800322124 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3F211AFFA43800322124 /* User.m */; };
+		1E4B3F251AFFB9AE00322124 /* GXChatListLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3F241AFFB9AE00322124 /* GXChatListLoginViewController.m */; };
+		1E4B3F281AFFB9C900322124 /* GXNotificationLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3F271AFFB9C900322124 /* GXNotificationLoginViewController.m */; };
 		1E5C50091AFA64E200958EBA /* JKCountDownButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E5C50081AFA64E200958EBA /* JKCountDownButton.m */; };
 		1E5C500C1AFB392300958EBA /* GXForgetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E5C500B1AFB392300958EBA /* GXForgetViewController.m */; };
 		1E5C500F1AFB393F00958EBA /* GXForgetResetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E5C500E1AFB393F00958EBA /* GXForgetResetViewController.m */; };
@@ -596,10 +598,14 @@
 		1E4B3F151AFF105400322124 /* GXPostedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXPostedTableViewCell.m; sourceTree = "<group>"; };
 		1E4B3F171AFF3F1E00322124 /* User+Permission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "User+Permission.h"; sourceTree = "<group>"; };
 		1E4B3F181AFF3F1E00322124 /* User+Permission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "User+Permission.m"; sourceTree = "<group>"; };
-		1E4B3F1A1AFF95FD00322124 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
-		1E4B3F1B1AFF95FD00322124 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		1E4B3F1D1AFF9E9900322124 /* GXGoToLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXGoToLoginViewController.h; sourceTree = "<group>"; };
 		1E4B3F1E1AFF9E9900322124 /* GXGoToLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXGoToLoginViewController.m; sourceTree = "<group>"; };
+		1E4B3F201AFFA43800322124 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		1E4B3F211AFFA43800322124 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
+		1E4B3F231AFFB9AE00322124 /* GXChatListLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXChatListLoginViewController.h; sourceTree = "<group>"; };
+		1E4B3F241AFFB9AE00322124 /* GXChatListLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXChatListLoginViewController.m; sourceTree = "<group>"; };
+		1E4B3F261AFFB9C900322124 /* GXNotificationLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXNotificationLoginViewController.h; sourceTree = "<group>"; };
+		1E4B3F271AFFB9C900322124 /* GXNotificationLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXNotificationLoginViewController.m; sourceTree = "<group>"; };
 		1E5C50071AFA64E200958EBA /* JKCountDownButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JKCountDownButton.h; sourceTree = "<group>"; };
 		1E5C50081AFA64E200958EBA /* JKCountDownButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JKCountDownButton.m; sourceTree = "<group>"; };
 		1E5C500A1AFB392300958EBA /* GXForgetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXForgetViewController.h; sourceTree = "<group>"; };
@@ -2767,8 +2773,8 @@
 		1E9E365B1AF85788003BA9E1 /* Core Data Model */ = {
 			isa = PBXGroup;
 			children = (
-				1E4B3F1A1AFF95FD00322124 /* User.h */,
-				1E4B3F1B1AFF95FD00322124 /* User.m */,
+				1E4B3F201AFFA43800322124 /* User.h */,
+				1E4B3F211AFFA43800322124 /* User.m */,
 				1E4B3F0E1AFE67A400322124 /* Store.h */,
 				1E4B3F0F1AFE67A400322124 /* Store.m */,
 				1E4B3F0B1AFE675F00322124 /* News.h */,
@@ -2830,6 +2836,10 @@
 				1E5C500E1AFB393F00958EBA /* GXForgetResetViewController.m */,
 				1E4B3F1D1AFF9E9900322124 /* GXGoToLoginViewController.h */,
 				1E4B3F1E1AFF9E9900322124 /* GXGoToLoginViewController.m */,
+				1E4B3F231AFFB9AE00322124 /* GXChatListLoginViewController.h */,
+				1E4B3F241AFFB9AE00322124 /* GXChatListLoginViewController.m */,
+				1E4B3F261AFFB9C900322124 /* GXNotificationLoginViewController.h */,
+				1E4B3F271AFFB9C900322124 /* GXNotificationLoginViewController.m */,
 			);
 			name = Login;
 			sourceTree = "<group>";
@@ -3486,7 +3496,6 @@
 				1E9E31AA1AF7B83D003BA9E1 /* PSTCollectionViewCell.m in Sources */,
 				1E9E33D71AF7BB2F003BA9E1 /* ContactSelectionViewController.m in Sources */,
 				1E4B3F191AFF3F1E00322124 /* User+Permission.m in Sources */,
-				1E4B3F1C1AFF95FD00322124 /* User.m in Sources */,
 				1E9E36361AF7CB6C003BA9E1 /* MessageTableViewCell.m in Sources */,
 				1E9E33ED1AF7BB30003BA9E1 /* EditNicknameViewController.m in Sources */,
 				1E74B2FF1AF90C3C00B8C0FA /* AFHTTPSessionManager.m in Sources */,
@@ -3616,6 +3625,7 @@
 				1E3D74001ABB36120003A963 /* EMSearchBar.m in Sources */,
 				1E9E33E31AF7BB2F003BA9E1 /* AddFriendViewController.m in Sources */,
 				1E9E31B21AF7B83D003BA9E1 /* PSTGridLayoutItem.m in Sources */,
+				1E4B3F281AFFB9C900322124 /* GXNotificationLoginViewController.m in Sources */,
 				1E9E31A01AF7B83D003BA9E1 /* NSData+EMImageContentType.m in Sources */,
 				1E9E33C21AF7BB2F003BA9E1 /* ChatViewController.m in Sources */,
 				1E9E31B61AF7B83D003BA9E1 /* THProgressView.m in Sources */,
@@ -3628,6 +3638,7 @@
 				1E9E33D31AF7BB2F003BA9E1 /* MessageModel.m in Sources */,
 				1E9E362F1AF7CB6C003BA9E1 /* GXStoreListTableViewCell.m in Sources */,
 				1E4B3F131AFF0EB700322124 /* GXPostedViewController.m in Sources */,
+				1E4B3F221AFFA43800322124 /* User.m in Sources */,
 				1E9E33CF1AF7BB2F003BA9E1 /* EMChatVideoBubbleView.m in Sources */,
 				1E34936C1A7F588E00630E4F /* main.m in Sources */,
 				1E9E31A61AF7B83D003BA9E1 /* UIImageView+EMWebCache.m in Sources */,
@@ -3643,6 +3654,7 @@
 				1E74B30D1AF90C3C00B8C0FA /* UIWebView+AFNetworking.m in Sources */,
 				1E74B3081AF90C3C00B8C0FA /* UIAlertView+AFNetworking.m in Sources */,
 				1E9E36251AF7CB6C003BA9E1 /* GXPostViewController.m in Sources */,
+				1E4B3F251AFFB9AE00322124 /* GXChatListLoginViewController.m in Sources */,
 				1E74B2D61AF8F88800B8C0FA /* SZTextView.m in Sources */,
 				1E9E36001AF7CB6C003BA9E1 /* Contact.m in Sources */,
 				1E9E31A11AF7B83D003BA9E1 /* UIButton+EMWebCache.m in Sources */,

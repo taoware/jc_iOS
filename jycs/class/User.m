@@ -24,6 +24,7 @@
 @dynamic objectId;
 @dynamic updateTime;
 @dynamic screenName;
+@dynamic audit;
 @dynamic avatar;
 @dynamic hasPermisson;
 @dynamic inUnit;

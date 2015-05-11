@@ -39,7 +39,12 @@
     NSManagedObjectContext* context = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
     
     User* user = [GXUserEngine sharedEngine].userLoggedIn;
-    NSDictionary* parameter = @{@"userId": user.objectId};
+    NSDictionary* parameter;
+    if (user) {
+        parameter = @{@"userId": user.objectId};
+    } else {
+        parameter = @{@"userId": @(532)};
+    }
     
     [[GXHTTPManager sharedManager] GET:@"news" parameters:parameter success:^(NSURLSessionDataTask *task, id responseObject) {
         if ([responseObject isKindOfClass:[NSDictionary class]]) {

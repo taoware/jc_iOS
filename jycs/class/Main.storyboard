@@ -109,6 +109,9 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZYc-Jz-cR4">
                                 <rect key="frame" x="229" y="525" width="44" height="19"/>
                                 <state key="normal" backgroundImage="login_preview.png"/>
+                                <connections>
+                                    <action selector="visitAsGuest:" destination="K0m-Tk-urC" eventType="touchUpInside" id="uY0-V3-IcT"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kFH-Go-L0Z">
                                 <rect key="frame" x="178" y="525" width="44" height="19"/>
@@ -209,7 +212,7 @@
         <!--Go To Login View Controller-->
         <scene sceneID="nVg-iM-Rzg">
             <objects>
-                <viewController id="gIt-rB-9Nt" customClass="GXGoToLoginViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="goToLoginVC" id="gIt-rB-9Nt" customClass="GXGoToLoginViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="H4W-pm-fWK"/>
                         <viewControllerLayoutGuide type="bottom" id="HYe-lC-iNd"/>
@@ -217,12 +220,49 @@
                     <view key="view" contentMode="scaleToFill" id="kAV-07-LDo">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="无访问权限" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JXf-OQ-GjQ">
+                                <rect key="frame" x="120" y="170" width="80" height="20"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="您可能未登录，或尚未审核通过，请联系管理员后，重新登录" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="300" translatesAutoresizingMaskIntoConstraints="NO" id="Y7O-sp-1iu">
+                                <rect key="frame" x="16" y="198" width="288" height="41"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f5W-Jq-idO">
+                                <rect key="frame" x="60" y="259" width="200" height="50"/>
+                                <color key="backgroundColor" red="0.13725490200000001" green="0.5450980392" blue="0.32549019610000002" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="MlR-bm-1e0"/>
+                                    <constraint firstAttribute="width" constant="200" id="eJg-88-kfF"/>
+                                </constraints>
+                                <state key="normal" title="去登录">
+                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="goToLoginPage:" destination="gIt-rB-9Nt" eventType="touchUpInside" id="aCm-t0-QhT"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="f5W-Jq-idO" firstAttribute="top" secondItem="Y7O-sp-1iu" secondAttribute="bottom" constant="20" id="4N9-hA-9ir"/>
+                            <constraint firstItem="Y7O-sp-1iu" firstAttribute="top" secondItem="JXf-OQ-GjQ" secondAttribute="bottom" constant="8" symbolic="YES" id="6Ez-mf-L4p"/>
+                            <constraint firstAttribute="centerX" secondItem="Y7O-sp-1iu" secondAttribute="centerX" id="ZfN-G4-xDv"/>
+                            <constraint firstAttribute="centerX" secondItem="JXf-OQ-GjQ" secondAttribute="centerX" id="lmj-ZQ-qJL"/>
+                            <constraint firstAttribute="centerX" secondItem="f5W-Jq-idO" secondAttribute="centerX" id="nV2-rh-EeD"/>
+                            <constraint firstItem="f5W-Jq-idO" firstAttribute="centerY" secondItem="kAV-07-LDo" secondAttribute="centerY" id="pc3-Oq-bC8"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hLt-uz-ORw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="302" y="721"/>
+            <point key="canvasLocation" x="303" y="731"/>
         </scene>
         <!--Main Tab Bar View Controller-->
         <scene sceneID="QIO-0L-6mf">
@@ -1843,6 +1883,116 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eEm-aA-mVJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3368" y="-356"/>
+        </scene>
+        <!--Chat List Login View Controller-->
+        <scene sceneID="2F1-Zq-thB">
+            <objects>
+                <viewController storyboardIdentifier="chatListLogin" id="Dky-Ae-eMc" customClass="GXChatListLoginViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y7b-fk-6rb"/>
+                        <viewControllerLayoutGuide type="bottom" id="U7Q-HF-qHw"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="6vY-ZN-x1k">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="无访问权限" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aoL-c3-65R">
+                                <rect key="frame" x="120" y="170" width="80" height="20"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="您可能未登录，或尚未审核通过，请联系管理员后，重新登录" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="300" translatesAutoresizingMaskIntoConstraints="NO" id="bCL-Sz-cIf">
+                                <rect key="frame" x="16" y="198" width="288" height="41"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hdJ-il-N20">
+                                <rect key="frame" x="60" y="259" width="200" height="50"/>
+                                <color key="backgroundColor" red="0.13725490200000001" green="0.5450980392" blue="0.32549019610000002" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="200" id="5Tk-7r-dYQ"/>
+                                    <constraint firstAttribute="height" constant="50" id="igb-AA-T64"/>
+                                </constraints>
+                                <state key="normal" title="去登录">
+                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="goToLoginPage:" destination="Dky-Ae-eMc" eventType="touchUpInside" id="5fc-h4-biX"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="hdJ-il-N20" firstAttribute="top" secondItem="bCL-Sz-cIf" secondAttribute="bottom" constant="20" id="9uQ-0c-Ptq"/>
+                            <constraint firstAttribute="centerX" secondItem="hdJ-il-N20" secondAttribute="centerX" id="Jlw-JO-mFa"/>
+                            <constraint firstAttribute="centerX" secondItem="aoL-c3-65R" secondAttribute="centerX" id="N4W-CU-pn0"/>
+                            <constraint firstAttribute="centerX" secondItem="bCL-Sz-cIf" secondAttribute="centerX" id="bbK-LF-aS6"/>
+                            <constraint firstItem="hdJ-il-N20" firstAttribute="centerY" secondItem="6vY-ZN-x1k" secondAttribute="centerY" id="nRL-Gf-Xbp"/>
+                            <constraint firstItem="bCL-Sz-cIf" firstAttribute="top" secondItem="aoL-c3-65R" secondAttribute="bottom" constant="8" symbolic="YES" id="nRr-6S-KQU"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WlC-p9-LiT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="297" y="935"/>
+        </scene>
+        <!--Notification Login View Controller-->
+        <scene sceneID="xAB-Fb-zSf">
+            <objects>
+                <viewController storyboardIdentifier="notificationLogin" id="FqF-z6-ZCC" customClass="GXNotificationLoginViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="iak-BN-m44"/>
+                        <viewControllerLayoutGuide type="bottom" id="2Mf-Wj-M0D"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="cdt-Ir-lnc">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="无访问权限" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Gd-dE-C9g">
+                                <rect key="frame" x="120" y="170" width="80" height="20"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="您可能未登录，或尚未审核通过，请联系管理员后，重新登录" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="300" translatesAutoresizingMaskIntoConstraints="NO" id="Dw9-40-DCM">
+                                <rect key="frame" x="16" y="198" width="288" height="41"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dwP-2Y-59h">
+                                <rect key="frame" x="60" y="259" width="200" height="50"/>
+                                <color key="backgroundColor" red="0.13725490200000001" green="0.5450980392" blue="0.32549019610000002" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="9V8-zM-bXt"/>
+                                    <constraint firstAttribute="width" constant="200" id="NOB-ON-FJo"/>
+                                </constraints>
+                                <state key="normal" title="去登录">
+                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="goToLoginPage:" destination="FqF-z6-ZCC" eventType="touchUpInside" id="dJB-ao-7Fk"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="centerX" secondItem="dwP-2Y-59h" secondAttribute="centerX" id="0oY-2o-7TF"/>
+                            <constraint firstItem="dwP-2Y-59h" firstAttribute="top" secondItem="Dw9-40-DCM" secondAttribute="bottom" constant="20" id="LjI-SF-hSS"/>
+                            <constraint firstAttribute="centerX" secondItem="Dw9-40-DCM" secondAttribute="centerX" id="RpQ-ns-QsA"/>
+                            <constraint firstItem="dwP-2Y-59h" firstAttribute="centerY" secondItem="cdt-Ir-lnc" secondAttribute="centerY" id="eiB-oA-nfK"/>
+                            <constraint firstAttribute="centerX" secondItem="8Gd-dE-C9g" secondAttribute="centerX" id="pQl-KN-c5X"/>
+                            <constraint firstItem="Dw9-40-DCM" firstAttribute="top" secondItem="8Gd-dE-C9g" secondAttribute="bottom" constant="8" symbolic="YES" id="sNZ-uE-6Y9"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="aqn-OB-UFS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="93" y="777"/>
         </scene>
     </scenes>
     <resources>

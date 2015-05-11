@@ -50,6 +50,7 @@
     user.name = [userDictionary valueForKeyPath:USER_NAME];
     user.screenName = [userDictionary valueForKey:USER_SCREENNAME];
     user.location = [userDictionary valueForKey:USER_LOCATION];
+    user.audit = [userDictionary valueForKey:USER_AUDIT];
     
     user.imUsername = [userDictionary valueForKeyPath:EASEMOB_USERNAME];
     user.imPassword = [userDictionary valueForKeyPath:EASEMOB_PASSWORD];

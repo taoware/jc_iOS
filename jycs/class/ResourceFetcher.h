@@ -57,6 +57,7 @@
 #define USER_SCREENNAME @"screenName"
 #define USER_MOBILE @"mobile"
 #define USER_LOCATION @"location"
+#define USER_AUDIT @"audit"
 #define USER_AVATAR @"avatar"
 #define USER_UNITS @"units"
 #define USER_PERMISSIONS @"permissions"

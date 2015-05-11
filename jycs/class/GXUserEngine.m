@@ -17,7 +17,6 @@
 
 @interface GXUserEngine ()
 @property (nonatomic, strong) NSDateFormatter *dateFormatter;
-@property (nonatomic, strong, readwrite) User* userLoggedIn;
 @end
 
 @implementation GXUserEngine
@@ -78,45 +77,53 @@
         NSArray* users = [responseObject valueForKeyPath:API_RESULTS];
         NSDictionary* userDic = [users firstObject];
         User* user = [User UserWithUserInfo:userDic inManagedObjectContext:context]; // load user info into core data
-        if (!user.imUsername || !user.imPassword || user.imUsername.length == 0 || user.imPassword.length == 0) {
-            completion(nil, [GXError errorWithCode:GXErrorEaseMobAuthenticationFailure andDescription:@"server error, this user have no easemob account"]);
-            return ;
+//        if (!user.imUsername || !user.imPassword || user.imUsername.length == 0 || user.imPassword.length == 0) {
+//            completion(nil, [GXError errorWithCode:GXErrorEaseMobAuthenticationFailure andDescription:@"server error, this user have no easemob account"]);
+//            return ;
+//        }
+        [self initializeCurrentUser];
+        if ([user.audit boolValue]) {
+            //环信异步登陆账号
+            [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:user.imUsername
+                                                                password:user.imPassword
+                                                              completion:
+             ^(NSDictionary *loginInfo, EMError *error) {
+                 if (loginInfo && !error) {
+                     [self updateUserLoggedInFlagWith:username];
+                     [self enableUserAutoLogin];
+                     [self saveUserPasswordInKeychainWithUsername:username andPassword:password];
+                     
+                     //获取群组列表
+                     [[EaseMob sharedInstance].chatManager asyncFetchMyGroupsList];
+                     [[EaseMob sharedInstance].chatManager asyncFetchBuddyList];
+                     
+                     //设置是否自动登录
+                     [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
+                     //将旧版的coredata数据导入新的数据库
+                     EMError *error = [[EaseMob sharedInstance].chatManager importDataToNewDatabase];
+                     if (!error) {
+                         error = [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
+                     }
+                     
+                     completion(responseObject, nil);
+                 }else {
+                     switch (error.errorCode) {
+                         case EMErrorServerAuthenticationFailure:
+                             completion(nil, [GXError errorWithCode:GXErrorEaseMobAuthenticationFailure andDescription:error.description]);
+                             break;
+                         default:
+                             completion(nil, [GXError errorWithCode:GXErrorEaseMobSeverError andDescription:error.description]);
+                             break;
+                     }
+                 }
+             } onQueue:nil];
+        } else {
+            [self updateUserLoggedInFlagWith:username];
+            [self enableUserAutoLogin];
+            [self saveUserPasswordInKeychainWithUsername:username andPassword:password];
+            completion(responseObject, nil);
         }
         
-        //环信异步登陆账号
-        [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:user.imUsername
-                                                            password:user.imPassword
-                                                          completion:
-         ^(NSDictionary *loginInfo, EMError *error) {
-             if (loginInfo && !error) {
-                 [self updateUserLoggedInFlagWith:username];
-                 [self enableUserAutoLogin];
-                 [self saveUserPasswordInKeychainWithUsername:username andPassword:password];
-                 
-                 //获取群组列表
-                 [[EaseMob sharedInstance].chatManager asyncFetchMyGroupsList];
-                 [[EaseMob sharedInstance].chatManager asyncFetchBuddyList];
-
-                 //设置是否自动登录
-                 [[EaseMob sharedInstance].chatManager setIsAutoLoginEnabled:YES];
-                 //将旧版的coredata数据导入新的数据库
-                 EMError *error = [[EaseMob sharedInstance].chatManager importDataToNewDatabase];
-                 if (!error) {
-                     error = [[EaseMob sharedInstance].chatManager loadDataFromDatabase];
-                 }
-                 
-                 completion(responseObject, nil);
-             }else {
-                 switch (error.errorCode) {
-                     case EMErrorServerAuthenticationFailure:
-                         completion(nil, [GXError errorWithCode:GXErrorEaseMobAuthenticationFailure andDescription:error.description]);
-                         break;
-                     default:
-                         completion(nil, [GXError errorWithCode:GXErrorEaseMobSeverError andDescription:error.description]);
-                         break;
-                 }
-             }
-         } onQueue:nil];
         [self executeCompletedOperations];
         
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -129,6 +136,7 @@
             }
         } else {
             // AFNetworking error handling
+            [self initializeCurrentUser];
             completion(nil, [GXError errorWithCode:GXErrorServerNotReachable andDescription:error.localizedDescription]);
         }
         [self executeCompletedOperations];

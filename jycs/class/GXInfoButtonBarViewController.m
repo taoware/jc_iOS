@@ -11,6 +11,9 @@
 #import "GXInfoChatListViewController.h"
 #import "GXInfoNotificationViewController.h"
 #import "AppDelegate.h"
+#import "GXUserEngine.h"
+#import "GXChatListLoginViewController.h"
+#import "GXNotificationLoginViewController.h"
 
 @interface GXInfoButtonBarViewController ()
 
@@ -32,13 +35,19 @@
 -(NSArray *)childViewControllersForPagerTabStripViewController:(XLPagerTabStripViewController *)pagerTabStripViewController
 {
     // create child view controllers that will be managed by XLPagerTabStripViewController
+    UIViewController* child_2, *child_3;
     GXInfoNewsViewController * child_1 = [[GXInfoNewsViewController alloc] init];
-    GXInfoChatListViewController * child_2 = [[GXInfoChatListViewController alloc] init];
-    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
-    GXInfoNotificationViewController * child_3 = [story instantiateViewControllerWithIdentifier:@"InfoNotificationViewController"];
     
-    AppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
-    appDelegate.mainController.chatListVC = child_2;
+    UIStoryboard *story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+    if (![GXUserEngine sharedEngine].userLoggedIn.audit.boolValue) {
+        child_2 = [story instantiateViewControllerWithIdentifier:@"chatListLogin"];
+        child_3 = [story instantiateViewControllerWithIdentifier:@"notificationLogin"];
+    } else {
+        child_2 = [[GXInfoChatListViewController alloc] init];
+        child_3 = [story instantiateViewControllerWithIdentifier:@"InfoNotificationViewController"];
+        AppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
+        appDelegate.mainController.chatListVC = (GXInfoChatListViewController *)child_2;
+    }
 
     if (!_isReload){
         return @[child_1, child_2, child_3];
