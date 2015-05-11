@@ -25,7 +25,7 @@
 - (void)asyncUpdateUserAvatarwithImageData:(NSData *)imageData andImageName:(NSString *) imageName completion:(void (^)(NSDictionary *info, GXError *error))completion;
 - (void)asyncLogoutWithCompletion:(void (^)(NSDictionary *info, GXError *error))completion;
 - (void)asyncFetchUserInfoWithEasemobUsername:(NSArray *)usernames completion:(void (^)(GXError *error))completion;
-- (void)asyncPasswordForgotWithNewPass:(NSString *)newPass completion:(void (^)(GXError *error))completion;
+- (void)asyncPasswordForgotWithMobile:(NSString *)mobile NewPass:(NSString *)newPass completion:(void (^)(GXError *error))completion;
 
 - (User *)queryUserInfoUsingEasmobUsername:(NSString* )easemobUsername;
 - (void)queryUserInfoUsingMobile:(NSString *)mobile completion:(void (^)(NSArray* users ,GXError *error))completion;

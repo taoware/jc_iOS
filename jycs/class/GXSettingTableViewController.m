@@ -25,11 +25,11 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    self.logoutCell.textLabel.text = [NSString stringWithFormat:@"%@ (%@)", self.logoutCell.textLabel.text, [GXUserEngine sharedEngine].userLoggedIn.mobile];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.logoutCell.textLabel.text = [NSString stringWithFormat:@"%@ (%@)", self.logoutCell.textLabel.text, [GXUserEngine sharedEngine].userLoggedIn.mobile];
 }
 
 - (void)didReceiveMemoryWarning {

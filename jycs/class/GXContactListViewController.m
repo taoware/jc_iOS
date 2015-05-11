@@ -85,17 +85,17 @@
 }
 #pragma mark - getter
 
-- (UISearchBar *)searchBar
-{
-    if (_searchBar == nil) {
-        _searchBar = [[EMSearchBar alloc] init];
-        _searchBar.delegate = self;
-        _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
-        _searchBar.backgroundColor = [UIColor colorWithRed:0.747 green:0.756 blue:0.751 alpha:1.000];
-    }
-    
-    return _searchBar;
-}
+//- (UISearchBar *)searchBar
+//{
+//    if (_searchBar == nil) {
+//        _searchBar = [[EMSearchBar alloc] init];
+//        _searchBar.delegate = self;
+//        _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
+//        _searchBar.backgroundColor = [UIColor colorWithRed:0.747 green:0.756 blue:0.751 alpha:1.000];
+//    }
+//    
+//    return _searchBar;
+//}
 
 - (UILabel *)unapplyCountLabel
 {
@@ -435,23 +435,53 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex != actionSheet.cancelButtonIndex && _currentLongPressIndex) {
-        EMBuddy *buddy = [[self.dataSource objectAtIndex:(_currentLongPressIndex.section - 1)] objectAtIndex:_currentLongPressIndex.row];
-        [self hideHud];
-        [self showHudInView:self.view hint:NSLocalizedString(@"wait", @"Pleae wait...")];
+        if (buttonIndex == 0) {
+            EMBuddy *buddy = [[self.dataSource objectAtIndex:(_currentLongPressIndex.section - 1)] objectAtIndex:_currentLongPressIndex.row];
+            [self hideHud];
+            [self showHudInView:self.view hint:NSLocalizedString(@"wait", @"Pleae wait...")];
+            
+            __weak typeof(self) weakSelf = self;
+            [[EaseMob sharedInstance].chatManager asyncBlockBuddy:buddy.username relationship:eRelationshipBoth withCompletion:^(NSString *username, EMError *error){
+                typeof(weakSelf) strongSelf = weakSelf;
+                [strongSelf hideHud];
+                if (!error)
+                {
+                    //由于加入黑名单成功后会刷新黑名单，所以此处不需要再更改好友列表
+                }
+                else
+                {
+                    [strongSelf showHint:error.description];
+                }
+            } onQueue:nil];
+        } else if (buttonIndex == 1){
+            NSIndexPath* indexPath = _currentLongPressIndex;
+            NSDictionary *loginInfo = [[[EaseMob sharedInstance] chatManager] loginInfo];
+            NSString *loginUsername = [loginInfo objectForKey:kSDKUsername];
+            EMBuddy *buddy = [[self.dataSource objectAtIndex:(indexPath.section - 1)] objectAtIndex:indexPath.row];
+            if ([buddy.username isEqualToString:loginUsername]) {
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:NSLocalizedString(@"friend.notDeleteSelf", @"can't delete self") delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
+                [alertView show];
+                
+                return;
+            }
+            
+            EMError *error = nil;
+            [[EaseMob sharedInstance].chatManager removeBuddy:buddy.username removeFromRemote:YES error:&error];
+            if (!error) {
+                [[EaseMob sharedInstance].chatManager removeConversationByChatter:buddy.username deleteMessages:YES append2Chat:YES];
+                
+                [self.tableView beginUpdates];
+                [[self.dataSource objectAtIndex:(indexPath.section - 1)] removeObjectAtIndex:indexPath.row];
+                [self.contactsSource removeObject:buddy];
+                [self.tableView  deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                [self.tableView  endUpdates];
+            }
+            else{
+                [self showHint:[NSString stringWithFormat:@"删除失败：%@", error.description]];
+                [self.tableView reloadData];
+            }
+        }
         
-        __weak typeof(self) weakSelf = self;
-        [[EaseMob sharedInstance].chatManager asyncBlockBuddy:buddy.username relationship:eRelationshipBoth withCompletion:^(NSString *username, EMError *error){
-            typeof(weakSelf) strongSelf = weakSelf;
-            [strongSelf hideHud];
-            if (!error)
-            {
-                //由于加入黑名单成功后会刷新黑名单，所以此处不需要再更改好友列表
-            }
-            else
-            {
-                [strongSelf showHint:error.description];
-            }
-        } onQueue:nil];
     }
     _currentLongPressIndex = nil;
 }
@@ -495,7 +525,7 @@
     }
     
     _currentLongPressIndex = indexPath;
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"cancel", @"Cancel") destructiveButtonTitle:NSLocalizedString(@"friend.block", @"join the blacklist") otherButtonTitles:nil, nil];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"cancel", @"Cancel") destructiveButtonTitle:NSLocalizedString(@"friend.block", @"join the blacklist") otherButtonTitles:@"删除联系人", nil];
     [actionSheet showInView:[[UIApplication sharedApplication] keyWindow]];
 }
 

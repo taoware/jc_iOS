@@ -9,6 +9,7 @@
 #import "GXForgetViewController.h"
 #import "JKCountDownButton.h"
 #import "GXForgetResetViewController.h"
+#import "GXHTTPManager.h"
 
 @interface GXForgetViewController ()
 @property (nonatomic, strong)NSString* verificationCode;
@@ -41,7 +42,11 @@
     self.verificationCode = [self generateRandom4DigitCode];
     NSString* message = [NSString stringWithFormat:@"您本次身份校验码是%@, 30分钟内有效，教育超市工作人员绝不会向您索取此校验码，切勿告知他人", self.verificationCode];
     NSString* url = [NSString stringWithFormat:@"http://vps1.taoware.com/notify?mobile=%@&message=%@", self.mobile, message];
+//    NSString* url = [NSString stringWithFormat:@"http://vps1.taoware.com/notify?mobile=%@&message=%@", @"13166362596", message];
+    url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSURLRequest* request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [operation start];
     [sender didChange:^NSString *(JKCountDownButton *countDownButton,int second) {
         NSString *title = [NSString stringWithFormat:@"剩余%d秒",second];
         return title;
@@ -74,12 +79,19 @@
             TTAlert(@"验证码错误");
             return NO;
         }
-        if (self.phoneField.text.length != 11) {
+        if (self.phoneField.text.length != 11 || self.mobile.length != 11) {
             TTAlert(@"手机格式错误");
             return NO;
         }
     }
     return YES;
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"go reset password"]) {
+        GXForgetResetViewController* resetVC = segue.destinationViewController;
+        resetVC.mobile = self.mobile;
+    }
 }
 
 

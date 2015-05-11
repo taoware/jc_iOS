@@ -31,6 +31,7 @@
 @property (nonatomic)NSInteger currentDistrict;
 
 @property (nonatomic, strong)NSString* verificationCode;
+@property (nonatomic, strong)NSString* mobile;
 
 @property (weak, nonatomic) IBOutlet UIButton *gender_Btn;
 @property (weak, nonatomic) IBOutlet UIButton *category_Btn;
@@ -194,7 +195,7 @@
     } else if (![self validatePassword:password]) {  // password validation
         TTAlert(@"密码要求6-16位，至少1个数字，1个字母");
         return;
-    } else if (![self verificationCode]) {  // vefication code validation
+    } else if (![self verifyCode:validationCode]) {  // vefication code validation
         TTAlert(@"验证码错误");
         return;
     } else {
@@ -353,8 +354,15 @@
     sender.enabled = NO;
     //button type要 设置成custom 否则会闪动
     [sender startWithSecond:60];
+    self.mobile = self.fourthTextField.text;
     self.verificationCode = [self generateRandom4DigitCode];
-    
+    NSString* message = [NSString stringWithFormat:@"您本次身份校验码是%@, 30分钟内有效，教育超市工作人员绝不会向您索取此校验码，切勿告知他人", self.verificationCode];
+    NSString* url = [NSString stringWithFormat:@"http://vps1.taoware.com/notify?mobile=%@&message=%@", self.mobile, message];
+//    NSString* url = [NSString stringWithFormat:@"http://vps1.taoware.com/notify?mobile=%@&message=%@", @"13166362596", message];
+    url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSURLRequest* request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [operation start];
     [sender didChange:^NSString *(JKCountDownButton *countDownButton,int second) {
         NSString *title = [NSString stringWithFormat:@"剩余%d秒",second];
         return title;
@@ -370,6 +378,7 @@
     int randomNum = arc4random_uniform(10000);
     return [NSString stringWithFormat:@"%04d", randomNum];
 }
+
 
 #pragma mark- Picker Data Source Methods
 

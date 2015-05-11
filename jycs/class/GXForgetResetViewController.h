@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface GXForgetResetViewController : UITableViewController
-
+@property (nonatomic, strong)NSString* mobile;
 @end

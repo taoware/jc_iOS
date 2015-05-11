@@ -94,7 +94,7 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 - (void)setupSubviews {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
     GXGoToLoginViewController *goToLoginVCForContact = [storyboard instantiateViewControllerWithIdentifier:@"goToLoginVC"];
-    goToLoginVCForContact.tabBarItem = [[UITabBarItem alloc]initWithTitle:@"通讯录" image:[UIImage imageNamed:@"tabbar_message.png"] selectedImage:[UIImage imageNamed:@"tabbar_messageHL.png"]];
+    goToLoginVCForContact.tabBarItem = [[UITabBarItem alloc]initWithTitle:@"通讯录" image:[UIImage imageNamed:@"tabbar_contact.png"] selectedImage:[UIImage imageNamed:@"tabbar_contactHL.png"]];
     GXGoToLoginViewController *goToLoginVCForSquare = [storyboard instantiateViewControllerWithIdentifier:@"goToLoginVC"];
     goToLoginVCForSquare.tabBarItem = [[UITabBarItem alloc]initWithTitle:@"广场" image:[UIImage imageNamed:@"tabbar_square.png"] selectedImage:[UIImage imageNamed:@"tabbar_squareHL.png"]];
     GXGoToLoginViewController *goToLoginVCForMe = [storyboard instantiateViewControllerWithIdentifier:@"goToLoginVC"];

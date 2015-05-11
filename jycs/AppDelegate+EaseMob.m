@@ -33,7 +33,7 @@
 #if DEBUG
     apnsCertName = @"jycsios";
 #else
-    apnsCertName = @"chatdemoui";
+    apnsCertName = @"jycsproduction";
 #endif
     
     [[EaseMob sharedInstance] registerSDKWithAppKey:@"gxcm#jycs"

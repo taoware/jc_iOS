@@ -183,7 +183,6 @@
 		1E9E31B41AF7B83D003BA9E1 /* PSTGridLayoutSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E31841AF7B83D003BA9E1 /* PSTGridLayoutSection.m */; };
 		1E9E31B51AF7B83D003BA9E1 /* MWPhotoBrowser.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1E9E31851AF7B83D003BA9E1 /* MWPhotoBrowser.bundle */; };
 		1E9E31B61AF7B83D003BA9E1 /* THProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E31881AF7B83D003BA9E1 /* THProgressView.m */; };
-		1E9E31B71AF7B83D003BA9E1 /* libMobClickLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E9E318A1AF7B83D003BA9E1 /* libMobClickLibrary.a */; };
 		1E9E31D21AF7BA00003BA9E1 /* NSDate+Category.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E31C31AF7B9FF003BA9E1 /* NSDate+Category.m */; };
 		1E9E31D31AF7BA00003BA9E1 /* NSDateFormatter+Category.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E31C51AF7B9FF003BA9E1 /* NSDateFormatter+Category.m */; };
 		1E9E31D41AF7BA00003BA9E1 /* NSString+Valid.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E31C71AF7B9FF003BA9E1 /* NSString+Valid.m */; };
@@ -800,8 +799,6 @@
 		1E9E31851AF7B83D003BA9E1 /* MWPhotoBrowser.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = MWPhotoBrowser.bundle; sourceTree = "<group>"; };
 		1E9E31871AF7B83D003BA9E1 /* THProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THProgressView.h; sourceTree = "<group>"; };
 		1E9E31881AF7B83D003BA9E1 /* THProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THProgressView.m; sourceTree = "<group>"; };
-		1E9E318A1AF7B83D003BA9E1 /* libMobClickLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMobClickLibrary.a; sourceTree = "<group>"; };
-		1E9E318B1AF7B83D003BA9E1 /* MobClick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobClick.h; sourceTree = "<group>"; };
 		1E9E31C21AF7B9FF003BA9E1 /* NSDate+Category.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+Category.h"; sourceTree = "<group>"; };
 		1E9E31C31AF7B9FF003BA9E1 /* NSDate+Category.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+Category.m"; sourceTree = "<group>"; };
 		1E9E31C41AF7B9FF003BA9E1 /* NSDateFormatter+Category.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDateFormatter+Category.h"; sourceTree = "<group>"; };
@@ -1350,7 +1347,6 @@
 				1E3D71401ABAC7990003A963 /* libz.dylib in Frameworks */,
 				1E3D713E1ABAC78F0003A963 /* libstdc++.6.0.9.dylib in Frameworks */,
 				1E3D713C1ABAC7840003A963 /* libsqlite3.dylib in Frameworks */,
-				1E9E31B71AF7B83D003BA9E1 /* libMobClickLibrary.a in Frameworks */,
 				FCD596CA67DA4579516FD8D9 /* libPods-jycs.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1590,7 +1586,6 @@
 				1E9E312C1AF7B83D003BA9E1 /* macros.h */,
 				1E9E312D1AF7B83D003BA9E1 /* MWPhotoBrowser */,
 				1E9E31861AF7B83D003BA9E1 /* THProgressView */,
-				1E9E31891AF7B83D003BA9E1 /* UMeng */,
 				1E3D74BE1ABBC7180003A963 /* SlimeRefresh */,
 				1EC694B91AB666C1009DD25C /* MBProgressHUD */,
 				1EC694BE1AB666C1009DD25C /* TTGlobalUICommon */,
@@ -1893,15 +1888,6 @@
 				1E9E31881AF7B83D003BA9E1 /* THProgressView.m */,
 			);
 			path = THProgressView;
-			sourceTree = "<group>";
-		};
-		1E9E31891AF7B83D003BA9E1 /* UMeng */ = {
-			isa = PBXGroup;
-			children = (
-				1E9E318A1AF7B83D003BA9E1 /* libMobClickLibrary.a */,
-				1E9E318B1AF7B83D003BA9E1 /* MobClick.h */,
-			);
-			path = UMeng;
 			sourceTree = "<group>";
 		};
 		1E9E31C11AF7B9FF003BA9E1 /* Catogory */ = {
@@ -3094,7 +3080,7 @@
 				TargetAttributes = {
 					1E3493651A7F588E00630E4F = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = 7QTSX3L9UK;
+						DevelopmentTeam = 43BJBF7JDD;
 					};
 					1E34937E1A7F588E00630E4F = {
 						CreatedOnToolsVersion = 6.1.1;
@@ -3784,11 +3770,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Lin Tang (DTRGS3GP33)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PREFIX_HEADER = "$(SRCROOT)/jycs/PrefixHeader.pch";
 				INFOPLIST_FILE = jycs/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3801,7 +3787,7 @@
 					"$(inherited)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "c56807b8-bf88-4a82-90ea-6b83f94ab25c";
+				PROVISIONING_PROFILE = "8dec3acd-dc6c-420e-84d9-8b0287b6f4bb";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -3812,11 +3798,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Lin Tang (DTRGS3GP33)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Jiangsu Shengle Universities Media Co., Ltd, (43BJBF7JDD)";
 				GCC_PREFIX_HEADER = "$(SRCROOT)/jycs/PrefixHeader.pch";
 				INFOPLIST_FILE = jycs/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3829,7 +3815,7 @@
 					"$(inherited)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "c56807b8-bf88-4a82-90ea-6b83f94ab25c";
+				PROVISIONING_PROFILE = "8dec3acd-dc6c-420e-84d9-8b0287b6f4bb";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;

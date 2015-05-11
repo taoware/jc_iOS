@@ -81,8 +81,12 @@
 //            completion(nil, [GXError errorWithCode:GXErrorEaseMobAuthenticationFailure andDescription:@"server error, this user have no easemob account"]);
 //            return ;
 //        }
+        [self updateUserLoggedInFlagWith:username];
         [self initializeCurrentUser];
         if ([user.audit boolValue]) {
+            if ([[[EaseMob sharedInstance] chatManager] loginInfo]) {
+                [[EaseMob sharedInstance].chatManager logoffWithUnbindDeviceToken:YES error:NULL];
+            }
             //环信异步登陆账号
             [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:user.imUsername
                                                                 password:user.imPassword
@@ -200,12 +204,12 @@
     }];
 }
 
-- (void)asyncPasswordForgotWithNewPass:(NSString *)newPass completion:(void (^)(GXError *))completion {
+- (void)asyncPasswordForgotWithMobile:(NSString *)mobile NewPass:(NSString *)newPass completion:(void (^)(GXError *))completion {
     NSDictionary *parameter = [NSDictionary dictionaryWithObjectsAndKeys:
+                               mobile, @"mobile",
                                newPass, @"password",
                                nil];
-    NSString* userId = [NSString stringWithFormat:@"%@", self.userLoggedIn.objectId];
-    NSString* endpoint = [NSString stringWithFormat:@"users/%@/forgetPass", userId];
+    NSString* endpoint = [@"users/forgetPass?mobile=" stringByAppendingString:mobile];
     [[GXHTTPManager sharedManager] POST:endpoint parameters:parameter success:^(NSURLSessionDataTask *task, id responseObject) {
         completion(nil);
     } failure:^(NSURLSessionDataTask *task, NSError *error) {

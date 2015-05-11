@@ -27,7 +27,7 @@
         return;
     } else {
         [self showHudInView:self.view hint:@"正在重置"];
-        [[GXUserEngine sharedEngine] asyncPasswordForgotWithNewPass:password completion:^(GXError *error) {
+        [[GXUserEngine sharedEngine] asyncPasswordForgotWithMobile:self.mobile NewPass:password completion:^(GXError *error) {
             [self hideHud];
             if (!error) {
                 [self.navigationController dismissViewControllerAnimated:YES completion:NULL];
