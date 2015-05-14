@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 appleseed. All rights reserved.
 //
 
-#import "GXSquareTableViewController.h"
+#import "GXMomentListViewController.h"
 #import "SRRefreshView.h"
 #import "GXMomentsEngine.h"
 #import "Photo.h"
@@ -15,13 +15,13 @@
 #import "GXMainTabBarViewController.h"
 #import "GXMomentsTableViewCell.h"
 #import "CTAssetsPickerController.h"
-#import "GXEditMomentTableViewController.h"
+#import "GXMomentEntryViewController.h"
 #import "GXAssetsManager.h"
 #import "GXUserInfoViewController.h"
 
 static NSString *CellIdentifier = @"MomentsCellIdentifier";
 
-@interface GXSquareTableViewController () <SRRefreshDelegate, UIActionSheetDelegate, CTAssetsPickerControllerDelegate, GXMomentsTableViewCellDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface GXMomentListViewController () <SRRefreshDelegate, UIActionSheetDelegate, CTAssetsPickerControllerDelegate, GXMomentsTableViewCellDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 // A dictionary of offscreen cells that are used within the tableView:heightForRowAtIndexPath: method to
 // handle the height calculations. These are never drawn onscreen. The dictionary is in the format:
 //      { NSString *reuseIdentifier : UITableViewCell *offscreenCell, ... }
@@ -35,7 +35,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 
 @end
 
-@implementation GXSquareTableViewController
+@implementation GXMomentListViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -51,7 +51,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.tableView addSubview:self.slimeView];
     
-    self.managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+    self.managedObjectContext = [[GXCoreDataController sharedInstance] masterManagedObjectContext];
     self.dateFormatter = [[NSDateFormatter alloc] init];
     [self.dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"GMT-8"]];
     [self.dateFormatter setDateStyle:NSDateFormatterMediumStyle];
@@ -59,6 +59,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     self.momentsInProgress = [[NSMutableArray alloc]init];
     [self.slimeView setLoadingWithExpansion];
 }
+
 
 - (void)loadMomentsFromCoreData {
     [self.managedObjectContext performBlockAndWait:^{
@@ -257,7 +258,8 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 0) {  // only text
-        GXEditMomentTableViewController* addVC = [[GXEditMomentTableViewController alloc]initWithStyle:UITableViewStyleGrouped];
+        GXMomentEntryViewController* addVC = [[GXMomentEntryViewController alloc]initWithStyle:UITableViewStyleGrouped];
+        addVC.context = [[GXCoreDataController sharedInstance] newManagedObjectContext];
         addVC.squareVC = self;
         UINavigationController* navi = [[UINavigationController alloc]initWithRootViewController:addVC];
         [self presentViewController:navi animated:YES completion:NULL];
@@ -292,7 +294,8 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
              [library assetForURL:assetURL resultBlock:^(ALAsset *asset )
               {
                   [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-                  GXEditMomentTableViewController* addVC = [[GXEditMomentTableViewController alloc]initWithStyle:UITableViewStyleGrouped];
+                  GXMomentEntryViewController* addVC = [[GXMomentEntryViewController alloc]initWithStyle:UITableViewStyleGrouped];
+                  addVC.context = [[GXCoreDataController sharedInstance] newManagedObjectContext];
                   addVC.squareVC = self;
                   addVC.imageAssets = [@[asset] mutableCopy];
                   UINavigationController* navi = [[UINavigationController alloc]initWithRootViewController:addVC];
@@ -319,7 +322,8 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 {
     [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     
-    GXEditMomentTableViewController* addVC = [[GXEditMomentTableViewController alloc]initWithStyle:UITableViewStyleGrouped];
+    GXMomentEntryViewController* addVC = [[GXMomentEntryViewController alloc]initWithStyle:UITableViewStyleGrouped];
+    addVC.context = [[GXCoreDataController sharedInstance] newManagedObjectContext];
     addVC.squareVC = self;
     addVC.imageAssets = [assets copy];
     UINavigationController* navi = [[UINavigationController alloc]initWithRootViewController:addVC];

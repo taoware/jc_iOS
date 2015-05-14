@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "Moment.h"
 
-@interface GXSquareTableViewController : UITableViewController
+@interface GXMomentListViewController : UITableViewController
 - (void)showGiftInfo;
 - (void)sendSquareMoments;
 - (void)sendSquareMomentWithMoment:(Moment *)moment;

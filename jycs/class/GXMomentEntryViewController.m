@@ -6,14 +6,14 @@
 //  Copyright (c) 2015 appleseed. All rights reserved.
 //
 
-#import "GXEditMomentTableViewController.h"
+#import "GXMomentEntryViewController.h"
 #import "AddMomentTableViewCell.h"
 #import "CTAssetsPickerController.h"
 #import "CTAssetsPageViewController.h"
 #import "CTAssetsPickerController.h"
 #import "DeleteableCTAssetsPageViewController.h"
-#import "GXSelectTypeTableViewController.h"
-#import "GXSelectUnitTableViewController.h"
+#import "GXSelectTypeViewController.h"
+#import "GXSelectUnitViewController.h"
 #import "GXCoreDataController.h"
 #import "Moment.h"
 #import "Photo.h"
@@ -25,14 +25,13 @@
 static NSString * const GXAddMomentCellIdentifier = @"GXAddMomentCellIdentifier";
 static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 
-@interface GXEditMomentTableViewController () <AddMomentCellDelegate, CTAssetsPickerControllerDelegate, DeleteableCTAssetsPageViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate>
-@property (nonatomic, strong)NSManagedObjectContext* managedObjectContext;
+@interface GXMomentEntryViewController () <AddMomentCellDelegate, CTAssetsPickerControllerDelegate, DeleteableCTAssetsPageViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, GXSelectUnitDelegate, GXSelectTypeDelegate>
 @property (nonatomic, strong)NSMutableArray* imagesForMoment;
 @property (strong, nonatomic) NSMutableDictionary *offscreenCells;
 @property (nonatomic, strong)NSString* momentText;
 @end
 
-@implementation GXEditMomentTableViewController
+@implementation GXMomentEntryViewController
 
 
 - (void)viewDidLoad {
@@ -44,7 +43,6 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self.tableView registerClass:[AddMomentTableViewCell class] forCellReuseIdentifier:GXAddMomentCellIdentifier];
-    self.managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
     
     [self setupButtons];
 }
@@ -89,6 +87,16 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
     _unitName = unitName;
     [self.tableView reloadData];
     [self toggleDoneButton];
+}
+
+#pragma mark - select type delegate
+- (void)didFinishSelectType:(NSString *)type {
+    
+}
+
+#pragma mark - select unit delegate
+- (void)didFinishSelectUnit:(Unit *)unit {
+    
 }
 
 - (void)toggleDoneButton {
@@ -204,12 +212,12 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 1) {
         if (indexPath.row == 0) {
-            GXSelectUnitTableViewController* unitSelectVC = [[GXSelectUnitTableViewController alloc]initWithStyle:UITableViewStyleGrouped];
+            GXSelectUnitViewController* unitSelectVC = [[GXSelectUnitViewController alloc]initWithStyle:UITableViewStyleGrouped];
             unitSelectVC.addMomentVC = self;
             unitSelectVC.unitidSelected = @(self.unitId);
             [self.navigationController pushViewController:unitSelectVC animated:YES];
         } else if (indexPath.row == 1) {
-            GXSelectTypeTableViewController* typeSelectVC = [[GXSelectTypeTableViewController alloc]initWithStyle:UITableViewStyleGrouped];
+            GXSelectTypeViewController* typeSelectVC = [[GXSelectTypeViewController alloc]initWithStyle:UITableViewStyleGrouped];
             typeSelectVC.addMomentVC = self;
             typeSelectVC.currentType = self.type;
             [self.navigationController pushViewController:typeSelectVC animated:YES];

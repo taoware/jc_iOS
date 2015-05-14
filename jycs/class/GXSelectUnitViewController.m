@@ -1,36 +1,54 @@
 //
-//  GXSelectTypeTableViewController.m
+//  GXSelectUnitTableViewController.m
 //  jycs
 //
 //  Created by appleseed on 4/23/15.
 //  Copyright (c) 2015 appleseed. All rights reserved.
 //
 
-#import "GXSelectTypeTableViewController.h"
+#import "GXSelectUnitViewController.h"
+#import "Unit.h"
 #import "GXUserEngine.h"
-#import "User+Permission.h"
+#import "GXCoreDataController.h"
 
-@interface GXSelectTypeTableViewController ()
-@property (nonatomic, strong)NSMutableArray* typeArray;
+@interface GXSelectUnitViewController ()
+@property (nonatomic, strong)NSArray* unitArray;
 @end
 
-@implementation GXSelectTypeTableViewController
+@implementation GXSelectUnitViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.title = @"发送至";
+    self.title = @"发送单位";
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(finishedSelectType)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonTapped)];
+    [self toggleDoneButton];
 }
 
+- (void)toggleDoneButton {
+    self.navigationItem.rightBarButtonItem.enabled = self.unit?YES:NO;
+}
+
+#pragma mark - properties
+
+- (NSArray *)unitArray {
+    if (!_unitArray) {
+        [self.context performBlockAndWait:^{
+            User* userLoggedIn = (User*)[self.context objectWithID:[GXUserEngine sharedEngine].userLoggedIn.objectID];
+            NSSet *units = userLoggedIn.inUnit;
+            _unitArray = [units allObjects];
+        }];
+    }
+    return _unitArray;
+}
 
 #pragma mark - table view delegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [[self typeArray] count];
+    return [[self unitArray] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -39,22 +57,24 @@
     if (!cell) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
     }
-    NSString* type = [[self typeArray] objectAtIndex:indexPath.row];
-    cell.textLabel.text = type;
+    Unit* unit = [self.unitArray objectAtIndex:indexPath.row];
+    cell.textLabel.text = unit.name;
     cell.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:20];  // not working, maybe because of chinese character
-    cell.detailTextLabel.text = [self typeDescriptionForType:type];
+    cell.detailTextLabel.text = unit.uriName;
     cell.detailTextLabel.textColor = [UIColor grayColor];
     
-    if ([self.currentType isEqualToString:[[self typeArray] objectAtIndex:indexPath.row]]) {
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    if (self.unit) {
+        if ([self.unit.objectId isEqualToNumber:unit.objectId]) {
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        }
     }
-
+    
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    NSUInteger typeIndex = [self.typeArray indexOfObject:self.currentType];
+    NSUInteger typeIndex = [self.unitArray indexOfObject:self.unit];
     if (typeIndex == indexPath.row) {
         return;
     }
@@ -63,7 +83,7 @@
     UITableViewCell *newCell = [tableView cellForRowAtIndexPath:indexPath];
     if (newCell.accessoryType == UITableViewCellAccessoryNone) {
         newCell.accessoryType = UITableViewCellAccessoryCheckmark;
-        self.currentType = [self.typeArray objectAtIndex:indexPath.row];
+        self.unit = [self.unitArray objectAtIndex:indexPath.row];
     }
     
     UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:oldIndexPath];
@@ -81,36 +101,11 @@
     return 20;
 }
 
-#pragma mark - properties
-
-- (NSArray *)typeArray {
-    if (!_typeArray) {
-        _typeArray = [[NSMutableArray alloc]init];
-        User* user = [GXUserEngine sharedEngine].userLoggedIn;
-        if ([user canSendMomentForEmployee]) {
-            [_typeArray addObject:@"员工广场"];
-        }
-        if ([user canSendMomentForPurchase]) {
-            [_typeArray addObject:@"联采广场"];
-        }
-        if ([user canSendMomentForSupplier]) {
-            [_typeArray addObject:@"供应商广场"];
-        }
-    }
-    return _typeArray;
-}
-
-- (NSString *)typeDescriptionForType:(NSString *)type {
-    NSDictionary* typeDic = @{@"员工广场": @"所选单位的员工均可见",
-                              @"联采广场": @"全国联采业务员均可见",
-                              @"供应商广场": @"仅供应商可见"};
-    return typeDic[type];
-}
 
 #pragma mark - action
 
-- (void)finishedSelectType {
-    self.addMomentVC.type = self.currentType;
+- (void)doneButtonTapped {
+    [self.delegate didFinishSelectUnit:self.unit];
     [self.navigationController popViewControllerAnimated:YES];
 }
 

@@ -432,7 +432,7 @@
 		1E9E36101AF7CB6C003BA9E1 /* GXCoreDataController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35871AF7CB6B003BA9E1 /* GXCoreDataController.m */; };
 		1E9E36111AF7CB6C003BA9E1 /* GXCoverFlowCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35891AF7CB6B003BA9E1 /* GXCoverFlowCollectionViewCell.m */; };
 		1E9E36121AF7CB6C003BA9E1 /* GXCoverFlowCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1E9E358A1AF7CB6B003BA9E1 /* GXCoverFlowCollectionViewCell.xib */; };
-		1E9E36131AF7CB6C003BA9E1 /* GXEditMomentTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E358C1AF7CB6B003BA9E1 /* GXEditMomentTableViewController.m */; };
+		1E9E36131AF7CB6C003BA9E1 /* GXMomentEntryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E358C1AF7CB6B003BA9E1 /* GXMomentEntryViewController.m */; };
 		1E9E36141AF7CB6C003BA9E1 /* GXError.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E358E1AF7CB6B003BA9E1 /* GXError.m */; };
 		1E9E36151AF7CB6C003BA9E1 /* GXGiftViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35911AF7CB6B003BA9E1 /* GXGiftViewController.m */; };
 		1E9E36161AF7CB6C003BA9E1 /* GXGroupListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35931AF7CB6B003BA9E1 /* GXGroupListViewController.m */; };
@@ -453,10 +453,10 @@
 		1E9E36261AF7CB6C003BA9E1 /* GXPostViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1E9E35B21AF7CB6B003BA9E1 /* GXPostViewController.xib */; };
 		1E9E36271AF7CB6C003BA9E1 /* GXRegisterTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35B41AF7CB6B003BA9E1 /* GXRegisterTableViewController.m */; };
 		1E9E36281AF7CB6C003BA9E1 /* GXResetPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35B61AF7CB6B003BA9E1 /* GXResetPasswordViewController.m */; };
-		1E9E362A1AF7CB6C003BA9E1 /* GXSelectTypeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35B91AF7CB6B003BA9E1 /* GXSelectTypeTableViewController.m */; };
-		1E9E362B1AF7CB6C003BA9E1 /* GXSelectUnitTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35BB1AF7CB6B003BA9E1 /* GXSelectUnitTableViewController.m */; };
+		1E9E362A1AF7CB6C003BA9E1 /* GXSelectTypeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35B91AF7CB6B003BA9E1 /* GXSelectTypeViewController.m */; };
+		1E9E362B1AF7CB6C003BA9E1 /* GXSelectUnitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35BB1AF7CB6B003BA9E1 /* GXSelectUnitViewController.m */; };
 		1E9E362C1AF7CB6C003BA9E1 /* GXSettingTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35BD1AF7CB6B003BA9E1 /* GXSettingTableViewController.m */; };
-		1E9E362D1AF7CB6C003BA9E1 /* GXSquareTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35BF1AF7CB6B003BA9E1 /* GXSquareTableViewController.m */; };
+		1E9E362D1AF7CB6C003BA9E1 /* GXMomentListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35BF1AF7CB6B003BA9E1 /* GXMomentListViewController.m */; };
 		1E9E362E1AF7CB6C003BA9E1 /* GXStoreEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35C11AF7CB6B003BA9E1 /* GXStoreEngine.m */; };
 		1E9E362F1AF7CB6C003BA9E1 /* GXStoreListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35C31AF7CB6B003BA9E1 /* GXStoreListTableViewCell.m */; };
 		1E9E36301AF7CB6C003BA9E1 /* GXStoreShowTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35C51AF7CB6B003BA9E1 /* GXStoreShowTableViewCell.m */; };
@@ -1208,8 +1208,8 @@
 		1E9E35881AF7CB6B003BA9E1 /* GXCoverFlowCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXCoverFlowCollectionViewCell.h; sourceTree = "<group>"; };
 		1E9E35891AF7CB6B003BA9E1 /* GXCoverFlowCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXCoverFlowCollectionViewCell.m; sourceTree = "<group>"; };
 		1E9E358A1AF7CB6B003BA9E1 /* GXCoverFlowCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GXCoverFlowCollectionViewCell.xib; sourceTree = "<group>"; };
-		1E9E358B1AF7CB6B003BA9E1 /* GXEditMomentTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXEditMomentTableViewController.h; sourceTree = "<group>"; };
-		1E9E358C1AF7CB6B003BA9E1 /* GXEditMomentTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXEditMomentTableViewController.m; sourceTree = "<group>"; };
+		1E9E358B1AF7CB6B003BA9E1 /* GXMomentEntryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXMomentEntryViewController.h; sourceTree = "<group>"; };
+		1E9E358C1AF7CB6B003BA9E1 /* GXMomentEntryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXMomentEntryViewController.m; sourceTree = "<group>"; };
 		1E9E358D1AF7CB6B003BA9E1 /* GXError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXError.h; sourceTree = "<group>"; };
 		1E9E358E1AF7CB6B003BA9E1 /* GXError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXError.m; sourceTree = "<group>"; };
 		1E9E358F1AF7CB6B003BA9E1 /* GXErrorDefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXErrorDefs.h; sourceTree = "<group>"; };
@@ -1250,14 +1250,14 @@
 		1E9E35B41AF7CB6B003BA9E1 /* GXRegisterTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXRegisterTableViewController.m; sourceTree = "<group>"; };
 		1E9E35B51AF7CB6B003BA9E1 /* GXResetPasswordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXResetPasswordViewController.h; sourceTree = "<group>"; };
 		1E9E35B61AF7CB6B003BA9E1 /* GXResetPasswordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXResetPasswordViewController.m; sourceTree = "<group>"; };
-		1E9E35B81AF7CB6B003BA9E1 /* GXSelectTypeTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXSelectTypeTableViewController.h; sourceTree = "<group>"; };
-		1E9E35B91AF7CB6B003BA9E1 /* GXSelectTypeTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXSelectTypeTableViewController.m; sourceTree = "<group>"; };
-		1E9E35BA1AF7CB6B003BA9E1 /* GXSelectUnitTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXSelectUnitTableViewController.h; sourceTree = "<group>"; };
-		1E9E35BB1AF7CB6B003BA9E1 /* GXSelectUnitTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXSelectUnitTableViewController.m; sourceTree = "<group>"; };
+		1E9E35B81AF7CB6B003BA9E1 /* GXSelectTypeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXSelectTypeViewController.h; sourceTree = "<group>"; };
+		1E9E35B91AF7CB6B003BA9E1 /* GXSelectTypeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXSelectTypeViewController.m; sourceTree = "<group>"; };
+		1E9E35BA1AF7CB6B003BA9E1 /* GXSelectUnitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXSelectUnitViewController.h; sourceTree = "<group>"; };
+		1E9E35BB1AF7CB6B003BA9E1 /* GXSelectUnitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXSelectUnitViewController.m; sourceTree = "<group>"; };
 		1E9E35BC1AF7CB6B003BA9E1 /* GXSettingTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXSettingTableViewController.h; sourceTree = "<group>"; };
 		1E9E35BD1AF7CB6B003BA9E1 /* GXSettingTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXSettingTableViewController.m; sourceTree = "<group>"; };
-		1E9E35BE1AF7CB6B003BA9E1 /* GXSquareTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXSquareTableViewController.h; sourceTree = "<group>"; };
-		1E9E35BF1AF7CB6B003BA9E1 /* GXSquareTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXSquareTableViewController.m; sourceTree = "<group>"; };
+		1E9E35BE1AF7CB6B003BA9E1 /* GXMomentListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXMomentListViewController.h; sourceTree = "<group>"; };
+		1E9E35BF1AF7CB6B003BA9E1 /* GXMomentListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXMomentListViewController.m; sourceTree = "<group>"; };
 		1E9E35C01AF7CB6B003BA9E1 /* GXStoreEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXStoreEngine.h; sourceTree = "<group>"; };
 		1E9E35C11AF7CB6B003BA9E1 /* GXStoreEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXStoreEngine.m; sourceTree = "<group>"; };
 		1E9E35C21AF7CB6B003BA9E1 /* GXStoreListTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXStoreListTableViewCell.h; sourceTree = "<group>"; };
@@ -2942,20 +2942,20 @@
 				1E9E35621AF7CB6A003BA9E1 /* AddMomentTableViewCell.m */,
 				1E9E356E1AF7CB6A003BA9E1 /* DeleteableCTAssetsPageViewController.h */,
 				1E9E356F1AF7CB6A003BA9E1 /* DeleteableCTAssetsPageViewController.m */,
-				1E9E358B1AF7CB6B003BA9E1 /* GXEditMomentTableViewController.h */,
-				1E9E358C1AF7CB6B003BA9E1 /* GXEditMomentTableViewController.m */,
+				1E9E358B1AF7CB6B003BA9E1 /* GXMomentEntryViewController.h */,
+				1E9E358C1AF7CB6B003BA9E1 /* GXMomentEntryViewController.m */,
 				1E9E35901AF7CB6B003BA9E1 /* GXGiftViewController.h */,
 				1E9E35911AF7CB6B003BA9E1 /* GXGiftViewController.m */,
 				1E9E35EE1AF7CB6B003BA9E1 /* SFPhotoBrowser.h */,
 				1E9E35EF1AF7CB6B003BA9E1 /* SFPhotoBrowser.m */,
 				1E9E35A81AF7CB6B003BA9E1 /* GXMomentsTableViewCell.h */,
 				1E9E35A91AF7CB6B003BA9E1 /* GXMomentsTableViewCell.m */,
-				1E9E35B81AF7CB6B003BA9E1 /* GXSelectTypeTableViewController.h */,
-				1E9E35B91AF7CB6B003BA9E1 /* GXSelectTypeTableViewController.m */,
-				1E9E35BA1AF7CB6B003BA9E1 /* GXSelectUnitTableViewController.h */,
-				1E9E35BB1AF7CB6B003BA9E1 /* GXSelectUnitTableViewController.m */,
-				1E9E35BE1AF7CB6B003BA9E1 /* GXSquareTableViewController.h */,
-				1E9E35BF1AF7CB6B003BA9E1 /* GXSquareTableViewController.m */,
+				1E9E35B81AF7CB6B003BA9E1 /* GXSelectTypeViewController.h */,
+				1E9E35B91AF7CB6B003BA9E1 /* GXSelectTypeViewController.m */,
+				1E9E35BA1AF7CB6B003BA9E1 /* GXSelectUnitViewController.h */,
+				1E9E35BB1AF7CB6B003BA9E1 /* GXSelectUnitViewController.m */,
+				1E9E35BE1AF7CB6B003BA9E1 /* GXMomentListViewController.h */,
+				1E9E35BF1AF7CB6B003BA9E1 /* GXMomentListViewController.m */,
 				1E5C50101AFB612800958EBA /* GXUserInfoViewController.h */,
 				1E5C50111AFB612800958EBA /* GXUserInfoViewController.m */,
 			);
@@ -3487,7 +3487,7 @@
 				1E74B2FF1AF90C3C00B8C0FA /* AFHTTPSessionManager.m in Sources */,
 				1E9E35FE1AF7CB6C003BA9E1 /* ChildExampleViewController.m in Sources */,
 				1E74B30B1AF90C3C00B8C0FA /* UIProgressView+AFNetworking.m in Sources */,
-				1E9E362D1AF7CB6C003BA9E1 /* GXSquareTableViewController.m in Sources */,
+				1E9E362D1AF7CB6C003BA9E1 /* GXMomentListViewController.m in Sources */,
 				1E9E33BE1AF7BB2F003BA9E1 /* ChatListCell.m in Sources */,
 				1E9E36441AF7CB6C003BA9E1 /* ResourceFetcher.m in Sources */,
 				1EC694C21AB666C1009DD25C /* MBProgressHUD.m in Sources */,
@@ -3500,7 +3500,7 @@
 				1E9E36081AF7CB6C003BA9E1 /* GXAdminEmplyeeViewController.m in Sources */,
 				1E9E31D41AF7BA00003BA9E1 /* NSString+Valid.m in Sources */,
 				1E9E33BD1AF7BB2F003BA9E1 /* CallViewController.m in Sources */,
-				1E9E36131AF7CB6C003BA9E1 /* GXEditMomentTableViewController.m in Sources */,
+				1E9E36131AF7CB6C003BA9E1 /* GXMomentEntryViewController.m in Sources */,
 				1E9E31931AF7B83D003BA9E1 /* MWPhotoBrowser.m in Sources */,
 				1E9E36111AF7CB6C003BA9E1 /* GXCoverFlowCollectionViewCell.m in Sources */,
 				1E9E36401AF7CB6C003BA9E1 /* Permission+Create.m in Sources */,
@@ -3564,8 +3564,8 @@
 				1E3D74011ABB36120003A963 /* EMTextView.m in Sources */,
 				1E9E31AC1AF7B83D003BA9E1 /* PSTCollectionViewData.m in Sources */,
 				1E9E33C11AF7BB2F003BA9E1 /* ChatViewController+Category.m in Sources */,
-				1E9E362B1AF7CB6C003BA9E1 /* GXSelectUnitTableViewController.m in Sources */,
-				1E9E362A1AF7CB6C003BA9E1 /* GXSelectTypeTableViewController.m in Sources */,
+				1E9E362B1AF7CB6C003BA9E1 /* GXSelectUnitViewController.m in Sources */,
+				1E9E362A1AF7CB6C003BA9E1 /* GXSelectTypeViewController.m in Sources */,
 				1E5C501D1AFBC16900958EBA /* GXNotificationTableViewCell.m in Sources */,
 				1E9E36101AF7CB6C003BA9E1 /* GXCoreDataController.m in Sources */,
 				1E9E31AB1AF7B83D003BA9E1 /* PSTCollectionViewController.m in Sources */,

@@ -12,7 +12,7 @@
 #import "GXInfoChatListViewController.h"
 #import "GXContactButtonBarViewController.h"
 #import "GXContactListViewController.h"
-#import "GXSquareTableViewController.h"
+#import "GXMomentListViewController.h"
 #import "ApplyViewController.h"
 #import "CallViewController.h"
 #import "GXUserEngine.h"
@@ -27,7 +27,7 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 @interface GXMainTabBarViewController () <UIAlertViewDelegate, IChatManagerDelegate, EMCallManagerDelegate>
 @property (nonatomic, strong)UIViewController* infoVC;
 @property (nonatomic, strong)UIViewController* contactVC;
-@property (nonatomic, strong)GXSquareTableViewController* squareVC;
+@property (nonatomic, strong)GXMomentListViewController* squareVC;
 
 @property (nonatomic, strong)UIBarButtonItem* showItem;
 @property (nonatomic, strong)UIBarButtonItem* addItem;

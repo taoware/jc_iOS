@@ -43,7 +43,6 @@
     self.timer = [NSTimer scheduledTimerWithTimeInterval:4 target:self selector:@selector(changeCover) userInfo:nil repeats:YES];
     
     self.managedObjectContext = [[GXCoreDataController sharedInstance] newManagedObjectContext];
-//    [[GXNewsEngine sharedEngine] startSync];
     [self.slimeView setLoadingWithExpansion];
 }
 
