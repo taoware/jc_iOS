@@ -2,7 +2,7 @@
 //  Moment.m
 //  jycs
 //
-//  Created by appleseed on 4/27/15.
+//  Created by appleseed on 5/15/15.
 //  Copyright (c) 2015 appleseed. All rights reserved.
 //
 
@@ -18,10 +18,10 @@
 @dynamic deleteTime;
 @dynamic objectId;
 @dynamic screenName;
+@dynamic syncStatus;
 @dynamic text;
 @dynamic type;
 @dynamic updateTime;
-@dynamic syncStatus;
 @dynamic inUnit;
 @dynamic photo;
 @dynamic sender;

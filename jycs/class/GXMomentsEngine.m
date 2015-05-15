@@ -92,7 +92,7 @@
     NSDictionary* parameter = [moment JSONToCreateMomentOnServer];
     NSString* endpoint = [NSString stringWithFormat:@"square/user/%@/unit/%@", user.objectId, unit.objectId];
     [[GXHTTPManager sharedManager] POST:endpoint parameters:parameter constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-        NSArray* photos = moment.photo.allObjects;
+        NSArray* photos = moment.photo.array;
         for (int i = 0; i < photos.count; i++) {
             Photo* photo = [photos objectAtIndex:i];
             NSString* photoName = [[photo.imageURL componentsSeparatedByString:@"/"] lastObject];

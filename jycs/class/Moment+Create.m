@@ -53,10 +53,7 @@
     moment.syncStatus = [NSNumber numberWithInt:GXObjectSynced];
     
     [moment removePhoto:moment.photo];
-    NSArray* photoDictionarys = [momentDictionary valueForKey:MOMENT_PHOTOS];
-    for (NSDictionary* photoDictionary in photoDictionarys) {
-        [moment addPhotoObject:[Photo photoWithPhotoInfo:photoDictionary inManagedObjectContext:context]];
-    }
+    [moment addPhoto:[NSOrderedSet orderedSetWithArray:[Photo loadPhotosFromPhotosArray:[momentDictionary valueForKey:MOMENT_PHOTOS] intoManagedObjectContext:context]]];
 
     return moment;
 

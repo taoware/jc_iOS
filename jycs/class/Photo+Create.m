@@ -48,10 +48,12 @@
 
 }
 
-+ (void)loadPhotosFromPhotosArray:(NSArray *)photos intoManagedObjectContext:(NSManagedObjectContext *)context {
++ (NSArray* )loadPhotosFromPhotosArray:(NSArray *)photos intoManagedObjectContext:(NSManagedObjectContext *)context {
+    NSMutableArray* photosArray = [[NSMutableArray alloc]init];
     for (NSDictionary *photo in photos) {
-        [self photoWithPhotoInfo:photo inManagedObjectContext:context];
+        [photosArray addObject:[self photoWithPhotoInfo:photo inManagedObjectContext:context]];
     }
+    return [photosArray copy];
 }
 
 @end

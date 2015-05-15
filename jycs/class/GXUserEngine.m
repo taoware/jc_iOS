@@ -50,6 +50,13 @@
     self.userLoggedIn = [[self.managedObjectContext executeFetchRequest:fetchRequest error:&error] firstObject];
 }
 
+- (NSString *)documentDirectoryForCurrentUser {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *userDocDir = [documentsDirectory stringByAppendingPathComponent:self.userLoggedIn.name];
+    return userDocDir;
+}
+
 - (void)updateUserLoggedInFlagWith:(NSString *)username {
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:username forKey:@"userLoggedIn"];

@@ -12,6 +12,7 @@ typedef enum {
     GXObjectSynced = 0,
     GXObjectCreated,
     GXObjectDeleted,
+    GXObjectSyncing,
     GXObjectFailed
 } GXObjectSyncStatus;
 

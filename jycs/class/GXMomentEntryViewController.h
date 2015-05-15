@@ -13,7 +13,7 @@
 @protocol GXMomentEntryDelegate;
 
 @interface GXMomentEntryViewController : UITableViewController
-@property (nonatomic, strong)NSMutableArray* imageAssets;
+@property (nonatomic, strong)Moment* momentEntry;
 @property (nonatomic, strong)NSManagedObjectContext* context;
 @property (nonatomic, weak)id<GXMomentEntryDelegate> delegate;
 @end

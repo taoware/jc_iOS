@@ -11,7 +11,6 @@
 #import "CTAssetsPickerController.h"
 #import "CTAssetsPageViewController.h"
 #import "CTAssetsPickerController.h"
-#import "DeleteableCTAssetsPageViewController.h"
 #import "GXSelectTypeViewController.h"
 #import "GXSelectUnitViewController.h"
 #import "GXCoreDataController.h"
@@ -20,12 +19,13 @@
 #import "GXMomentsEngine.h"
 #import "GXUserEngine.h"
 #import "GXAssetsManager.h"
-#import "UIImage+CS193p.h"
+#import "GXPhotoPageViewController.h"
+#import "GXPhotoEngine.h"
 
 static NSString * const GXAddMomentCellIdentifier = @"GXAddMomentCellIdentifier";
 static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 
-@interface GXMomentEntryViewController () <AddMomentCellDelegate, CTAssetsPickerControllerDelegate, DeleteableCTAssetsPageViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, GXSelectUnitDelegate, GXSelectTypeDelegate>
+@interface GXMomentEntryViewController () <AddMomentCellDelegate, CTAssetsPickerControllerDelegate, GXPhotoPageViewControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, GXSelectUnitDelegate, GXSelectTypeDelegate>
 @property (nonatomic, strong)NSMutableArray* imagesForMoment;
 @property (strong, nonatomic) NSMutableDictionary *offscreenCells;
 @property (nonatomic, strong)NSString* momentText;
@@ -48,60 +48,33 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 }
 
 - (void)setupButtons {
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(dismiss:)];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(sendMoment:)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelButtonTapped:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonTapped:)];
     self.navigationItem.rightBarButtonItem.enabled = NO;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-#pragma mark - properties
-
-- (void)setImageAssets:(NSMutableArray *)imageAssets {
-    _imageAssets = imageAssets;
-    [self.imagesForMoment removeAllObjects];
-    for (ALAsset* imageAsset in _imageAssets) {
-        [self.imagesForMoment addObject:[UIImage imageWithCGImage:imageAsset.thumbnail]];
-    }
-    [self.tableView reloadData];
-}
-
-- (NSMutableArray *)imagesForMoment {
-    if (!_imagesForMoment) {
-        _imagesForMoment = [[NSMutableArray alloc]init];
-    }
-    return _imagesForMoment;
-}
-
-
-- (void)setType:(NSString *)type {
-    _type = type;
-    [self.tableView reloadData];
-    [self toggleDoneButton];
-}
-
-- (void)setUnitName:(NSString *)unitName {
-    _unitName = unitName;
-    [self.tableView reloadData];
-    [self toggleDoneButton];
-}
 
 #pragma mark - select type delegate
 - (void)didFinishSelectType:(NSString *)type {
-    
+    if (type) {
+        self.momentEntry.type = type;
+        [self.tableView reloadData];
+    }
+    [self toggleDoneButton];
 }
 
 #pragma mark - select unit delegate
 - (void)didFinishSelectUnit:(Unit *)unit {
-    
+    if (unit) {
+        self.momentEntry.inUnit = unit;
+        [self.tableView reloadData];
+    }
+    [self toggleDoneButton];
 }
 
 - (void)toggleDoneButton {
     BOOL enabled = NO;
-    if (self.momentText.length && self.type && self.unitName) {
+    if (self.momentText.length && self.momentEntry.type && self.momentEntry.inUnit) {
         enabled = YES;
     }
     self.navigationItem.rightBarButtonItem.enabled = enabled;
@@ -162,10 +135,10 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 
     if (indexPath.row == 0) {
         cell.textLabel.text = @"所在单位";
-        cell.detailTextLabel.text = self.unitName;
+        cell.detailTextLabel.text = self.momentEntry.inUnit.name;
     } else if (indexPath.row == 1) {
         cell.textLabel.text = @"广场类型";
-        cell.detailTextLabel.text = self.type;
+        cell.detailTextLabel.text = self.momentEntry.type;
     }
     return cell;
 }
@@ -213,13 +186,13 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
     if (indexPath.section == 1) {
         if (indexPath.row == 0) {
             GXSelectUnitViewController* unitSelectVC = [[GXSelectUnitViewController alloc]initWithStyle:UITableViewStyleGrouped];
-            unitSelectVC.addMomentVC = self;
-            unitSelectVC.unitidSelected = @(self.unitId);
+            unitSelectVC.delegate = self;
+            unitSelectVC.unit = self.momentEntry.inUnit;
             [self.navigationController pushViewController:unitSelectVC animated:YES];
         } else if (indexPath.row == 1) {
             GXSelectTypeViewController* typeSelectVC = [[GXSelectTypeViewController alloc]initWithStyle:UITableViewStyleGrouped];
-            typeSelectVC.addMomentVC = self;
-            typeSelectVC.currentType = self.type;
+            typeSelectVC.delegate = self;
+            typeSelectVC.type = self.momentEntry.type;
             [self.navigationController pushViewController:typeSelectVC animated:YES];
         }
     }
@@ -233,11 +206,11 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 }
 
 - (void)selectImageThunbnailAtIndex:(NSInteger)index {
-    DeleteableCTAssetsPageViewController *vc = [[DeleteableCTAssetsPageViewController alloc] initWithAssets:self.imageAssets];
-    vc.pageIndex = index;
-    vc.delegator = self;
+    GXPhotoPageViewController* pageVC = [[GXPhotoPageViewController alloc]initWithPhotos:self.momentEntry.photo.array];
+    pageVC.pageIndex = index;
+    pageVC.delegator = self;
     
-    [self.navigationController pushViewController:vc animated:YES];
+    [self.navigationController pushViewController:pageVC animated:YES];
 }
 
 - (void)addMoreImage {
@@ -277,11 +250,22 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 #pragma mark - asset pager delegate
 
 - (void)deleteImageAtIndex:(int)index {
-    NSMutableArray* imageArr = [self.imageAssets mutableCopy];
-    [imageArr removeObjectAtIndex:index];
-    self.imageAssets = [imageArr copy];
+    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:index];
+    [self.momentEntry removePhotoAtIndexes:indexSet];
     
     [self.navigationController popToViewController:self animated:YES];
+}
+
+- (void)addPhotoWithImageAsset:(ALAsset *)imageAsset {
+    Photo* photo = [NSEntityDescription insertNewObjectForEntityForName:@"Photo" inManagedObjectContext:self.context];
+    [self.momentEntry addPhotoObject:photo];
+    
+    ALAssetRepresentation *imageRep = [imageAsset defaultRepresentation];
+    photo.photoDescription = [imageRep filename];
+    UIImage* photoImg = [UIImage imageWithCGImage:imageRep.fullScreenImage scale:imageRep.scale orientation:(UIImageOrientation)imageRep.orientation];
+    NSString* photoURL = [GXPhotoEngine writePhotoToDisk:photoImg];
+    photo.imageURL = photoURL;
+    photo.thumbnailURL = photoURL;
 }
 
 #pragma mark - image picker controller
@@ -296,7 +280,7 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
               {
                   [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
                   if (asset) {
-                      self.imageAssets = [[self.imageAssets arrayByAddingObject:asset] copy];
+                      [self addPhotoWithImageAsset:asset];
                   }
               }
                      failureBlock:^(NSError *error )
@@ -318,14 +302,16 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 {
     [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     if (assets.count) {
-        self.imageAssets = [[self.imageAssets arrayByAddingObjectsFromArray:assets] copy];
+        for (ALAsset* asset in assets) {
+            [self addPhotoWithImageAsset:asset];
+        }
     }
 }
 
 
 - (BOOL)assetsPickerController:(CTAssetsPickerController *)picker shouldSelectAsset:(ALAsset *)asset
 {
-    NSUInteger imageNumAllowed = 9 - self.imageAssets.count;
+    NSUInteger imageNumAllowed = 9 - self.momentEntry.photo.count;
     if (picker.selectedAssets.count >= imageNumAllowed)
     {
         NSString* message = [NSString stringWithFormat:@"Please select not more than %lu assets", (unsigned long)imageNumAllowed];
@@ -357,107 +343,14 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 
 #pragma mark - action
 
-- (void)dismiss:(id)sender {
+- (void)cancelButtonTapped:(id)sender {
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
-- (void)sendMoment:(id)sender {
-    Moment* moment = [NSEntityDescription insertNewObjectForEntityForName:@"Moment" inManagedObjectContext:self.managedObjectContext];
-    moment.text = self.momentText;
-    moment.type = [self.type substringToIndex:self.type.length-2];
-    moment.sender = [[GXUserEngine sharedEngine] userLoggedIn];
-    moment.inUnit = self.unit;
-    moment.createTime = [NSDate date];
-    
-    [self showHudInView:self.view hint:@"请稍等"];
-
-    __block NSArray* photos = nil;
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        photos = [self savePhotosIntoCoreData];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            for (Photo* photo in photos) {
-                [moment addPhotoObject:photo];
-            }
-            
-            moment.syncStatus = [NSNumber numberWithInt:GXObjectCreated];
-            [self.managedObjectContext performBlockAndWait:^{
-                NSError *error = nil;
-                BOOL saved = [self.managedObjectContext save:&error];
-                if (!saved) {
-                    // do some real error handling
-                    NSLog(@"Could not save Date due to %@", error);
-                }
-                [[GXCoreDataController sharedInstance] saveMasterContext];
-            }];
-            [self hideHud];
-            [self dismissViewControllerAnimated:YES completion:^{ [self.squareVC sendSquareMomentWithMoment:moment]; }];
-        });
-    });
-}
-
-- (NSArray *)savePhotosIntoCoreData {
-    NSMutableArray* photos = [[NSMutableArray alloc]init];
-    for (ALAsset* imageAsset in self.imageAssets) {
-        Photo* photo = [NSEntityDescription insertNewObjectForEntityForName:@"Photo" inManagedObjectContext:self.managedObjectContext];
-        [photos addObject:photo];
-        
-        ALAssetRepresentation *imageRep = [imageAsset defaultRepresentation];
-        photo.photoDescription = [imageRep filename];
-        UIImage* photoImg = [UIImage imageWithCGImage:imageRep.fullScreenImage scale:imageRep.scale orientation:(UIImageOrientation)imageRep.orientation];
-        NSURL* photoURL = [self photoURLForImage:photoImg];
-        photo.imageURL = [photoURL path];
-        photo.thumbnailURL = [[self thumbnailURLForImage:photoImg andPhotoURL:photoURL] absoluteString];
+- (void)doneButtonTapped:(id)sender {
+    if ([self.delegate respondsToSelector:@selector(didFinishMomentEntryViewController:didSave:)]) {
+        [self.delegate didFinishMomentEntryViewController:self didSave:YES];
     }
-    return [photos copy];
-}
-
-- (NSURL *)photoURLForImage:(UIImage *)image {
-    NSURL *url = [self uniqueDocumentURL];
-    
-    NSData* imageData = [self downScaleToOneMega:image];
-    
-    if(![imageData writeToURL:url atomically:YES]) {
-        NSLog(@"save photo failed");
-    }
-    return url;
-}
-
-- (NSData *)downScaleToOneMega:(UIImage *)image {
-    NSData  *imageData    = UIImageJPEGRepresentation(image, 0.8);
-    double   factor       = 1.0;
-    double   adjustment   = 1.0 / sqrt(2.0);  // or use 0.8 or whatever you want
-    CGSize   size         = image.size;
-    CGSize   currentSize  = size;
-    UIImage *currentImage = image;
-
-    while (imageData.length >= (300 * 1024))
-    {
-        factor      *= adjustment;
-        currentSize  = CGSizeMake(roundf(size.width * factor), roundf(size.height * factor));
-        currentImage = [image imageByScalingToSize:currentSize];
-        imageData    = UIImageJPEGRepresentation(currentImage, 0.8);
-    }
-    return imageData;
-}
-
-
-- (NSURL *)thumbnailURLForImage:(UIImage *)image andPhotoURL:(NSURL *)photoURL {
-    NSURL *url = [photoURL URLByAppendingPathExtension:@"thumbnail"];
-    UIImage *thumbnail = [image imageByScalingToSize:CGSizeMake(75, 75)];
-    NSData *imageData = UIImageJPEGRepresentation(thumbnail, 0.5);
-    if (![imageData writeToURL:url atomically:YES]) {
-        NSLog(@"save thumbnail failed");
-    }
-    
-    return url;
-}
-
-- (NSURL *)uniqueDocumentURL
-{
-    NSArray *documentDirectories = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
-    NSString *unique = [NSString stringWithFormat:@"%.10f", [NSDate timeIntervalSinceReferenceDate]];
-    unique = [unique stringByReplacingOccurrencesOfString:@"." withString:@""];
-    return [[documentDirectories firstObject] URLByAppendingPathComponent:unique];
 }
 
 @end

@@ -47,6 +47,10 @@
 		1E4611A71A821C7400CA82D2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E46119D1A821C7400CA82D2 /* AppDelegate.m */; };
 		1E4611BF1A82446800CA82D2 /* add@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E4611BE1A82446800CA82D2 /* add@2x.png */; };
 		1E4611C61A82496100CA82D2 /* adminIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E4611C51A82496100CA82D2 /* adminIcon@2x.png */; };
+		1E469D721B0590DE0070D32D /* GXPhotoPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E469D711B0590DE0070D32D /* GXPhotoPageViewController.m */; };
+		1E469D751B0595060070D32D /* GXPhotoItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E469D741B0595060070D32D /* GXPhotoItemViewController.m */; };
+		1E469D781B0595E50070D32D /* GXPhotoScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E469D771B0595E50070D32D /* GXPhotoScrollView.m */; };
+		1E469D7B1B05A8160070D32D /* Moment.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E469D7A1B05A8160070D32D /* Moment.m */; };
 		1E4B3EE21AFC5BE900322124 /* Notification+Create.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E4B3EE11AFC5BE900322124 /* Notification+Create.m */; };
 		1E4B3EEA1AFC646F00322124 /* bookmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E4B3EE61AFC646F00322124 /* bookmark@2x.png */; };
 		1E4B3EEB1AFC646F00322124 /* bookmarked@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E4B3EE71AFC646F00322124 /* bookmarked@2x.png */; };
@@ -186,7 +190,6 @@
 		1E9E31D21AF7BA00003BA9E1 /* NSDate+Category.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E31C31AF7B9FF003BA9E1 /* NSDate+Category.m */; };
 		1E9E31D31AF7BA00003BA9E1 /* NSDateFormatter+Category.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E31C51AF7B9FF003BA9E1 /* NSDateFormatter+Category.m */; };
 		1E9E31D41AF7BA00003BA9E1 /* NSString+Valid.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E31C71AF7B9FF003BA9E1 /* NSString+Valid.m */; };
-		1E9E31D51AF7BA00003BA9E1 /* UIImage+CS193p.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E31C91AF7B9FF003BA9E1 /* UIImage+CS193p.m */; };
 		1E9E31D61AF7BA00003BA9E1 /* UIResponder+Router.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E31CB1AF7B9FF003BA9E1 /* UIResponder+Router.m */; };
 		1E9E31D71AF7BA00003BA9E1 /* UIView+AutoLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E31CD1AF7B9FF003BA9E1 /* UIView+AutoLayout.m */; };
 		1E9E31D81AF7BA00003BA9E1 /* UIViewController+DismissKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E31CF1AF7BA00003BA9E1 /* UIViewController+DismissKeyboard.m */; };
@@ -468,7 +471,6 @@
 		1E9E36361AF7CB6C003BA9E1 /* MessageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35D11AF7CB6B003BA9E1 /* MessageTableViewCell.m */; };
 		1E9E36371AF7CB6C003BA9E1 /* MessageTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1E9E35D21AF7CB6B003BA9E1 /* MessageTableViewCell.xib */; };
 		1E9E36381AF7CB6C003BA9E1 /* Moment+Create.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35D41AF7CB6B003BA9E1 /* Moment+Create.m */; };
-		1E9E36391AF7CB6C003BA9E1 /* Moment.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35D61AF7CB6B003BA9E1 /* Moment.m */; };
 		1E9E363A1AF7CB6C003BA9E1 /* News+Create.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35D81AF7CB6B003BA9E1 /* News+Create.m */; };
 		1E9E363C1AF7CB6C003BA9E1 /* NewsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9E35DC1AF7CB6B003BA9E1 /* NewsTableViewCell.m */; };
 		1E9E363D1AF7CB6C003BA9E1 /* NewsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1E9E35DD1AF7CB6B003BA9E1 /* NewsTableViewCell.xib */; };
@@ -490,6 +492,8 @@
 		1EC694C11AB666C1009DD25C /* MBProgressHUD+Add.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC694BB1AB666C1009DD25C /* MBProgressHUD+Add.m */; };
 		1EC694C21AB666C1009DD25C /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC694BD1AB666C1009DD25C /* MBProgressHUD.m */; };
 		1EC694C31AB666C1009DD25C /* TTGlobalUICommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC694C01AB666C1009DD25C /* TTGlobalUICommon.m */; };
+		1ED395031B048309003EAC78 /* GXPhotoEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ED395021B048309003EAC78 /* GXPhotoEngine.m */; };
+		1ED395061B0495FE003EAC78 /* UIImage+UIImageFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ED395051B0495FE003EAC78 /* UIImage+UIImageFunctions.m */; };
 		1EDB57BC1AC439FD00BAF337 /* carousel_bg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EDB57BB1AC439FD00BAF337 /* carousel_bg@2x.png */; };
 		1EE4A20B1AA95970008EBB5A /* titleBar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EE4A20A1AA95970008EBB5A /* titleBar@2x.png */; };
 		1EE4A2321AA9850F008EBB5A /* newsCellSeperator@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EE4A2311AA9850F008EBB5A /* newsCellSeperator@2x.png */; };
@@ -574,6 +578,14 @@
 		1E46119D1A821C7400CA82D2 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = class/AppDelegate.m; sourceTree = "<group>"; };
 		1E4611BE1A82446800CA82D2 /* add@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "add@2x.png"; sourceTree = "<group>"; };
 		1E4611C51A82496100CA82D2 /* adminIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "adminIcon@2x.png"; sourceTree = "<group>"; };
+		1E469D701B0590DE0070D32D /* GXPhotoPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXPhotoPageViewController.h; sourceTree = "<group>"; };
+		1E469D711B0590DE0070D32D /* GXPhotoPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXPhotoPageViewController.m; sourceTree = "<group>"; };
+		1E469D731B0595060070D32D /* GXPhotoItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXPhotoItemViewController.h; sourceTree = "<group>"; };
+		1E469D741B0595060070D32D /* GXPhotoItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXPhotoItemViewController.m; sourceTree = "<group>"; };
+		1E469D761B0595E50070D32D /* GXPhotoScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXPhotoScrollView.h; sourceTree = "<group>"; };
+		1E469D771B0595E50070D32D /* GXPhotoScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXPhotoScrollView.m; sourceTree = "<group>"; };
+		1E469D791B05A8160070D32D /* Moment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Moment.h; sourceTree = "<group>"; };
+		1E469D7A1B05A8160070D32D /* Moment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Moment.m; sourceTree = "<group>"; };
 		1E4B3EE01AFC5BE900322124 /* Notification+Create.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Notification+Create.h"; sourceTree = "<group>"; };
 		1E4B3EE11AFC5BE900322124 /* Notification+Create.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Notification+Create.m"; sourceTree = "<group>"; };
 		1E4B3EE61AFC646F00322124 /* bookmark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bookmark@2x.png"; sourceTree = "<group>"; };
@@ -805,8 +817,6 @@
 		1E9E31C51AF7B9FF003BA9E1 /* NSDateFormatter+Category.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDateFormatter+Category.m"; sourceTree = "<group>"; };
 		1E9E31C61AF7B9FF003BA9E1 /* NSString+Valid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Valid.h"; sourceTree = "<group>"; };
 		1E9E31C71AF7B9FF003BA9E1 /* NSString+Valid.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Valid.m"; sourceTree = "<group>"; };
-		1E9E31C81AF7B9FF003BA9E1 /* UIImage+CS193p.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+CS193p.h"; sourceTree = "<group>"; };
-		1E9E31C91AF7B9FF003BA9E1 /* UIImage+CS193p.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+CS193p.m"; sourceTree = "<group>"; };
 		1E9E31CA1AF7B9FF003BA9E1 /* UIResponder+Router.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIResponder+Router.h"; sourceTree = "<group>"; };
 		1E9E31CB1AF7B9FF003BA9E1 /* UIResponder+Router.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIResponder+Router.m"; sourceTree = "<group>"; };
 		1E9E31CC1AF7B9FF003BA9E1 /* UIView+AutoLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+AutoLayout.h"; sourceTree = "<group>"; };
@@ -1278,8 +1288,6 @@
 		1E9E35D21AF7CB6B003BA9E1 /* MessageTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MessageTableViewCell.xib; sourceTree = "<group>"; };
 		1E9E35D31AF7CB6B003BA9E1 /* Moment+Create.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Moment+Create.h"; sourceTree = "<group>"; };
 		1E9E35D41AF7CB6B003BA9E1 /* Moment+Create.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Moment+Create.m"; sourceTree = "<group>"; };
-		1E9E35D51AF7CB6B003BA9E1 /* Moment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Moment.h; sourceTree = "<group>"; };
-		1E9E35D61AF7CB6B003BA9E1 /* Moment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Moment.m; sourceTree = "<group>"; };
 		1E9E35D71AF7CB6B003BA9E1 /* News+Create.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "News+Create.h"; sourceTree = "<group>"; };
 		1E9E35D81AF7CB6B003BA9E1 /* News+Create.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "News+Create.m"; sourceTree = "<group>"; };
 		1E9E35DB1AF7CB6B003BA9E1 /* NewsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsTableViewCell.h; sourceTree = "<group>"; };
@@ -1318,6 +1326,10 @@
 		1EC694BD1AB666C1009DD25C /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		1EC694BF1AB666C1009DD25C /* TTGlobalUICommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTGlobalUICommon.h; sourceTree = "<group>"; };
 		1EC694C01AB666C1009DD25C /* TTGlobalUICommon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTGlobalUICommon.m; sourceTree = "<group>"; };
+		1ED395011B048309003EAC78 /* GXPhotoEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GXPhotoEngine.h; sourceTree = "<group>"; };
+		1ED395021B048309003EAC78 /* GXPhotoEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GXPhotoEngine.m; sourceTree = "<group>"; };
+		1ED395041B0495FE003EAC78 /* UIImage+UIImageFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+UIImageFunctions.h"; sourceTree = "<group>"; };
+		1ED395051B0495FE003EAC78 /* UIImage+UIImageFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+UIImageFunctions.m"; sourceTree = "<group>"; };
 		1EDB57BB1AC439FD00BAF337 /* carousel_bg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "carousel_bg@2x.png"; sourceTree = "<group>"; };
 		1EE4A20A1AA95970008EBB5A /* titleBar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titleBar@2x.png"; sourceTree = "<group>"; };
 		1EE4A2311AA9850F008EBB5A /* newsCellSeperator@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "newsCellSeperator@2x.png"; sourceTree = "<group>"; };
@@ -1899,8 +1911,6 @@
 				1E9E31C51AF7B9FF003BA9E1 /* NSDateFormatter+Category.m */,
 				1E9E31C61AF7B9FF003BA9E1 /* NSString+Valid.h */,
 				1E9E31C71AF7B9FF003BA9E1 /* NSString+Valid.m */,
-				1E9E31C81AF7B9FF003BA9E1 /* UIImage+CS193p.h */,
-				1E9E31C91AF7B9FF003BA9E1 /* UIImage+CS193p.m */,
 				1E9E31CA1AF7B9FF003BA9E1 /* UIResponder+Router.h */,
 				1E9E31CB1AF7B9FF003BA9E1 /* UIResponder+Router.m */,
 				1E9E31CC1AF7B9FF003BA9E1 /* UIView+AutoLayout.h */,
@@ -1911,6 +1921,8 @@
 				1E9E31D11AF7BA00003BA9E1 /* UIViewController+HUD.m */,
 				1E74B2D01AF8A1CD00B8C0FA /* EMBuddy+JCuser.h */,
 				1E74B2D11AF8A1CD00B8C0FA /* EMBuddy+JCuser.m */,
+				1ED395041B0495FE003EAC78 /* UIImage+UIImageFunctions.h */,
+				1ED395051B0495FE003EAC78 /* UIImage+UIImageFunctions.m */,
 			);
 			path = Catogory;
 			sourceTree = "<group>";
@@ -2759,6 +2771,8 @@
 		1E9E365B1AF85788003BA9E1 /* Core Data Model */ = {
 			isa = PBXGroup;
 			children = (
+				1E469D791B05A8160070D32D /* Moment.h */,
+				1E469D7A1B05A8160070D32D /* Moment.m */,
 				1E4B3F201AFFA43800322124 /* User.h */,
 				1E4B3F211AFFA43800322124 /* User.m */,
 				1E4B3F0E1AFE67A400322124 /* Store.h */,
@@ -2776,8 +2790,6 @@
 				1E9E35871AF7CB6B003BA9E1 /* GXCoreDataController.m */,
 				1E9E35D31AF7CB6B003BA9E1 /* Moment+Create.h */,
 				1E9E35D41AF7CB6B003BA9E1 /* Moment+Create.m */,
-				1E9E35D51AF7CB6B003BA9E1 /* Moment.h */,
-				1E9E35D61AF7CB6B003BA9E1 /* Moment.m */,
 				1E9E35F81AF7CB6C003BA9E1 /* User+Query.h */,
 				1E9E35F91AF7CB6C003BA9E1 /* User+Query.m */,
 				1E9E35E11AF7CB6B003BA9E1 /* Permission+Create.h */,
@@ -2942,6 +2954,8 @@
 				1E9E35621AF7CB6A003BA9E1 /* AddMomentTableViewCell.m */,
 				1E9E356E1AF7CB6A003BA9E1 /* DeleteableCTAssetsPageViewController.h */,
 				1E9E356F1AF7CB6A003BA9E1 /* DeleteableCTAssetsPageViewController.m */,
+				1E469D701B0590DE0070D32D /* GXPhotoPageViewController.h */,
+				1E469D711B0590DE0070D32D /* GXPhotoPageViewController.m */,
 				1E9E358B1AF7CB6B003BA9E1 /* GXMomentEntryViewController.h */,
 				1E9E358C1AF7CB6B003BA9E1 /* GXMomentEntryViewController.m */,
 				1E9E35901AF7CB6B003BA9E1 /* GXGiftViewController.h */,
@@ -2958,6 +2972,12 @@
 				1E9E35BF1AF7CB6B003BA9E1 /* GXMomentListViewController.m */,
 				1E5C50101AFB612800958EBA /* GXUserInfoViewController.h */,
 				1E5C50111AFB612800958EBA /* GXUserInfoViewController.m */,
+				1ED395011B048309003EAC78 /* GXPhotoEngine.h */,
+				1ED395021B048309003EAC78 /* GXPhotoEngine.m */,
+				1E469D761B0595E50070D32D /* GXPhotoScrollView.h */,
+				1E469D771B0595E50070D32D /* GXPhotoScrollView.m */,
+				1E469D731B0595060070D32D /* GXPhotoItemViewController.h */,
+				1E469D741B0595060070D32D /* GXPhotoItemViewController.m */,
 			);
 			name = square;
 			sourceTree = "<group>";
@@ -3435,13 +3455,11 @@
 				1E9E31D21AF7BA00003BA9E1 /* NSDate+Category.m in Sources */,
 				1E9E360A1AF7CB6C003BA9E1 /* GXAssetsManager.m in Sources */,
 				1E9E361F1AF7CB6C003BA9E1 /* GXMeTableViewController.m in Sources */,
-				1E9E31D51AF7BA00003BA9E1 /* UIImage+CS193p.m in Sources */,
 				1E9E36431AF7CB6C003BA9E1 /* Photo.m in Sources */,
 				1E9E33BF1AF7BB2F003BA9E1 /* ChatListViewController.m in Sources */,
 				1E9E363C1AF7CB6C003BA9E1 /* NewsTableViewCell.m in Sources */,
 				1E9E33C01AF7BB2F003BA9E1 /* ChatSendHelper.m in Sources */,
 				1E3D74C91ABBC7180003A963 /* SRSlimeView.m in Sources */,
-				1E9E36391AF7CB6C003BA9E1 /* Moment.m in Sources */,
 				1E9E33C41AF7BB2F003BA9E1 /* LocationViewController.m in Sources */,
 				1E9E36191AF7CB6C003BA9E1 /* GXInfoChatListViewController.m in Sources */,
 				1E9E36221AF7CB6C003BA9E1 /* GXNewsEngine.m in Sources */,
@@ -3477,6 +3495,7 @@
 				1E9E33DC1AF7BB2F003BA9E1 /* GroupSettingViewController.m in Sources */,
 				1E9E31AF1AF7B83D003BA9E1 /* PSTCollectionViewLayout.m in Sources */,
 				1E9E364B1AF7CB6C003BA9E1 /* Unit.m in Sources */,
+				1E469D781B0595E50070D32D /* GXPhotoScrollView.m in Sources */,
 				1E9E361C1AF7CB6C003BA9E1 /* GXInfoViewController.m in Sources */,
 				1E9E35FF1AF7CB6C003BA9E1 /* CollectionViewCell.m in Sources */,
 				1E9E31AA1AF7B83D003BA9E1 /* PSTCollectionViewCell.m in Sources */,
@@ -3492,6 +3511,7 @@
 				1E9E36441AF7CB6C003BA9E1 /* ResourceFetcher.m in Sources */,
 				1EC694C21AB666C1009DD25C /* MBProgressHUD.m in Sources */,
 				1E74B3011AF90C3C00B8C0FA /* AFSecurityPolicy.m in Sources */,
+				1E469D751B0595060070D32D /* GXPhotoItemViewController.m in Sources */,
 				1E9E361D1AF7CB6C003BA9E1 /* GXLoginViewController.m in Sources */,
 				1E9E364A1AF7CB6C003BA9E1 /* Unit+Create.m in Sources */,
 				1E9E362E1AF7CB6C003BA9E1 /* GXStoreEngine.m in Sources */,
@@ -3547,6 +3567,8 @@
 				1E4B3EF31AFCA03200322124 /* GXBookmarkedViewController.m in Sources */,
 				1E9E36411AF7CB6C003BA9E1 /* Permission.m in Sources */,
 				1E9E33C31AF7BB2F003BA9E1 /* ConvertToCommonEmoticonsHelper.m in Sources */,
+				1E469D721B0590DE0070D32D /* GXPhotoPageViewController.m in Sources */,
+				1E469D7B1B05A8160070D32D /* Moment.m in Sources */,
 				1E9E33E71AF7BB2F003BA9E1 /* InvitationManager.m in Sources */,
 				1E5C500C1AFB392300958EBA /* GXForgetViewController.m in Sources */,
 				1E9E36341AF7CB6C003BA9E1 /* GXUserEngine.m in Sources */,
@@ -3591,6 +3613,7 @@
 				1E74B3101AF914C200B8C0FA /* GXContactViewController.m in Sources */,
 				1E9E33DB1AF7BB2F003BA9E1 /* GroupListViewController.m in Sources */,
 				1E74B3091AF90C3C00B8C0FA /* UIButton+AFNetworking.m in Sources */,
+				1ED395031B048309003EAC78 /* GXPhotoEngine.m in Sources */,
 				1E4B3F0A1AFE641300322124 /* GXArticleViewController.m in Sources */,
 				1E9E33D51AF7BB2F003BA9E1 /* MessageReadManager.m in Sources */,
 				1E9E33E11AF7BB2F003BA9E1 /* ContactsViewController.m in Sources */,
@@ -3637,6 +3660,7 @@
 				1E9E36011AF7CB6C003BA9E1 /* ContactTableViewCell.m in Sources */,
 				1E9E361B1AF7CB6C003BA9E1 /* GXInfoNotificationViewController.m in Sources */,
 				1E9E31A41AF7B83D003BA9E1 /* UIImage+EMWebP.m in Sources */,
+				1ED395061B0495FE003EAC78 /* UIImage+UIImageFunctions.m in Sources */,
 				1E74B30D1AF90C3C00B8C0FA /* UIWebView+AFNetworking.m in Sources */,
 				1E74B3081AF90C3C00B8C0FA /* UIAlertView+AFNetworking.m in Sources */,
 				1E9E36251AF7CB6C003BA9E1 /* GXPostViewController.m in Sources */,

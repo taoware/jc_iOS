@@ -114,7 +114,7 @@
 #pragma mark - action
 
 - (void)doneButtonTapped {
-    [self.delegate didFinisheSelectType:self.type];
+    [self.delegate didFinishSelectType:self.type];
     [self.navigationController popViewControllerAnimated:YES];
 }
 

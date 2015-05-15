@@ -13,7 +13,7 @@
 + (Photo *)photoWithPhotoInfo:(NSDictionary *)photoDictionary
        inManagedObjectContext:(NSManagedObjectContext *)context;
 
-+ (void)loadPhotosFromPhotosArray:(NSArray *)photos // of News NSDictionary
++ (NSArray *)loadPhotosFromPhotosArray:(NSArray *)photos // of News NSDictionary
        intoManagedObjectContext:(NSManagedObjectContext *)context;
 
 @end

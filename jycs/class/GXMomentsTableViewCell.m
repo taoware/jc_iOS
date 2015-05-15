@@ -477,7 +477,7 @@ alpha:1.0]
     
     NSMutableArray* thumbnailUrls = [[NSMutableArray alloc]init];
     NSMutableArray* imageUrls = [[NSMutableArray alloc]init];
-    for (Photo* photo in [self.momentToDisplay.photo allObjects]) {
+    for (Photo* photo in self.momentToDisplay.photo.array) {
         [thumbnailUrls addObject:photo.thumbnailURL];
         [imageUrls addObject:photo.imageURL];
     }

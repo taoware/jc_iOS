@@ -2,7 +2,7 @@
 //  Moment.h
 //  jycs
 //
-//  Created by appleseed on 4/27/15.
+//  Created by appleseed on 5/15/15.
 //  Copyright (c) 2015 appleseed. All rights reserved.
 //
 
@@ -17,20 +17,25 @@
 @property (nonatomic, retain) NSDate * deleteTime;
 @property (nonatomic, retain) NSNumber * objectId;
 @property (nonatomic, retain) NSString * screenName;
+@property (nonatomic, retain) NSNumber * syncStatus;
 @property (nonatomic, retain) NSString * text;
 @property (nonatomic, retain) NSString * type;
 @property (nonatomic, retain) NSDate * updateTime;
-@property (nonatomic, retain) NSNumber * syncStatus;
 @property (nonatomic, retain) Unit *inUnit;
-@property (nonatomic, retain) NSSet *photo;
+@property (nonatomic, retain) NSOrderedSet *photo;
 @property (nonatomic, retain) User *sender;
 @end
 
 @interface Moment (CoreDataGeneratedAccessors)
 
+- (void)insertObject:(Photo *)value inPhotoAtIndex:(NSUInteger)idx;
+- (void)removeObjectFromPhotoAtIndex:(NSUInteger)idx;
+- (void)insertPhoto:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
+- (void)removePhotoAtIndexes:(NSIndexSet *)indexes;
+- (void)replaceObjectInPhotoAtIndex:(NSUInteger)idx withObject:(Photo *)value;
+- (void)replacePhotoAtIndexes:(NSIndexSet *)indexes withPhoto:(NSArray *)values;
 - (void)addPhotoObject:(Photo *)value;
 - (void)removePhotoObject:(Photo *)value;
-- (void)addPhoto:(NSSet *)values;
-- (void)removePhoto:(NSSet *)values;
-
+- (void)addPhoto:(NSOrderedSet *)values;
+- (void)removePhoto:(NSOrderedSet *)values;
 @end

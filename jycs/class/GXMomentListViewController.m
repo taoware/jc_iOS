@@ -18,10 +18,11 @@
 #import "GXMomentEntryViewController.h"
 #import "GXAssetsManager.h"
 #import "GXUserInfoViewController.h"
+#import "GXPhotoEngine.h"
 
 static NSString *CellIdentifier = @"MomentsCellIdentifier";
 
-@interface GXMomentListViewController () <SRRefreshDelegate, UIActionSheetDelegate, CTAssetsPickerControllerDelegate, GXMomentsTableViewCellDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface GXMomentListViewController () <SRRefreshDelegate, UIActionSheetDelegate, CTAssetsPickerControllerDelegate, GXMomentsTableViewCellDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, GXMomentEntryDelegate>
 // A dictionary of offscreen cells that are used within the tableView:heightForRowAtIndexPath: method to
 // handle the height calculations. These are never drawn onscreen. The dictionary is in the format:
 //      { NSString *reuseIdentifier : UITableViewCell *offscreenCell, ... }
@@ -254,15 +255,53 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     [actionSheet showInView:self.view];
 }
 
+#pragma mark - go to moment entry
+
+- (void)goToMomentEntryWithImageAsset:(NSArray*)imageAssets {
+    GXMomentEntryViewController* detailVC = [[GXMomentEntryViewController alloc]initWithStyle:UITableViewStyleGrouped];
+    NSManagedObjectContext* childContext = [[GXCoreDataController sharedInstance] newManagedObjectContext];
+    Moment* newMomentEntry = [NSEntityDescription insertNewObjectForEntityForName:@"Moment" inManagedObjectContext:childContext];
+    if (imageAssets.count) {
+        for (ALAsset* imageAsset in imageAssets) {
+            ALAssetRepresentation *imageRep = [imageAsset defaultRepresentation];
+            UIImage* image = [UIImage imageWithCGImage:imageRep.fullScreenImage scale:imageRep.scale orientation:(UIImageOrientation)imageRep.orientation];
+            NSString* imageUrl = [GXPhotoEngine writePhotoToDisk:image];
+            
+            Photo* photo = [NSEntityDescription insertNewObjectForEntityForName:@"Photo" inManagedObjectContext:childContext];
+            photo.thumbnailURL = imageUrl;
+            photo.imageURL = imageUrl;
+            photo.photoDescription = [imageRep filename];
+            [newMomentEntry addPhotoObject:photo];
+        }
+    }
+    
+    detailVC.momentEntry = newMomentEntry;
+    detailVC.context = newMomentEntry.managedObjectContext;
+    detailVC.delegate = self;
+    
+    UINavigationController* navi = [[UINavigationController alloc]initWithRootViewController:detailVC];
+    [self presentViewController:navi animated:YES completion:NULL];
+}
+
+#pragma mark - moment entry delegate
+
+- (void)didFinishMomentEntryViewController:(GXMomentEntryViewController *)viewController didSave:(BOOL)didSave {
+    if (didSave) {
+        NSManagedObjectContext* context = viewController.context;
+        [context performBlockAndWait:^{
+            if (context.hasChanges && ![context save:NULL]) {
+                NSLog(@"could not sava new moment entry");
+            }
+        }];
+        [self.managedObjectContext save:NULL];
+    }
+}
+
 #pragma mark - action sheet delegate
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 0) {  // only text
-        GXMomentEntryViewController* addVC = [[GXMomentEntryViewController alloc]initWithStyle:UITableViewStyleGrouped];
-        addVC.context = [[GXCoreDataController sharedInstance] newManagedObjectContext];
-        addVC.squareVC = self;
-        UINavigationController* navi = [[UINavigationController alloc]initWithRootViewController:addVC];
-        [self presentViewController:navi animated:YES completion:NULL];
+        
     } else if (buttonIndex == 1) {   // take photo from camera
         if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
             UIImagePickerController *imagePickController=[[UIImagePickerController alloc]init];
@@ -283,6 +322,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     }
 }
 
+
 #pragma mark - image picker controller
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     ALAssetsLibrary *library = [GXAssetsManager defaultAssetsLibrary];
@@ -294,12 +334,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
              [library assetForURL:assetURL resultBlock:^(ALAsset *asset )
               {
                   [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-                  GXMomentEntryViewController* addVC = [[GXMomentEntryViewController alloc]initWithStyle:UITableViewStyleGrouped];
-                  addVC.context = [[GXCoreDataController sharedInstance] newManagedObjectContext];
-                  addVC.squareVC = self;
-                  addVC.imageAssets = [@[asset] mutableCopy];
-                  UINavigationController* navi = [[UINavigationController alloc]initWithRootViewController:addVC];
-                  [picker.presentingViewController presentViewController:navi animated:YES completion:NULL];
+                  [self goToMomentEntryWithImageAsset:@[asset]];
               }
                      failureBlock:^(NSError *error )
               {
@@ -322,12 +357,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 {
     [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     
-    GXMomentEntryViewController* addVC = [[GXMomentEntryViewController alloc]initWithStyle:UITableViewStyleGrouped];
-    addVC.context = [[GXCoreDataController sharedInstance] newManagedObjectContext];
-    addVC.squareVC = self;
-    addVC.imageAssets = [assets copy];
-    UINavigationController* navi = [[UINavigationController alloc]initWithRootViewController:addVC];
-    [picker.presentingViewController presentViewController:navi animated:YES completion:NULL];
+    [self goToMomentEntryWithImageAsset:assets];
 }
 
 
