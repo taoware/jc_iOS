@@ -12,7 +12,7 @@
 #import "NSBundle+CTAssetsPickerController.h"
 
 @interface GXPhotoPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, GXPhotoItemViewControllerDataSource>
-@property (nonatomic, strong) NSArray *photos;
+@property (nonatomic, strong) Moment *moment;
 @property (nonatomic, assign, getter = isStatusBarHidden) BOOL statusBarHidden;
 @end
 
@@ -25,7 +25,22 @@
                                   options:@{UIPageViewControllerOptionInterPageSpacingKey:@30.f}];
     if (self)
     {
-        self.photos                 = photos;
+        self.dataSource             = self;
+        self.delegate               = self;
+        self.view.backgroundColor   = [UIColor whiteColor];
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
+    
+    return self;
+}
+
+- (id)initWithMomoent:(Moment *)moment {
+    self = [super initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
+                    navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
+                                  options:@{UIPageViewControllerOptionInterPageSpacingKey:@30.f}];
+    if (self)
+    {
+        self.moment                 = moment;
         self.dataSource             = self;
         self.delegate               = self;
         self.view.backgroundColor   = [UIColor whiteColor];
@@ -38,7 +53,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self addNotificationObserver];
+    [self addNotificationObserver];self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteCurrentPhoto)];
 }
 
 - (void)dealloc
@@ -51,12 +66,24 @@
     return self.isStatusBarHidden;
 }
 
+- (void)deleteCurrentPhoto {
+    NSMutableOrderedSet* photos = [self.moment.photo mutableCopy];
+    [photos removeObjectsAtIndexes:[NSIndexSet indexSetWithIndex:self.pageIndex]];
+    self.moment.photo = photos;
+    if (photos.count == 0) {
+        [self.navigationController popViewControllerAnimated:YES];
+    } else if (self.pageIndex == photos.count) {
+        self.pageIndex = self.pageIndex-1;
+    } else {
+        self.pageIndex = self.pageIndex;
+    }
+}
 
 #pragma mark - Update Title
 
 - (void)setTitleIndex:(NSInteger)index
 {
-    NSInteger count = self.photos.count;
+    NSInteger count = self.moment.photo.count;
     self.title      = [NSString stringWithFormat:CTAssetsPickerControllerLocalizedString(@"%ld of %ld"), index, count];
 }
 
@@ -70,7 +97,7 @@
 
 - (void)setPageIndex:(NSInteger)pageIndex
 {
-    NSInteger count = self.photos.count;
+    NSInteger count = self.moment.photo.count;
     
     if (pageIndex >= 0 && pageIndex < count)
     {
@@ -106,7 +133,7 @@
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
 {
-    NSInteger count = self.photos.count;
+    NSInteger count = self.moment.photo.count;
     NSInteger index = ((GXPhotoItemViewController *)viewController).pageIndex;
     
     if (index < count - 1)
@@ -209,7 +236,7 @@
 
 - (Photo *)photoAtIndex:(NSUInteger)index;
 {
-    return [self.photos objectAtIndex:index];
+    return [self.moment.photo objectAtIndex:index];
 }
 
 

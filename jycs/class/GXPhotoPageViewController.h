@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Moment.h"
 
 @protocol GXPhotoPageViewControllerDelegate;
 
@@ -19,7 +20,6 @@
  *  The index of the photo or video with the currently showing item.
  */
 @property (nonatomic, assign) NSInteger pageIndex;
-@property (nonatomic, weak)id<GXPhotoPageViewControllerDelegate> delegator;
 
 
 /**
@@ -35,10 +35,6 @@
  */
 - (id)initWithPhotos:(NSArray *)photos;
 
-@end
-
-@protocol GXPhotoPageViewControllerDelegate <NSObject>
-
-- didDeletePhotoAtIndex:(NSUInteger)index;
+- (id)initWithMomoent:(Moment *)moment;
 
 @end

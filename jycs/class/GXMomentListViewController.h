@@ -12,5 +12,4 @@
 @interface GXMomentListViewController : UITableViewController
 - (void)showGiftInfo;
 - (void)sendSquareMoments;
-- (void)sendSquareMomentWithMoment:(Moment *)moment;
 @end

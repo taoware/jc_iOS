@@ -15,6 +15,7 @@
 #import "ResourceFetcher.h"
 #import "GXUserEngine.h"
 #import "Photo.h"
+#import "GXPhotoEngine.h"
 
 @implementation GXMomentsEngine
 
@@ -95,11 +96,8 @@
         NSArray* photos = moment.photo.array;
         for (int i = 0; i < photos.count; i++) {
             Photo* photo = [photos objectAtIndex:i];
-            NSString* photoName = [[photo.imageURL componentsSeparatedByString:@"/"] lastObject];
-            NSURL* documentDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-            NSURL* photoURL = [documentDirectory URLByAppendingPathComponent:photoName];
-            NSData* imageData = [NSData dataWithContentsOfURL:photoURL];
-            [formData appendPartWithFileData:imageData name:[NSString stringWithFormat:@"file%i", i+1] fileName:photo.photoDescription mimeType:@"image/jpeg"];
+            NSData* photoData = [GXPhotoEngine dataForLocalPhotoURL:photo.imageURL];
+            [formData appendPartWithFileData:photoData name:[NSString stringWithFormat:@"file%i", i+1] fileName:photo.photoDescription mimeType:@"image/jpeg"];
         }
     } success:^(NSURLSessionDataTask *task, id responseObject) {
         

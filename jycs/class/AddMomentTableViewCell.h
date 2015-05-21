@@ -8,17 +8,17 @@
 
 #import <UIKit/UIKit.h>
 #import "SZTextView.h"
+#import "Moment.h"
 
 @protocol AddMomentCellDelegate <NSObject>
 
 - (void)selectImageThunbnailAtIndex:(NSInteger)index;
 - (void)addMoreImage;
-- (void)textViewDidEndEditing:(UITextView *)textView;
+- (void)momentTextDidChange;
 
 @end
 
 @interface AddMomentTableViewCell : UITableViewCell
-@property (nonatomic, strong)SZTextView* momentTextView;
-@property (nonatomic, strong)NSMutableArray* imagesForMoment;     // type of UIImage
+@property (nonatomic, strong)Moment* momentEntry;
 @property (nonatomic, strong)id<AddMomentCellDelegate> delegate;
 @end

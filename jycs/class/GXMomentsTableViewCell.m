@@ -89,21 +89,21 @@ alpha:1.0]
         
         
         
-        [self.bodyLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headImageView withOffset:15.f];
-        [self.bodyLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.headImageView];
+        [self.bodyLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.userNameLabel withOffset:5.f];
+        [self.bodyLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.headImageView withOffset:15.f];
         [self.bodyLabel autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:30.f];
-        [self.bodyLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10 relation:NSLayoutRelationGreaterThanOrEqual];
+        [self.bodyLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:30 relation:NSLayoutRelationGreaterThanOrEqual];
         
         [self.userNameLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:12.f];
         [self.userNameLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.headImageView withOffset:15.f];
         [self.userNameLabel sizeToFit];
         
         
-        [self.timeLabel autoPinEdge:ALEdgeTop  toEdge:ALEdgeBottom ofView:self.userNameLabel withOffset:10.f];
+        [self.timeLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f];
         [self.timeLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeRight ofView:self.headImageView withOffset:15.f];
         [self.timeLabel sizeToFit];
         
-        [self.typeLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.userNameLabel withOffset:10.f];
+        [self.typeLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f];
         [self.typeLabel autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:15.f];
         [self.typeLabel sizeToFit];
         
@@ -232,7 +232,7 @@ alpha:1.0]
         
         [imgView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.bodyLabel withOffset:5.f];
         
-        [imgView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:12.f];
+        [imgView autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.headImageView withOffset:15.f];
         
         
         /**
@@ -243,7 +243,7 @@ alpha:1.0]
         }];
         
         
-        [imgView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f relation:NSLayoutRelationGreaterThanOrEqual];
+        [imgView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:30.f relation:NSLayoutRelationGreaterThanOrEqual];
         
     }
     
@@ -255,7 +255,8 @@ alpha:1.0]
          */
         [prototypeImage autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.bodyLabel withOffset:5.f];
         
-        [prototypeImage autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:12.f];
+//        [prototypeImage autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:12.f];
+        [prototypeImage autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.headImageView withOffset:15.f];
         
         
         /**
@@ -268,7 +269,7 @@ alpha:1.0]
 
         
         NSLayoutConstraint*  firtImageLayout=
-        [prototypeImage autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f relation:NSLayoutRelationGreaterThanOrEqual];
+        [prototypeImage autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:30.f relation:NSLayoutRelationGreaterThanOrEqual];
         
         //图片等宽高
         [_thumbnailViewArray autoMatchViewsDimension:ALDimensionWidth];
@@ -299,7 +300,7 @@ alpha:1.0]
                     
                     [self.contentView removeConstraint:firtImageLayout];
                     
-                    [view autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f relation:NSLayoutRelationGreaterThanOrEqual];
+                    [view autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:30.f relation:NSLayoutRelationGreaterThanOrEqual];
                 }
                 
             }
@@ -475,12 +476,8 @@ alpha:1.0]
     [self.headImageView setImageWithURL:[NSURL URLWithString:self.momentToDisplay.sender.avatar.thumbnailURL] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
     self.syncStatus = [self.momentToDisplay.syncStatus intValue];
     
-    NSMutableArray* thumbnailUrls = [[NSMutableArray alloc]init];
-    NSMutableArray* imageUrls = [[NSMutableArray alloc]init];
-    for (Photo* photo in self.momentToDisplay.photo.array) {
-        [thumbnailUrls addObject:photo.thumbnailURL];
-        [imageUrls addObject:photo.imageURL];
-    }
+    NSMutableArray* thumbnailUrls = [self.momentToDisplay.photo.array valueForKey:@"thumbnailURL"];
+    NSMutableArray* imageUrls = [self.momentToDisplay.photo.array valueForKey:@"imageURL"];
     
     [self setImageswithThumbnailURLs:thumbnailUrls];
     [self setImageswithURLs:imageUrls];

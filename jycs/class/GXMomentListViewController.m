@@ -58,6 +58,8 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     [self.dateFormatter setDateStyle:NSDateFormatterMediumStyle];
     [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     self.momentsInProgress = [[NSMutableArray alloc]init];
+    
+    [self updateUI];
     [self.slimeView setLoadingWithExpansion];
 }
 
@@ -237,9 +239,6 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 
 #pragma mark - public methods
 
-- (void)sendSquareMomentWithMoment:(Moment *)moment {
-    [self resendButtonTappedWithMoment:moment];
-}
 
 - (void)showGiftInfo {
     
@@ -294,6 +293,8 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
             }
         }];
         [self.managedObjectContext save:NULL];
+        [self resendButtonTappedWithMoment:viewController.momentEntry];
+        [self dismissViewControllerAnimated:YES completion:NULL];
     }
 }
 
@@ -301,12 +302,13 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 0) {  // only text
-        
+        [self goToMomentEntryWithImageAsset:nil];
     } else if (buttonIndex == 1) {   // take photo from camera
         if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
             UIImagePickerController *imagePickController=[[UIImagePickerController alloc]init];
             imagePickController.sourceType=UIImagePickerControllerSourceTypeCamera;
             imagePickController.mediaTypes = @[( NSString *)kUTTypeImage];
+            imagePickController.allowsEditing = YES;
             imagePickController.delegate=self;
             [self presentViewController:imagePickController animated:YES completion:NULL];
         } else {

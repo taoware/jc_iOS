@@ -334,13 +334,15 @@
         }
         
         NSInteger page = scrollView.contentOffset.x/scrollView.frame.size.width;
+
         if (page == 0) {
-            page = self.slideStores.count-2;
+            page = self.originalSlideStores.count-1;
         } else if (page == self.slideStores.count-1) {
             page = 0;
         } else {
             page--;
         }
+        NSLog(@"real: %i", page);
         self.pageControl.currentPage = page;
         Store* currentStore = self.originalSlideStores[page];
         self.coverTitle.text = currentStore.storeName;
@@ -353,7 +355,7 @@
     if ([scrollView isKindOfClass:[UICollectionView class]]) {
         NSInteger page = scrollView.contentOffset.x/scrollView.frame.size.width;
         if (page == 0) {
-            page = self.slideStores.count-2;
+            page = self.originalSlideStores.count-2;
         } else if (page == self.slideStores.count-1) {
             page = 0;
         } else {

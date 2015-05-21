@@ -12,5 +12,6 @@
 
 + (NSString *)writePhotoToDisk:(UIImage* )image;
 + (UIImage *)imageForlocalPhotoUrl:(NSString *)photoUrl;
++ (NSData *)dataForLocalPhotoURL:(NSString *)photoURL;
 
 @end

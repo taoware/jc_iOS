@@ -52,8 +52,10 @@
     moment.deleteTime = [ResourceFetcher dateUsingStringFromAPI:[momentDictionary valueForKeyPath:RESOURCE_DELETED_DATE]];
     moment.syncStatus = [NSNumber numberWithInt:GXObjectSynced];
     
-    [moment removePhoto:moment.photo];
-    [moment addPhoto:[NSOrderedSet orderedSetWithArray:[Photo loadPhotosFromPhotosArray:[momentDictionary valueForKey:MOMENT_PHOTOS] intoManagedObjectContext:context]]];
+    NSMutableOrderedSet* set = [moment.photo mutableCopy];
+    [set removeAllObjects];
+    [set addObjectsFromArray:[Photo loadPhotosFromPhotosArray:[momentDictionary valueForKey:MOMENT_PHOTOS] intoManagedObjectContext:context]];
+    moment.photo = set;
 
     return moment;
 

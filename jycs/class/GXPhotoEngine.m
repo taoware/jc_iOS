@@ -17,6 +17,12 @@
 + (NSString *)uniqueDocumentURL
 {
     NSString* username = [GXUserEngine sharedEngine].userLoggedIn.mobile;
+    NSString* folderPath = [[self documentDirectory] stringByAppendingPathComponent:username];
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:folderPath isDirectory:NULL]) {
+        [fileManager createDirectoryAtPath:folderPath withIntermediateDirectories:NO attributes:nil error:NULL];
+    }
+    
     NSString *unique = [NSString stringWithFormat:@"%.10f", [NSDate timeIntervalSinceReferenceDate]];
     unique = [unique stringByReplacingOccurrencesOfString:@"." withString:@""];
     return [username stringByAppendingPathComponent:unique];
@@ -33,8 +39,10 @@
     
     NSString* imageRelatveUrl = [self uniqueDocumentURL];
     NSString* pathUrl = [[self documentDirectory] stringByAppendingPathComponent:imageRelatveUrl];
-    if (![imageData writeToFile:pathUrl atomically:YES]) {
+    NSError* error;
+    if (![imageData writeToFile:pathUrl options:NSDataWritingAtomic error:&error]) {
         NSLog(@"save photo failed");
+        NSLog(@"%@", error);
     }
     return imageRelatveUrl;
 }
@@ -42,6 +50,11 @@
 + (UIImage *)imageForlocalPhotoUrl:(NSString *)photoUrl {
     NSString* pathUrl = [[self documentDirectory] stringByAppendingPathComponent:photoUrl];
     return [UIImage imageWithContentsOfFile:pathUrl];
+}
+
++ (NSData *)dataForLocalPhotoURL:(NSString *)photoURL {
+    NSString* pathURL = [[self documentDirectory] stringByAppendingPathComponent:photoURL];
+    return [NSData dataWithContentsOfFile:pathURL];
 }
 
 @end

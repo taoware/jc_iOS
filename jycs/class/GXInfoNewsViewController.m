@@ -43,6 +43,8 @@
     self.timer = [NSTimer scheduledTimerWithTimeInterval:4 target:self selector:@selector(changeCover) userInfo:nil repeats:YES];
     
     self.managedObjectContext = [[GXCoreDataController sharedInstance] newManagedObjectContext];
+    
+    [self updateUI];
     [self.slimeView setLoadingWithExpansion];
 }
 
@@ -51,21 +53,25 @@
     [super viewWillAppear:animated];
   
     [[NSNotificationCenter defaultCenter] addObserverForName:kNOTIFICATION_NEWSSYNCCOMPLETED object:nil queue:nil usingBlock:^(NSNotification *note) {
-        [self loadRecordsFromCoreData];
-        
-        [self.newsTableView reloadData];
-        [self reloadCoverFlow];
-
-        if (self.slideNews.count >= 2) {
-            // scroll to the first page, note that this call will trigger scrollViewDidScroll: once and only once
-            [self.coverFlow scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
-        }
-        News* firstSlideNews = [self.originalSlideNews firstObject];
-        self.coverTitle.text = firstSlideNews.title;
+        [self updateUI];
         
         [_slimeView endRefresh];
     }];
 
+}
+
+- (void)updateUI {
+    [self loadRecordsFromCoreData];
+    
+    [self.newsTableView reloadData];
+    [self reloadCoverFlow];
+    
+    if (self.slideNews.count >= 2) {
+        // scroll to the first page, note that this call will trigger scrollViewDidScroll: once and only once
+        [self.coverFlow scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
+    }
+    News* firstSlideNews = [self.originalSlideNews firstObject];
+    self.coverTitle.text = firstSlideNews.title;
 }
 
 - (void)reloadCoverFlow {
@@ -310,7 +316,7 @@
         
         NSInteger page = scrollView.contentOffset.x/scrollView.frame.size.width;
         if (page == 0) {
-            page = self.slideNews.count-2;
+            page = self.originalSlideNews.count-1;
         } else if (page == self.slideNews.count-1) {
             page = 0;
         } else {
@@ -328,7 +334,7 @@
     if ([scrollView isKindOfClass:[UICollectionView class]]) {
         NSInteger page = scrollView.contentOffset.x/scrollView.frame.size.width;
         if (page == 0) {
-            page = self.slideNews.count-2;
+            page = self.originalSlideNews.count-1;
         } else if (page == self.slideNews.count-1) {
             page = 0;
         } else {

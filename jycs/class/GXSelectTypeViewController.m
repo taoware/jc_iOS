@@ -74,6 +74,8 @@
     if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
         oldCell.accessoryType = UITableViewCellAccessoryNone;
     }
+    
+    [self toggleDoneButton];
 }
 
 
@@ -114,7 +116,7 @@
 #pragma mark - action
 
 - (void)doneButtonTapped {
-    [self.delegate didFinishSelectType:self.type];
+    [self.delegate didFinishSelectType:[self.type substringToIndex:self.type.length-2]];
     [self.navigationController popViewControllerAnimated:YES];
 }
 

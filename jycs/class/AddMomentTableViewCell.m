@@ -9,6 +9,8 @@
 #import "AddMomentTableViewCell.h"
 #import "UIView+AutoLayout.h"
 #import "CTAssetsPageViewController.h"
+#import "GXPhotoEngine.h"
+#import "Photo.h"
 
 #define SquareImageSize   CGSizeMake(66.5f,  66.5f)
 
@@ -16,6 +18,9 @@
 @property (nonatomic) BOOL didSetupConstraints;
 @property (nonatomic, strong)NSMutableArray* imageViewArray;
 @property (nonatomic, strong)UIImageView* plusImageView;
+@property (nonatomic, strong)SZTextView* momentTextView;
+@property (nonatomic, strong)NSMutableArray* imagesForMoment;     // type of UIImage
+
 @end
 
 @implementation AddMomentTableViewCell
@@ -154,11 +159,40 @@
 
 #pragma mark - text view delegate
 
-- (void)textViewDidEndEditing:(UITextView *)textView {
-    [self.delegate textViewDidEndEditing:textView];
+- (void)textViewDidChange:(UITextView *)textView {
+    self.momentEntry.text = textView.text;
+    [self.delegate momentTextDidChange];
 }
 
 #pragma mark - properties
+
+- (void)setMomentEntry:(Moment *)momentEntry {
+    _momentEntry = momentEntry;
+    
+    [self.imageViewArray makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    [self.imageViewArray removeAllObjects];
+    [self.plusImageView removeFromSuperview];
+    [momentEntry.photo enumerateObjectsUsingBlock:^(Photo* photo, NSUInteger idx, BOOL *stop) {
+        UIImageView* imageView  = [[UIImageView alloc]initForAutoLayout];
+        imageView.tag = idx;
+        
+        imageView.contentMode=UIViewContentModeScaleAspectFill;
+        imageView.clipsToBounds = YES;
+        imageView.userInteractionEnabled=YES;
+        [imageView addGestureRecognizer:[self addTapGestureRecognizer]];
+        imageView.image = [GXPhotoEngine imageForlocalPhotoUrl:photo.imageURL];
+        
+        [self.imageViewArray addObject:imageView];
+    }];
+    
+    if (self.imageViewArray.count < 9) {
+        [self.imageViewArray addObject:self.plusImageView];
+    }
+    
+    [self setNeedsUpdateConstraints];
+    [self updateConstraints];
+
+}
 
 - (SZTextView *)momentTextView {
     if (!_momentTextView) {

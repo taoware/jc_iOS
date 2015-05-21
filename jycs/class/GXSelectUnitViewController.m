@@ -90,6 +90,8 @@
     if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
         oldCell.accessoryType = UITableViewCellAccessoryNone;
     }
+    
+    [self toggleDoneButton];
 }
 
 

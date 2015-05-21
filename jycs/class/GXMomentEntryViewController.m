@@ -25,10 +25,8 @@
 static NSString * const GXAddMomentCellIdentifier = @"GXAddMomentCellIdentifier";
 static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 
-@interface GXMomentEntryViewController () <AddMomentCellDelegate, CTAssetsPickerControllerDelegate, GXPhotoPageViewControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, GXSelectUnitDelegate, GXSelectTypeDelegate>
-@property (nonatomic, strong)NSMutableArray* imagesForMoment;
+@interface GXMomentEntryViewController () <AddMomentCellDelegate, CTAssetsPickerControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, GXSelectUnitDelegate, GXSelectTypeDelegate>
 @property (strong, nonatomic) NSMutableDictionary *offscreenCells;
-@property (nonatomic, strong)NSString* momentText;
 @end
 
 @implementation GXMomentEntryViewController
@@ -45,6 +43,11 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
     [self.tableView registerClass:[AddMomentTableViewCell class] forCellReuseIdentifier:GXAddMomentCellIdentifier];
     
     [self setupButtons];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.tableView reloadData];
 }
 
 - (void)setupButtons {
@@ -74,7 +77,7 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 
 - (void)toggleDoneButton {
     BOOL enabled = NO;
-    if (self.momentText.length && self.momentEntry.type && self.momentEntry.inUnit) {
+    if (self.momentEntry.text.length && self.momentEntry.type && self.momentEntry.inUnit) {
         enabled = YES;
     }
     self.navigationItem.rightBarButtonItem.enabled = enabled;
@@ -120,7 +123,7 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 - (AddMomentTableViewCell *)addMomentCellAtIndexPath:(NSIndexPath *)indexPath {
     AddMomentTableViewCell* cell = [self.tableView dequeueReusableCellWithIdentifier:GXAddMomentCellIdentifier forIndexPath:indexPath];
     
-    cell.imagesForMoment = self.imagesForMoment;
+    cell.momentEntry = self.momentEntry;
     cell.delegate = self;
 
     return cell;
@@ -152,7 +155,7 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
             cell = [[AddMomentTableViewCell alloc]init];
             [self.offscreenCells setObject:cell forKey:reuseIdentifier];
         }
-        cell.imagesForMoment = self.imagesForMoment;
+        cell.momentEntry = self.momentEntry;
         
         [cell setNeedsUpdateConstraints];
         [cell updateConstraintsIfNeeded];
@@ -187,6 +190,7 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
         if (indexPath.row == 0) {
             GXSelectUnitViewController* unitSelectVC = [[GXSelectUnitViewController alloc]initWithStyle:UITableViewStyleGrouped];
             unitSelectVC.delegate = self;
+            unitSelectVC.context = self.context;
             unitSelectVC.unit = self.momentEntry.inUnit;
             [self.navigationController pushViewController:unitSelectVC animated:YES];
         } else if (indexPath.row == 1) {
@@ -200,15 +204,15 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 
 #pragma mark - addMomentTablecell
 
-- (void)textViewDidEndEditing:(UITextView *)textView {
-    self.momentText = textView.text;
+- (void)momentTextDidChange {
     [self toggleDoneButton];
 }
 
+
+
 - (void)selectImageThunbnailAtIndex:(NSInteger)index {
-    GXPhotoPageViewController* pageVC = [[GXPhotoPageViewController alloc]initWithPhotos:self.momentEntry.photo.array];
+    GXPhotoPageViewController* pageVC = [[GXPhotoPageViewController alloc]initWithMomoent:self.momentEntry];
     pageVC.pageIndex = index;
-    pageVC.delegator = self;
     
     [self.navigationController pushViewController:pageVC animated:YES];
 }
@@ -266,6 +270,8 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
     NSString* photoURL = [GXPhotoEngine writePhotoToDisk:photoImg];
     photo.imageURL = photoURL;
     photo.thumbnailURL = photoURL;
+    
+    [self.tableView reloadData];
 }
 
 #pragma mark - image picker controller
@@ -349,6 +355,8 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 
 - (void)doneButtonTapped:(id)sender {
     if ([self.delegate respondsToSelector:@selector(didFinishMomentEntryViewController:didSave:)]) {
+        self.momentEntry.syncStatus = @(GXObjectCreated);
+        self.momentEntry.sender = (User*)[self.context objectWithID:[GXUserEngine sharedEngine].userLoggedIn.objectID];
         [self.delegate didFinishMomentEntryViewController:self didSave:YES];
     }
 }
