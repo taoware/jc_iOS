@@ -16,20 +16,15 @@
 #import "Photo.h"
 #import "ResourceFetcher.h"
 #import "GXArticleViewController.h"
+#import "GXStoreCarouselView.h"
 
-@interface GXStoreViewController () <UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,UITableViewDataSource,UITableViewDelegate,GXStoreShowTableViewCellDelegate>
-@property (nonatomic, strong) UIView* coverFlowContainer;
-@property (strong, nonatomic) UICollectionView *coverFlow;
-@property (strong, nonatomic) UIView *carouselShadow;
+@interface GXStoreViewController () <UITableViewDataSource,UITableViewDelegate, GXStoreShowTableViewCellDelegate>
 @property (weak, nonatomic)IBOutlet UITableView *storeTableView;
-@property (strong, nonatomic) UIPageControl *pageControl;
-@property (strong, nonatomic) UILabel *coverTitle;
+@property (nonatomic, strong)GXStoreCarouselView* carouselView;
 @property (nonatomic, strong)NSArray* slideStores;
-@property (nonatomic, strong)NSArray* originalSlideStores;
 @property (nonatomic, strong)NSArray* stores;
 @property (nonatomic, strong)NSArray* provinces;
 @property (nonatomic, strong)NSDictionary* storesInProvince;
-@property (nonatomic ,strong)NSTimer* timer;
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 @end
 
@@ -39,49 +34,39 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:4 target:self selector:@selector(changeCover) userInfo:nil repeats:YES];
-    
-    self.storeTableView.tableHeaderView = self.coverFlowContainer;
+    self.storeTableView.tableHeaderView = self.carouselView;
     
     self.managedObjectContext = [[GXCoreDataController sharedInstance] newManagedObjectContext];
     [[GXStoreEngine sharedEngine] startSync];
     
-    [self initData];
+    [self updateUI];
 }
 
-- (void)initData {
+- (void)updateUI {
     [self loadRecordsFromCoreData];
     [self.storeTableView reloadData];
-    [self reloadCoverFlow];
+    self.carouselView.stores = self.slideStores;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
     [[NSNotificationCenter defaultCenter] addObserverForName:kNOTIFICATION_STORESYNCCOMPLETED object:nil queue:nil usingBlock:^(NSNotification *note) {
-        [self loadRecordsFromCoreData];
-        
-        [self.storeTableView reloadData];
-        [self reloadCoverFlow];
-        if (self.slideStores.count >= 2) {
-            // scroll to the first page, note that this call will trigger scrollViewDidScroll: once and only once
-            [self.coverFlow scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
-        }
-        Store* firstSlideStore = [self.originalSlideStores firstObject];
-        self.coverTitle.text = firstSlideStore.storeName;
-        
+        [self updateUI];
     }];
     
 }
 
-- (void)reloadCoverFlow {
-    if (!self.slideStores.count) {
-        self.carouselShadow.hidden = true;
-    } else {
-        self.carouselShadow.hidden = NO;
+- (GXStoreCarouselView *)carouselView {
+    if (!_carouselView) {
+        _carouselView = [[GXStoreCarouselView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 160)];
+        __block GXStoreViewController* weakSelf = self;
+        [_carouselView setDidSelectBlock:^(GXCarouselItem *item, NSInteger index) {
+            Store* store = weakSelf.slideStores[index];
+            [weakSelf didSelectStore:store];
+        }];
     }
-    self.pageControl.numberOfPages = self.slideStores.count-2;
-    [self.coverFlow reloadData];
+    return _carouselView;
 }
 
 - (void)loadRecordsFromCoreData {
@@ -91,17 +76,6 @@
         [self loadSlideStoreFromCoreData];
         [self loadDistinctProvinceFromCoreData];
         [self loadStoresInProvinceFromCoreData];
-        
-        if (self.slideStores.count>=2) {
-            // duplicate the last item and put it at first
-            // duplicate the first item and put it at last
-            id firstItem = [_slideStores firstObject];
-            id lastItem = [_slideStores lastObject];
-            NSMutableArray *workingArray = [_slideStores mutableCopy];
-            [workingArray insertObject:lastItem atIndex:0];
-            [workingArray addObject:firstItem];
-            _slideStores = [NSArray arrayWithArray:workingArray];
-        }
         
     }];
 }
@@ -115,7 +89,6 @@
     [request setSortDescriptors:[NSArray arrayWithObject:
                                  [NSSortDescriptor sortDescriptorWithKey:@"createTime" ascending:NO]]];
     self.slideStores = [self.managedObjectContext executeFetchRequest:request error:&error];
-    self.originalSlideStores = _slideStores;
 }
 
 - (void)loadDistinctProvinceFromCoreData {
@@ -146,66 +119,6 @@
         [storesInProvince setValue:stores forKey:province];
     }
     self.storesInProvince = storesInProvince;
-}
-
-
-- (UIView *)coverFlowContainer {
-    if (!_coverFlowContainer) {
-        CGFloat viewWidth = CGRectGetWidth(self.view.frame);
-        // add coverflow to first page
-        _coverFlowContainer = [[UIView alloc]initWithFrame:CGRectMake(0, 0, viewWidth, 160)];
-        UICollectionViewFlowLayout* flowLayout = [[UICollectionViewFlowLayout alloc]init];
-        flowLayout.minimumInteritemSpacing = 0;
-        flowLayout.minimumLineSpacing = 0;
-        flowLayout.itemSize = CGSizeMake(viewWidth, 160);
-        [flowLayout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
-        self.coverFlow = [[UICollectionView alloc]initWithFrame:_coverFlowContainer.bounds  collectionViewLayout:flowLayout];
-        
-        self.coverFlow.delegate = self;
-        self.coverFlow.dataSource = self;
-        self.coverFlow.pagingEnabled = YES;
-        self.coverFlow.backgroundColor = nil;
-        [self.coverFlow registerNib:[UINib nibWithNibName:@"GXCoverFlowCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:@"CoverFlowCell"];
-        self.coverFlow.showsHorizontalScrollIndicator = NO;
-        self.coverFlow.showsVerticalScrollIndicator = NO;
-        [_coverFlowContainer addSubview:self.coverFlow];
-        
-        self.carouselShadow = [[UIView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.coverFlow.bounds)-25, viewWidth, 25)];
-        self.carouselShadow.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"carousel_bg"]];
-        self.carouselShadow.hidden = YES;
-        [_coverFlowContainer addSubview:self.carouselShadow];
-        
-        self.coverTitle = [[UILabel alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.coverFlow.bounds)-25, viewWidth-70, 25)];
-        self.coverTitle.textColor = [UIColor whiteColor];
-        self.coverTitle.font = [UIFont systemFontOfSize:13];
-        self.coverTitle.text = @"上海教育超市学生信的过的超市";
-        [_coverFlowContainer addSubview:self.coverTitle];
-        
-        self.pageControl = [[UIPageControl alloc]initWithFrame:CGRectMake(viewWidth-70, CGRectGetHeight(self.coverFlow.bounds)-20, 70, 20)];
-        self.pageControl.pageIndicatorTintColor = [UIColor whiteColor];
-        _pageControl.currentPageIndicatorTintColor = [UIColor redColor];
-        self.pageControl.numberOfPages = 6;
-        [_coverFlowContainer addSubview:self.pageControl];
-    }
-    return _coverFlowContainer;
-}
-
-- (UIPageControl *)pageControl {
-    if (!_pageControl) {
-        _pageControl = [[UIPageControl alloc]initWithFrame:CGRectMake(15, 140, 80, 37)];
-        _pageControl.pageIndicatorTintColor = [UIColor whiteColor];
-        _pageControl.currentPageIndicatorTintColor = [UIColor redColor];
-    }
-    return _pageControl;
-}
-
-- (UILabel *)coverTitle {
-    if (!_coverTitle) {
-        _coverTitle = [[UILabel alloc]initWithFrame:CGRectMake(126, 140, 186, 21)];
-        _coverTitle.textColor = [UIColor whiteColor];
-        _coverTitle.text = @"上海教育超市学生信的过的超市";
-    }
-    return _coverTitle;
 }
 
 #pragma mark - table view delegate 
@@ -269,125 +182,6 @@
     articleVC.articleUrl = store.url;
     [self.navigationController pushViewController:articleVC animated:YES];
 }
-
-#pragma mark - <UICollectionViewDelegateFlowLayout>
-
-- (CGSize)collectionView:(UICollectionView *)collectionView
-                  layout:(UICollectionViewLayout *)collectionViewLayout
-  sizeForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    return self.coverFlow.bounds.size;
-}
-
-#pragma mark - <UICollectionViewDataSource>
-
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 1;
-}
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return self.slideStores.count;
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    GXCoverFlowCollectionViewCell *cell = (GXCoverFlowCollectionViewCell *)[collectionView dequeueReusableCellWithReuseIdentifier:@"CoverFlowCell" forIndexPath:indexPath];
-    Store* store = self.slideStores[indexPath.row];
-    UIImage* placeholderImage = [UIImage imageNamed:@"placeholder.jpg"];
-
-    [cell.imageView setImageWithURL:[NSURL URLWithString:store.photo.imageURL] placeholderImage:placeholderImage];
-    
-    return cell;
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    Store* store = self.slideStores[indexPath.row];
-    GXArticleViewController* articleVC = [[GXArticleViewController alloc]init];
-    articleVC.articleUrl = store.url;
-    [self.navigationController pushViewController:articleVC animated:YES];
-}
-
-#pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    if ([scrollView isKindOfClass:[UICollectionView class]]) {
-        // Calculate where the collection view should be at the right-hand end item
-        float contentOffsetWhenFullyScrolledRight = self.coverFlow.frame.size.width * ([self.slideStores count] -1);
-        
-        if (scrollView.contentOffset.x == contentOffsetWhenFullyScrolledRight) {
-            
-            // user is scrolling to the right from the last item to the 'fake' item 1.
-            // reposition offset to show the 'real' item 1 at the left-hand end of the collection view
-            
-            NSIndexPath *newIndexPath = [NSIndexPath indexPathForItem:1 inSection:0];
-            
-            [self.coverFlow scrollToItemAtIndexPath:newIndexPath atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
-            
-        } else if (scrollView.contentOffset.x == 0)  {
-            
-            // user is scrolling to the left from the first item to the fake 'item N'.
-            // reposition offset to show the 'real' item N at the right end end of the collection view
-            
-            NSIndexPath *newIndexPath = [NSIndexPath indexPathForItem:([self.slideStores count] -2) inSection:0];
-            
-            [self.coverFlow scrollToItemAtIndexPath:newIndexPath atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
-
-        }
-        
-        NSInteger page = scrollView.contentOffset.x/scrollView.frame.size.width;
-
-        if (page == 0) {
-            page = self.originalSlideStores.count-1;
-        } else if (page == self.slideStores.count-1) {
-            page = 0;
-        } else {
-            page--;
-        }
-        NSLog(@"real: %i", page);
-        self.pageControl.currentPage = page;
-        Store* currentStore = self.originalSlideStores[page];
-        self.coverTitle.text = currentStore.storeName;
-        
-        [self.timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:2]];
-    }
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-    if ([scrollView isKindOfClass:[UICollectionView class]]) {
-        NSInteger page = scrollView.contentOffset.x/scrollView.frame.size.width;
-        if (page == 0) {
-            page = self.originalSlideStores.count-2;
-        } else if (page == self.slideStores.count-1) {
-            page = 0;
-        } else {
-            page--;
-        }
-        Store* currentStore = self.originalSlideStores[page];
-        self.coverTitle.text = currentStore.storeName;
-        self.pageControl.currentPage = page;
-    }
-}
-
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    if ([scrollView isKindOfClass:[UICollectionView class]]) {
-        [self.timer setFireDate:[NSDate distantFuture]];
-    }
-}
-
-
-#pragma mark - action 
-
-- (void)changeCover {
-    if (self.slideStores.count >= 2) {
-        NSIndexPath* indexPath = (NSIndexPath*)[[self.coverFlow indexPathsForVisibleItems] firstObject];
-        if (indexPath.item == self.slideStores.count-1) {
-            indexPath = [NSIndexPath indexPathForItem:1 inSection:0];
-            [self.coverFlow scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
-        }
-        NSIndexPath* newIndexPath = [NSIndexPath indexPathForItem:indexPath.item+1 inSection:indexPath.section];
-        [self.coverFlow scrollToItemAtIndexPath:newIndexPath atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-    }
-}
-
 
 #pragma mark - Navigation
 

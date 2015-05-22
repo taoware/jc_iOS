@@ -16,19 +16,15 @@
 #import "SRRefreshView.h"
 #import "XLPagerTabStripViewController.h"
 #import "GXArticleViewController.h"
+#import "GXNewsCarouselView.h"
 
-@interface GXInfoNewsViewController () <UIScrollViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UITableViewDataSource, UITableViewDelegate, XLPagerTabStripChildItem>
-@property (nonatomic, strong) UIView* coverFlowContainer;
-@property (nonatomic, strong) UICollectionView* coverFlow;
-@property (nonatomic, strong) UIPageControl* pageControl;
-@property (strong, nonatomic) UIView *carouselShadow;
-@property (nonatomic, strong) UILabel* coverTitle;
-@property (nonatomic, strong) NSTimer* timer;
+@interface GXInfoNewsViewController () <UIScrollViewDelegate, UITableViewDataSource, UITableViewDelegate, XLPagerTabStripChildItem, SRRefreshDelegate>
+
 @property (nonatomic, strong) UITableView* newsTableView;
 @property (nonatomic, strong) SRRefreshView         *slimeView;
-@property (strong, nonatomic) NSArray *slideNews; // data source
-@property (strong, nonatomic) NSArray *originalSlideNews;
+@property (nonatomic, strong) GXNewsCarouselView* carouselView;
 @property (strong, nonatomic) NSArray* news;
+@property (nonatomic, strong) NSArray* slideNews;
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 @end
 
@@ -39,8 +35,6 @@
     // Do any additional setup after loading the view.
     
     [self.view addSubview:self.newsTableView];
-    
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:4 target:self selector:@selector(changeCover) userInfo:nil repeats:YES];
     
     self.managedObjectContext = [[GXCoreDataController sharedInstance] newManagedObjectContext];
     
@@ -64,25 +58,9 @@
     [self loadRecordsFromCoreData];
     
     [self.newsTableView reloadData];
-    [self reloadCoverFlow];
-    
-    if (self.slideNews.count >= 2) {
-        // scroll to the first page, note that this call will trigger scrollViewDidScroll: once and only once
-        [self.coverFlow scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
-    }
-    News* firstSlideNews = [self.originalSlideNews firstObject];
-    self.coverTitle.text = firstSlideNews.title;
+    self.carouselView.news = self.slideNews;
 }
 
-- (void)reloadCoverFlow {
-    if (!self.slideNews.count) {
-        self.carouselShadow.hidden = true;
-    } else {
-        self.carouselShadow.hidden = NO;
-    }
-    self.pageControl.numberOfPages = self.slideNews.count-2;
-    [self.coverFlow reloadData];
-}
 
 - (void)loadRecordsFromCoreData {
     [self.managedObjectContext performBlockAndWait:^{
@@ -103,19 +81,6 @@
         [request setSortDescriptors:[NSArray arrayWithObject:
                                      [NSSortDescriptor sortDescriptorWithKey:@"createTime" ascending:NO]]];
         self.slideNews = [self.managedObjectContext executeFetchRequest:request error:&error];
-        self.originalSlideNews = _slideNews;
-        
-        if (self.slideNews.count>=2) {
-            // duplicate the last item and put it at first
-            // duplicate the first item and put it at last
-            id firstItem = [_slideNews firstObject];
-            id lastItem = [_slideNews lastObject];
-            NSMutableArray *workingArray = [_slideNews mutableCopy];
-            [workingArray insertObject:lastItem atIndex:0];
-            [workingArray addObject:firstItem];
-            _slideNews = [NSArray arrayWithArray:workingArray];
-        }
-        
     }];
 }
 
@@ -124,7 +89,7 @@
     if (!_newsTableView) {
         _newsTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
         _newsTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-        _newsTableView.tableHeaderView = self.coverFlowContainer;
+        _newsTableView.tableHeaderView = self.carouselView;
         _newsTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
         _newsTableView.backgroundColor = NEWSBGCOLOR;
         _newsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -135,46 +100,18 @@
     return _newsTableView;
 }
 
-- (UIView *)coverFlowContainer {
-    if (!_coverFlowContainer) {
-        CGFloat viewWidth = CGRectGetWidth(self.view.frame);
-        // add coverflow to first page
-        _coverFlowContainer = [[UIView alloc]initWithFrame:CGRectMake(0, 0, viewWidth, 160)];
-        UICollectionViewFlowLayout* flowLayout = [[UICollectionViewFlowLayout alloc]init];
-        flowLayout.minimumInteritemSpacing = 0;
-        flowLayout.minimumLineSpacing = 0;
-        flowLayout.itemSize = CGSizeMake(viewWidth, 160);
-        [flowLayout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
-        self.coverFlow = [[UICollectionView alloc]initWithFrame:_coverFlowContainer.bounds  collectionViewLayout:flowLayout];
-        
-        self.coverFlow.delegate = self;
-        self.coverFlow.dataSource = self;
-        self.coverFlow.pagingEnabled = YES;
-        self.coverFlow.backgroundColor = nil;
-        [self.coverFlow registerNib:[UINib nibWithNibName:@"GXCoverFlowCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:@"CoverFlowCell"];
-        self.coverFlow.showsHorizontalScrollIndicator = NO;
-        self.coverFlow.showsVerticalScrollIndicator = NO;
-        
-        
-        [_coverFlowContainer addSubview:self.coverFlow];
-        
-        self.carouselShadow = [[UIView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.coverFlow.bounds)-25, viewWidth, 25)];
-        self.carouselShadow.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"carousel_bg1"]];
-        self.carouselShadow.hidden = YES;
-        [_coverFlowContainer addSubview:self.carouselShadow];
-        
-        self.coverTitle = [[UILabel alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.coverFlow.bounds)-25, viewWidth-70, 25)];
-        self.coverTitle.textColor = [UIColor whiteColor];
-        self.coverTitle.font = [UIFont systemFontOfSize:13];
-        [_coverFlowContainer addSubview:self.coverTitle];
-        
-        self.pageControl = [[UIPageControl alloc]initWithFrame:CGRectMake(viewWidth-70, CGRectGetHeight(self.coverFlow.bounds)-20, 70, 20)];
-        self.pageControl.pageIndicatorTintColor = [UIColor whiteColor];
-        _pageControl.currentPageIndicatorTintColor = [UIColor redColor];
-        self.pageControl.numberOfPages = self.slideNews.count;
-        [_coverFlowContainer addSubview:self.pageControl];
+- (GXNewsCarouselView *)carouselView {
+    if (!_carouselView) {
+        _carouselView = [[GXNewsCarouselView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 160)];
+        __block GXInfoNewsViewController* weakSelf = self;
+        [_carouselView setDidSelectBlock:^(GXCarouselItem *item, NSInteger index) {
+            News* news = weakSelf.slideNews[index];
+            GXArticleViewController* articleVC = [[GXArticleViewController alloc]init];
+            articleVC.articleUrl = news.url;
+            [weakSelf.navigationController pushViewController:articleVC animated:YES];
+        }];
     }
-    return _coverFlowContainer;
+    return _carouselView;
 }
 
 - (SRRefreshView *)slimeView
@@ -195,14 +132,6 @@
     return _slimeView;
 }
 
-
-#pragma mark - utility method
-
-- (void)changeCoverFlowPage:(id)sender {
-    static int count = 0;
-    NSIndexPath* newIndexPath = [NSIndexPath indexPathForItem:count++%self.slideNews.count inSection:0];
-    [self.coverFlow scrollToItemAtIndexPath:newIndexPath atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-}
 
 #pragma mark - table view delegate
 
@@ -249,108 +178,8 @@
     [self.navigationController pushViewController:articleVC animated:YES];
 }
 
-#pragma mark - <UICollectionViewDelegateFlowLayout>
-
-- (CGSize)collectionView:(UICollectionView *)collectionView
-                  layout:(UICollectionViewLayout *)collectionViewLayout
-  sizeForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    return self.coverFlow.bounds.size;
-}
-
-#pragma mark - <UICollectionViewDataSource>
-
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 1;
-}
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return _slideNews.count;
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    GXCoverFlowCollectionViewCell *cell = (GXCoverFlowCollectionViewCell *)[collectionView dequeueReusableCellWithReuseIdentifier:@"CoverFlowCell" forIndexPath:indexPath];
-    
-    News *news = self.slideNews[indexPath.item];
-    UIImage* placeholderImage = [UIImage imageNamed:@"placeholder.jpg"];
-
-    [cell.imageView setImageWithURL:[NSURL URLWithString:news.photo.imageURL] placeholderImage:placeholderImage];
-    
-    return cell;
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    News* news = self.slideNews[indexPath.item];
-    
-    GXArticleViewController* articleVC = [[GXArticleViewController alloc]init];
-    articleVC.articleUrl = news.url;
-    [self.navigationController pushViewController:articleVC animated:YES];
-}
 
 #pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    if ([scrollView isKindOfClass:[UICollectionView class]]) {
-        // Calculate where the collection view should be at the right-hand end item
-        float contentOffsetWhenFullyScrolledRight = self.coverFlow.frame.size.width * ([self.slideNews count] -1);
-        
-        if (scrollView.contentOffset.x == contentOffsetWhenFullyScrolledRight) {
-            
-            // user is scrolling to the right from the last item to the 'fake' item 1.
-            // reposition offset to show the 'real' item 1 at the left-hand end of the collection view
-            
-            NSIndexPath *newIndexPath = [NSIndexPath indexPathForItem:1 inSection:0];
-            
-            [self.coverFlow scrollToItemAtIndexPath:newIndexPath atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
-            
-        } else if (scrollView.contentOffset.x == 0)  {
-            
-            // user is scrolling to the left from the first item to the fake 'item N'.
-            // reposition offset to show the 'real' item N at the right end end of the collection view
-            
-            NSIndexPath *newIndexPath = [NSIndexPath indexPathForItem:([self.slideNews count] -2) inSection:0];
-            
-            [self.coverFlow scrollToItemAtIndexPath:newIndexPath atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
-            
-        }
-        
-        NSInteger page = scrollView.contentOffset.x/scrollView.frame.size.width;
-        if (page == 0) {
-            page = self.originalSlideNews.count-1;
-        } else if (page == self.slideNews.count-1) {
-            page = 0;
-        } else {
-            page--;
-        }
-        self.pageControl.currentPage = page;
-        News* currentNew = self.originalSlideNews[page];
-        self.coverTitle.text = currentNew.title;
-        
-        [self.timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:2]];
-    }
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-    if ([scrollView isKindOfClass:[UICollectionView class]]) {
-        NSInteger page = scrollView.contentOffset.x/scrollView.frame.size.width;
-        if (page == 0) {
-            page = self.originalSlideNews.count-1;
-        } else if (page == self.slideNews.count-1) {
-            page = 0;
-        } else {
-            page--;
-        }
-        News* currentNew = self.originalSlideNews[page];
-        self.coverTitle.text = currentNew.title;
-        self.pageControl.currentPage = page;
-    }
-}
-
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    if ([scrollView isKindOfClass:[UICollectionView class]]) {
-        [self.timer setFireDate:[NSDate distantFuture]];
-    }
-}
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     if (scrollView == self.newsTableView) {
@@ -383,20 +212,6 @@
 -(UIColor *)colorForPagerTabStripViewController:(XLPagerTabStripViewController *)pagerTabStripViewController
 {
     return [UIColor redColor];
-}
-
-#pragma mark - action
-
-- (void)changeCover {
-    if (self.slideNews.count >= 2) {
-        NSIndexPath* indexPath = (NSIndexPath*)[[self.coverFlow indexPathsForVisibleItems] firstObject];
-        if (indexPath.item == self.slideNews.count-1) {
-            indexPath = [NSIndexPath indexPathForItem:1 inSection:0];
-            [self.coverFlow scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
-        }
-        NSIndexPath* newIndexPath = [NSIndexPath indexPathForItem:indexPath.item+1 inSection:indexPath.section];
-        [self.coverFlow scrollToItemAtIndexPath:newIndexPath atScrollPosition:UICollectionViewScrollPositionLeft animated:YES];
-    }
 }
 
 
