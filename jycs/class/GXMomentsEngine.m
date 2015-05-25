@@ -60,7 +60,7 @@
             }
         } else {
             // AFNetworking error handling
-            NSLog(@"news network error description: %@", error.localizedDescription);
+            NSLog(@"square network error description: %@", error.localizedDescription);
         }
         
         [self executeSyncCompletedOperations];

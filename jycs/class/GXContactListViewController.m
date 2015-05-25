@@ -32,7 +32,7 @@
 @property (strong, nonatomic) NSMutableArray *sectionTitles;
 
 @property (strong, nonatomic) UILabel *unapplyCountLabel;
-@property (strong, nonatomic) UITableView *tableView;
+//@property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) EMSearchBar *searchBar;
 @property (strong, nonatomic) SRRefreshView *slimeView;
 
@@ -58,13 +58,12 @@
 {
     [super viewDidLoad];
     
-    [self searchController];
-    self.searchBar.frame = CGRectMake(0, 0, self.view.frame.size.width, 44);
-    [self.view addSubview:self.searchBar];
-    
-    self.tableView.frame = CGRectMake(0, self.searchBar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.searchBar.frame.size.height);
-    [self.view addSubview:self.tableView];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.backgroundColor = [UIColor whiteColor];
+    self.tableView.tableFooterView = [[UIView alloc] init];
+    self.tableView.tableHeaderView = self.searchBar;
     [self.tableView addSubview:self.slimeView];
+    [self searchController];
 }
 
 - (void)didReceiveMemoryWarning
@@ -85,17 +84,17 @@
 }
 #pragma mark - getter
 
-//- (UISearchBar *)searchBar
-//{
-//    if (_searchBar == nil) {
-//        _searchBar = [[EMSearchBar alloc] init];
-//        _searchBar.delegate = self;
-//        _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
-//        _searchBar.backgroundColor = [UIColor colorWithRed:0.747 green:0.756 blue:0.751 alpha:1.000];
-//    }
-//    
-//    return _searchBar;
-//}
+- (UISearchBar *)searchBar
+{
+    if (_searchBar == nil) {
+        _searchBar = [[EMSearchBar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
+        _searchBar.delegate = self;
+        _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
+        _searchBar.backgroundColor = [UIColor colorWithRed:0.747 green:0.756 blue:0.751 alpha:1.000];
+    }
+    
+    return _searchBar;
+}
 
 - (UILabel *)unapplyCountLabel
 {
@@ -130,21 +129,21 @@
     return _slimeView;
 }
 
-- (UITableView *)tableView
-{
-    if (_tableView == nil)
-    {
-        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        _tableView.backgroundColor = [UIColor whiteColor];
-        _tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-        _tableView.delegate = self;
-        _tableView.dataSource = self;
-        _tableView.tableFooterView = [[UIView alloc] init];
-    }
-    
-    return _tableView;
-}
+//- (UITableView *)tableView
+//{
+//    if (_tableView == nil)
+//    {
+//        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+//        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//        _tableView.backgroundColor = [UIColor whiteColor];
+//        _tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+//        _tableView.delegate = self;
+//        _tableView.dataSource = self;
+//        _tableView.tableFooterView = [[UIView alloc] init];
+//    }
+//    
+//    return _tableView;
+//}
 
 - (EMSearchDisplayController *)searchController
 {
@@ -601,7 +600,7 @@
     
     [self.dataSource addObjectsFromArray:[self sortDataArray:self.contactsSource]];
     
-    [_tableView reloadData];
+    [self.tableView reloadData];
 }
 
 #pragma mark - action

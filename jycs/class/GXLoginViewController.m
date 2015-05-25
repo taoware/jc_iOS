@@ -101,11 +101,12 @@
 
 #pragma  mark - TextFieldDelegate
 -(BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
-    if (textField == self.passwordField) {
-        self.passwordField.text = @"";
-    }
     [self updateLoginButton];
     return YES;
+}
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    [self updateLoginButton];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField

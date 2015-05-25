@@ -22,6 +22,15 @@
     BOOL _isReload;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    CGRect frame = self.buttonBarView.selectedBar.frame;
+    frame.origin.y = frame.origin.y+3;
+    frame.size.height = frame.size.height-3;
+    self.buttonBarView.selectedBar.frame = frame;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.

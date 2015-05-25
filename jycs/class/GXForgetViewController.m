@@ -70,7 +70,7 @@
         result = YES;
     }
     
-    return YES;
+    return result;
 }
 
 - (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender {
