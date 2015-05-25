@@ -18,6 +18,7 @@
 @property (nonatomic, strong)UIPickerView* areaPicker;
 @property (nonatomic, strong)UIPickerView* genderPicker;
 @property (nonatomic, strong)UIPickerView* categoryPicker;
+@property (nonatomic, strong)UIPickerView* jobPicker;
 
 @property (nonatomic, strong)NSDictionary* areaDic;
 @property (nonatomic, strong)NSArray* province;
@@ -25,6 +26,7 @@
 @property (nonatomic, strong)NSArray* district;
 @property (nonatomic, strong)NSArray* gender;
 @property (nonatomic, strong)NSArray* category;
+@property (nonatomic, strong)NSArray* jobs;
 @property (nonatomic, strong)NSString *selectedProvince;
 @property (nonatomic)NSInteger currentProvince;
 @property (nonatomic)NSInteger currentCity;
@@ -36,9 +38,10 @@
 @property (weak, nonatomic) IBOutlet UIButton *gender_Btn;
 @property (weak, nonatomic) IBOutlet UIButton *category_Btn;
 @property (weak, nonatomic) IBOutlet UIButton *area_Btn;
+@property (weak, nonatomic) IBOutlet UIButton *job_Btn;
 
 @property (weak, nonatomic) IBOutlet UITextField *firstTextField;
-@property (weak, nonatomic) IBOutlet UITextField *secondTextField;
+//@property (weak, nonatomic) IBOutlet UITextField *secondTextField;
 @property (weak, nonatomic) IBOutlet UITextField *thirdTextField;
 @property (weak, nonatomic) IBOutlet UITextField *fourthTextField;
 @property (weak, nonatomic) IBOutlet UITextField *fifthTextField;
@@ -63,6 +66,7 @@
     self.area_Btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     self.gender_Btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     self.category_Btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    self.job_Btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(keyboardWillShow:)
@@ -77,7 +81,8 @@
     
     [self initAreaData];
     self.gender = @[@"男", @"女"];
-    self.category = @[@"内部", @"外部", @"其他"];
+    self.category = @[@"管理员", @"联采", @"员工", @"供应商", @"游客"];
+    self.jobs = @[@"副校长", @"董事长", @"校长助理", @"主任", @"秘书长", @"副主任", @"副秘书长", @"处长", @"总经理", @"副处长", @"副总经理", @"科长", @"部门经理", @"员工"];
 }
 
 - (void)dealloc {
@@ -172,7 +177,7 @@
     NSString* name = self.firstTextField.text;
     NSString* gender = self.gender_Btn.currentTitle;
     NSString* category = self.category_Btn.currentTitle;
-    NSString* job = self.secondTextField.text;
+    NSString* job = self.job_Btn.currentTitle;
     NSString* locaction = self.area_Btn.currentTitle;
     NSString* address = self.thirdTextField.text;
     NSString* mobile = self.fourthTextField.text;
@@ -337,10 +342,37 @@
         
         NSString *showMsg = self.category[genderIndex];
         [self.category_Btn setTitle:showMsg forState:UIControlStateNormal];
-        [self.secondTextField becomeFirstResponder];
+        [self showJobPicker:nil];
     }];
     UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
 
+    }];
+    
+    [alert addAction:ok];
+    [alert addAction:cancel];
+    [self presentViewController:alert animated:YES completion:^{
+        
+    }];
+}
+
+- (IBAction)showJobPicker:(UIButton *)sender {
+    self.jobPicker = [[UIPickerView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 190.0f)];
+    self.jobPicker.tag = 204;
+    self.jobPicker.delegate = self;
+    self.jobPicker.dataSource = self;
+    self.jobPicker.showsSelectionIndicator = YES;
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"\n\n\n\n\n\n\n\n" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    [alert.view addSubview:self.jobPicker];
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        NSInteger genderIndex = [self.jobPicker selectedRowInComponent: 0];
+        
+        NSString *showMsg = self.jobs[genderIndex];
+        [self.job_Btn setTitle:showMsg forState:UIControlStateNormal];
+        [self showAreaPicker:nil];
+    }];
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        
     }];
     
     [alert addAction:ok];
@@ -407,6 +439,8 @@
         else {
             return [self.district count];
         }
+    } else if (pickerView.tag == 204) {
+        return self.jobs.count;
     } else {
         return 0;
     }
@@ -431,6 +465,8 @@
         else {
             return [self.district objectAtIndex: row];
         }
+    } else if (pickerView.tag == 204) {
+        return self.jobs[row];
     }
     return nil;
 }
@@ -552,6 +588,12 @@
             myView.font = [UIFont systemFontOfSize:14];
             myView.backgroundColor = [UIColor clearColor];
         }
+    } else if (pickerView.tag == 204) {
+        myView = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 78, 30)];
+        myView.textAlignment = UITextAlignmentCenter;
+        myView.text = [self.jobs objectAtIndex:row];
+        myView.font = [UIFont systemFontOfSize:18];
+        myView.backgroundColor = [UIColor clearColor];
     }
     
     
@@ -570,9 +612,6 @@
     if (textField == self.firstTextField) {
         [self.firstTextField resignFirstResponder];
         [self showGenderPicker:nil];
-    } else if (textField == self.secondTextField) {
-        [self.secondTextField resignFirstResponder];
-        [self showAreaPicker:nil];
     } else if (textField == self.thirdTextField) {
         [self.fourthTextField becomeFirstResponder];
     } else if (textField == self.fourthTextField) {

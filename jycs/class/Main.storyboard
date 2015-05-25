@@ -365,13 +365,6 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="me_bookmark.png" translatesAutoresizingMaskIntoConstraints="NO" id="6wh-f4-ZpQ">
-                                                    <rect key="frame" x="242" y="11" width="45" height="21"/>
-                                                    <gestureRecognizers/>
-                                                    <connections>
-                                                        <outletCollection property="gestureRecognizers" destination="AXt-PM-X7M" appends="YES" id="9PT-wj-kgV"/>
-                                                    </connections>
-                                                </imageView>
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -384,7 +377,7 @@
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="19Q-Eb-vdl" id="i89-cw-jh1">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="发布" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="cwx-Di-xeA">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="我的发布" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="cwx-Di-xeA">
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -399,6 +392,23 @@
                                             <segue destination="Ssm-vG-Lkg" kind="push" id="rdh-ln-TEC"/>
                                         </connections>
                                     </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="xya-im-L3e" imageView="Lud-g8-gCw" style="IBUITableViewCellStyleDefault" id="YjV-IB-d7P">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="YjV-IB-d7P" id="Gxo-u6-msc">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="我的通知" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="xya-im-L3e">
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="me_post.png" id="Lud-g8-gCw">
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                </imageView>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection id="GNI-qo-JO7">
@@ -408,20 +418,41 @@
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="VvQ-VK-9pd" id="YQT-Jh-X9I">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="设置" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="dn4-5j-5tW">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="修改密码" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="dn4-5j-5tW">
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="me_setting.png" id="zcW-wi-Jvq">
+                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="setting_reset.png" id="zcW-wi-Jvq">
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </imageView>
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <segue destination="BW3-Bc-hbb" kind="push" id="bfy-O4-rQT"/>
+                                            <segue destination="b0B-hq-Szq" kind="push" id="rpD-mf-Unk"/>
                                         </connections>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                            <tableViewSection id="UhC-Wu-hLl">
+                                <cells>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="dy9-l3-K00" imageView="EuD-Jq-NSV" style="IBUITableViewCellStyleDefault" id="6fS-Cy-NnP">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="6fS-Cy-NnP" id="e3a-wo-zAS">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="退出登录" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="dy9-l3-K00">
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="setting_logout.png" id="EuD-Jq-NSV">
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                </imageView>
+                                            </subviews>
+                                        </tableViewCellContentView>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -436,6 +467,7 @@
                     <navigationItem key="navigationItem" title="我" id="VHs-YG-hc2"/>
                     <connections>
                         <outlet property="avatar" destination="hhj-OW-dxI" id="UWe-gU-bCR"/>
+                        <outlet property="logoutCell" destination="6fS-Cy-NnP" id="qoC-9l-R8r"/>
                         <outlet property="name" destination="f9s-E0-0bc" id="q2i-Mt-rxr"/>
                         <outlet property="phoneNum" destination="Xxc-la-fDV" id="6FO-NA-eqI"/>
                     </connections>
@@ -521,7 +553,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="upA-Hf-e1M" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1742" y="2172"/>
+            <point key="canvasLocation" x="1564" y="2377"/>
         </scene>
         <!--修改密码-->
         <scene sceneID="huB-YD-ybx">
@@ -678,7 +710,7 @@
                                                     <rect key="frame" x="113" y="37" width="95" height="95"/>
                                                     <gestureRecognizers/>
                                                 </imageView>
-                                                <imageView tag="1" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="98W-ZQ-ej3">
+                                                <imageView tag="2" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="98W-ZQ-ej3">
                                                     <rect key="frame" x="215" y="37" width="95" height="95"/>
                                                     <gestureRecognizers/>
                                                 </imageView>
@@ -887,20 +919,21 @@
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="iXC-Oa-JfW" id="oHF-rq-cOB">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" tag="102" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="请输入您的具体职务" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Bab-h5-iKs">
-                                                    <rect key="frame" x="97" y="7" width="215" height="30"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits" returnKeyType="next"/>
-                                                    <connections>
-                                                        <outlet property="delegate" destination="4Fj-D8-Quy" id="ri5-7h-jK5"/>
-                                                    </connections>
-                                                </textField>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="职务" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hfG-5f-vLV">
                                                     <rect key="frame" x="18" y="11" width="71" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pLD-is-RN2">
+                                                    <rect key="frame" x="97" y="7" width="215" height="30"/>
+                                                    <state key="normal">
+                                                        <color key="titleShadowColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    </state>
+                                                    <connections>
+                                                        <action selector="showJobPicker:" destination="4Fj-D8-Quy" eventType="touchUpInside" id="A6H-e7-aUG"/>
+                                                    </connections>
+                                                </button>
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -1092,14 +1125,14 @@
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="320" height="700"/>
                     <connections>
-                        <outlet property="area_Btn" destination="yry-vs-iRy" id="4lc-zG-EvG"/>
+                        <outlet property="area_Btn" destination="yry-vs-iRy" id="rav-qx-c6R"/>
                         <outlet property="category_Btn" destination="Yb4-7V-8Xz" id="XiQ-j7-GQa"/>
                         <outlet property="eighthTextField" destination="tH5-lW-E1B" id="Wya-wY-ll0"/>
                         <outlet property="fifthTextField" destination="vqA-8p-pl4" id="O5e-Pd-Umm"/>
                         <outlet property="firstTextField" destination="cOe-U5-ZdN" id="nWH-3I-m9c"/>
                         <outlet property="fourthTextField" destination="31R-IX-GoN" id="HYI-3z-NiH"/>
                         <outlet property="gender_Btn" destination="1pM-Jv-gFS" id="QN2-zh-sp1"/>
-                        <outlet property="secondTextField" destination="Bab-h5-iKs" id="6wv-Kn-T9D"/>
+                        <outlet property="job_Btn" destination="pLD-is-RN2" id="tpE-lH-w2R"/>
                         <outlet property="seventhTextField" destination="ZuI-5w-Ecj" id="Q3H-bK-mP1"/>
                         <outlet property="sixthTextField" destination="uYU-nx-121" id="cRn-rr-Lp9"/>
                         <outlet property="thirdTextField" destination="ymv-gI-1WS" id="6c9-ol-X9H"/>
@@ -1258,7 +1291,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Kfv-f8-oqH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1612" y="1660"/>
+            <point key="canvasLocation" x="1687" y="1503"/>
         </scene>
         <!--Contact Button Bar View Controller-->
         <scene sceneID="hoH-or-DyY">
@@ -2217,4 +2250,7 @@
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
+    <inferredMetricsTieBreakers>
+        <segue reference="rpD-mf-Unk"/>
+    </inferredMetricsTieBreakers>
 </document>
