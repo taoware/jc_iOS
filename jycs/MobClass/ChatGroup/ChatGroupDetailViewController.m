@@ -355,37 +355,13 @@
     [self showHudInView:self.view hint:NSLocalizedString(@"loadData", @"Load data...")];
     [[EaseMob sharedInstance].chatManager asyncFetchGroupInfo:_chatGroup.groupId completion:^(EMGroup *group, EMError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [weakSelf hideHud];
             if (!error) {
-                weakSelf.chatGroup = group;
-                [weakSelf reloadDataSource];
-                
-                //                NSString *tmp = [group.members objectAtIndex:0];
-                //                NSString *tmp = @"zxcvbn";
-                //                [[EaseMob sharedInstance].chatManager asyncBlockOccupants:@[tmp] fromGroup:group.groupId completion:^(EMGroup *group, EMError *error){
-                //                    if (!error) {
-                //                        //
-                //                    }
-                //
-                //                } onQueue:nil];
-                
-                //                [[EaseMob sharedInstance].chatManager asyncUnblockOccupants:@[tmp] forGroup:group.groupId completion:^(EMGroup *group, EMError *error) {
-                //                    if (!error) {
-                //                        //
-                //                    }
-                //                } onQueue:nil];
-                
-                //                [[EaseMob sharedInstance].chatManager asyncFetchGroupBansList:group.groupId completion:^(NSArray *groupBans, EMError *error) {
-                //                    if (!error) {
-                //                        //
-                //                    }
-                //                } onQueue:nil];
-                
-                //                [[EaseMob sharedInstance].chatManager asyncLeaveGroup:@"1413452243774" completion:^(EMGroup *group, EMGroupLeaveReason reason, EMError *error) {
-                //                    if (!error) {
-                //                        //
-                //                    }
-                //                } onQueue:nil];
+                NSArray* usernames = group.members;
+                [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:usernames completion:^(GXError *error) {
+                    [weakSelf hideHud];
+                    weakSelf.chatGroup = group;
+                    [weakSelf reloadDataSource];
+                }];
             }
             else{
                 [weakSelf showHint:NSLocalizedString(@"group.fetchInfoFail", @"failed to get the group details, please try again later")];

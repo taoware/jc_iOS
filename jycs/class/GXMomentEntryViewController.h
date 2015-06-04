@@ -14,6 +14,7 @@
 
 @interface GXMomentEntryViewController : UITableViewController
 @property (nonatomic, strong)Moment* momentEntry;
+@property (nonatomic)BOOL onlyText;
 @property (nonatomic, strong)NSManagedObjectContext* context;
 @property (nonatomic, weak)id<GXMomentEntryDelegate> delegate;
 @end

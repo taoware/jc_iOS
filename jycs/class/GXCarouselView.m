@@ -38,6 +38,7 @@ typedef void(^DKCarouselViewTapBlock)();
 - (void)commonInit {
     self.userInteractionEnabled = YES;
     self.enable = YES;
+//    self.contentMode = UIViewContentModeScaleAspectFill;
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTap:)];
     [self addGestureRecognizer:tapGesture];

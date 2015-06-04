@@ -7,17 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "GXInfoChatListViewController.h"
-#import "GXContactListViewController.h"
+#import "GXChatListViewController.h"
+#import "GXContactsViewController.h"
 #import "GXInfoNotificationViewController.h"
 
 @interface GXMainTabBarViewController : UITabBarController
 {
     EMConnectionState _connectionState;
 }
-@property (nonatomic, strong)GXContactListViewController* contactListVC;
-@property (nonatomic, strong)GXInfoChatListViewController* chatListVC;
-@property (nonatomic, strong)GXInfoNotificationViewController* notificationVC;
 
 - (void)jumpToChatList;
 

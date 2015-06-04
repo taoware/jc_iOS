@@ -24,7 +24,7 @@
     [self setItems:items];
     self.indicatorTintColor = [UIColor redColor];
     self.defaultImage = [UIImage imageNamed:@"placeholder.jpg"];
-    [self setAutoPagingForInterval:4];
+    [self setAutoPagingForInterval:6];
 }
 
 

@@ -75,12 +75,16 @@
 
 - (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender {
     if ([identifier isEqualToString:@"go reset password"]) {
-        if (![self verifyCode:self.verificationField.text]) {
-            TTAlert(@"验证码错误");
+        if (!self.phoneField.text.length) {
+            TTAlertNoTitle(@"请输入手机号");
             return NO;
         }
-        if (self.phoneField.text.length != 11 || self.mobile.length != 11) {
-            TTAlert(@"手机格式错误");
+        if (!self.verificationField.text.length) {
+            TTAlertNoTitle(@"请输入验证码");
+            return NO;
+        }
+        if (![self verifyCode:self.verificationField.text]) {
+            TTAlert(@"验证码错误");
             return NO;
         }
     }

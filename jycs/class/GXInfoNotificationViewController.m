@@ -28,7 +28,7 @@
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 50;
 
-    self.managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+    self.managedObjectContext = [[GXCoreDataController sharedInstance] masterManagedObjectContext];
     self.dateFormatter = [[NSDateFormatter alloc] init];
     [self.dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"GMT-8"]];
     [self.dateFormatter setDateStyle:NSDateFormatterMediumStyle];

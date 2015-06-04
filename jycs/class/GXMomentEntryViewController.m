@@ -77,7 +77,7 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 
 - (void)toggleDoneButton {
     BOOL enabled = NO;
-    if (self.momentEntry.text.length && self.momentEntry.type && self.momentEntry.inUnit) {
+    if (self.momentEntry.text.length && self.momentEntry.type) {
         enabled = YES;
     }
     self.navigationItem.rightBarButtonItem.enabled = enabled;
@@ -103,7 +103,7 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
             return 1;
             break;
         case 1:
-            return 2;
+            return 1;
             break;
         default:
             break;
@@ -122,9 +122,11 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 
 - (AddMomentTableViewCell *)addMomentCellAtIndexPath:(NSIndexPath *)indexPath {
     AddMomentTableViewCell* cell = [self.tableView dequeueReusableCellWithIdentifier:GXAddMomentCellIdentifier forIndexPath:indexPath];
+    cell.onlyText = self.onlyText;
     
     cell.momentEntry = self.momentEntry;
     cell.delegate = self;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
     return cell;
 }
@@ -136,13 +138,13 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
     }
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
-    if (indexPath.row == 0) {
-        cell.textLabel.text = @"所在单位";
-        cell.detailTextLabel.text = self.momentEntry.inUnit.name;
-    } else if (indexPath.row == 1) {
-        cell.textLabel.text = @"广场类型";
+//    if (indexPath.row == 0) {
+//        cell.textLabel.text = @"所在单位（必选）";
+//        cell.detailTextLabel.text = self.momentEntry.inUnit.name;
+//    } else if (indexPath.row == 1) {
+        cell.textLabel.text = @"广场类型（必选）";
         cell.detailTextLabel.text = self.momentEntry.type;
-    }
+//    }
     return cell;
 }
 
@@ -187,18 +189,18 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 1) {
-        if (indexPath.row == 0) {
-            GXSelectUnitViewController* unitSelectVC = [[GXSelectUnitViewController alloc]initWithStyle:UITableViewStyleGrouped];
-            unitSelectVC.delegate = self;
-            unitSelectVC.context = self.context;
-            unitSelectVC.unit = self.momentEntry.inUnit;
-            [self.navigationController pushViewController:unitSelectVC animated:YES];
-        } else if (indexPath.row == 1) {
+//        if (indexPath.row == 0) {
+//            GXSelectUnitViewController* unitSelectVC = [[GXSelectUnitViewController alloc]initWithStyle:UITableViewStyleGrouped];
+//            unitSelectVC.delegate = self;
+//            unitSelectVC.context = self.context;
+//            unitSelectVC.unit = self.momentEntry.inUnit;
+//            [self.navigationController pushViewController:unitSelectVC animated:YES];
+//        } else if (indexPath.row == 1) {
             GXSelectTypeViewController* typeSelectVC = [[GXSelectTypeViewController alloc]initWithStyle:UITableViewStyleGrouped];
             typeSelectVC.delegate = self;
             typeSelectVC.type = self.momentEntry.type;
             [self.navigationController pushViewController:typeSelectVC animated:YES];
-        }
+//        }
     }
 }
 
@@ -350,13 +352,24 @@ static NSString * const GXMomentOptionIdentifier = @"GXMomentOptionIdentifier";
 #pragma mark - action
 
 - (void)cancelButtonTapped:(id)sender {
+    NSArray* photos = self.momentEntry.photo.array;
+    for (Photo* photo in photos) {
+        [GXPhotoEngine deleteLocalPhotoWithURL:photo.imageURL];
+    }
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 - (void)doneButtonTapped:(id)sender {
+    [self.view endEditing:YES];
     if ([self.delegate respondsToSelector:@selector(didFinishMomentEntryViewController:didSave:)]) {
         self.momentEntry.syncStatus = @(GXObjectCreated);
         self.momentEntry.sender = (User*)[self.context objectWithID:[GXUserEngine sharedEngine].userLoggedIn.objectID];
+        
+        if (self.context.hasChanges && ![self.context save:NULL]) {
+            NSLog(@"could not sava new moment entry");
+        }
+        [[GXCoreDataController sharedInstance] saveMasterContext];
+        
         [self.delegate didFinishMomentEntryViewController:self didSave:YES];
     }
 }

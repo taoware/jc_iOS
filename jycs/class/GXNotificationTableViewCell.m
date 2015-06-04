@@ -80,11 +80,6 @@
 
 - (void)saveContext {
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSError *error = nil;
-        [[GXCoreDataController sharedInstance] saveBackgroundContext];
-        if (error) {
-            NSLog(@"Error saving background context after creating objects on server: %@", error);
-        }
         
         [[GXCoreDataController sharedInstance] saveMasterContext];
     });

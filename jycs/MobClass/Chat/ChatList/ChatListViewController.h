@@ -11,9 +11,8 @@
   */
 
 #import <UIKit/UIKit.h>
-#import "BaseViewController.h"
 
-@interface ChatListViewController : BaseViewController
+@interface ChatListViewController : UIViewController
 
 - (void)refreshDataSource;
 

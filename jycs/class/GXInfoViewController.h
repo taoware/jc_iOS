@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BaseViewController.h"
 
-@interface GXInfoViewController : UIViewController
+@interface GXInfoViewController : BaseViewController
 - (void)showStoreInfo;
 @end

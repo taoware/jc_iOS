@@ -11,6 +11,7 @@
 @interface GXPhotoEngine : NSObject
 
 + (NSString *)writePhotoToDisk:(UIImage* )image;
++ (void)deleteLocalPhotoWithURL:(NSString *)photoURL;
 + (UIImage *)imageForlocalPhotoUrl:(NSString *)photoUrl;
 + (NSData *)dataForLocalPhotoURL:(NSString *)photoURL;
 

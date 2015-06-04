@@ -44,48 +44,53 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
     self.tableView.allowsSelection = NO;
-//    self.tableView.separatorStyle = UITableViewCellSelectionStyleNone;
+    
+    
     
     self.offscreenCells = [NSMutableDictionary dictionary];
     [self.tableView registerClass:[GXMomentsTableViewCell class] forCellReuseIdentifier:CellIdentifier];
-    
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.tableView addSubview:self.slimeView];
     
-    self.managedObjectContext = [[GXCoreDataController sharedInstance] masterManagedObjectContext];
+    self.managedObjectContext = [[GXCoreDataController sharedInstance] newManagedObjectContext];
     self.dateFormatter = [[NSDateFormatter alloc] init];
     [self.dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"GMT-8"]];
     [self.dateFormatter setDateStyle:NSDateFormatterMediumStyle];
     [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    self.momentsInProgress = [[NSMutableArray alloc]init];
     
-    [self updateUI];
-    [self.slimeView setLoadingWithExpansion];
+    [self loadMomentsFromCoreData];
+    [[GXMomentsEngine sharedEngine] startSync];
 }
 
 
 - (void)loadMomentsFromCoreData {
+    
     [self.managedObjectContext performBlockAndWait:^{
+        [self.managedObjectContext reset];
+        
         NSError *error = nil;
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"Moment"];
         [request setSortDescriptors:[NSArray arrayWithObject:
                                      [NSSortDescriptor sortDescriptorWithKey:@"createTime" ascending:NO]]];
         self.moments = [self.managedObjectContext executeFetchRequest:request error:&error];
-        
     }];
+    
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    
     [[NSNotificationCenter defaultCenter] addObserverForName:kNOTIFICATION_MOMENTSSYNCCOMPLETED object:nil queue:nil usingBlock:^(NSNotification *note) {
         [self.slimeView endRefresh];
-        [self updateUI];
+        [self loadMomentsFromCoreData];
+        [self.tableView reloadData];
     }];
 }
 
-- (void)updateUI {
-    [self loadMomentsFromCoreData];
-    [self.tableView reloadData];
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNOTIFICATION_MOMENTSSYNCCOMPLETED object:nil];
 }
 
 - (SRRefreshView *)slimeView
@@ -106,21 +111,6 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     return _slimeView;
 }
 
-#pragma mark - GXMomentCell delegate
-
-- (void)resendButtonTappedWithMoment:(Moment *)moment {
-    [self.momentsInProgress addObject:moment];
-    [self loadMomentsFromCoreData];
-    [self.tableView reloadData];
-    [[GXMomentsEngine sharedEngine] sendMomentWithMoment:moment completion:^(NSDictionary *momentInfo, GXError *error) {
-        if (error) {
-            TTAlert(@"发送失败");
-        }
-        [self.momentsInProgress removeObject:moment];
-        [self loadMomentsFromCoreData];
-        [self.tableView reloadData];
-    }];
-}
 
 - (void)userInfoTappedWithMoment:(Moment *)moment {
     [self performSegueWithIdentifier:@"go user info" sender:moment];
@@ -135,20 +125,6 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
         userInfoVC.moment = moment;
     }
 }
-
-- (void)setMoment:(Moment *)moment WithStatus:(GXObjectSyncStatus)syncStatus {
-    moment.syncStatus = @(syncStatus);
-    [self.managedObjectContext performBlockAndWait:^{
-        NSError *error = nil;
-        BOOL saved = [self.managedObjectContext save:&error];
-        if (!saved) {
-            // do some real error handling
-            NSLog(@"Could not save Date due to %@", error);
-        }
-        [[GXCoreDataController sharedInstance] saveMasterContext];
-    }];
-}
-
 
 #pragma mark - UIScrollViewDelegate
 
@@ -170,6 +146,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 {
     [[GXMomentsEngine sharedEngine] startSync];
 }
+
 
 #pragma mark - Table view data source
 
@@ -193,9 +170,6 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
     Moment* moment = self.moments[indexPath.row];
     cell.fromViewController = self;
     cell.momentToDisplay = moment;
-    if ([self.momentsInProgress containsObject:moment]) {
-        cell.syncStatus = GXObjectSyncing;
-    }
     
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
@@ -233,7 +207,17 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 100;
+    Moment* moment =[self.moments objectAtIndex:indexPath.row];
+    if (moment.photo.count == 0) {
+        return 89.0f;
+    } else if (moment.photo.count>0 && moment.photo.count <4) {
+        return 164.0f;
+    } else if (moment.photo.count>3 && moment.photo.count <7) {
+        return 244.0f;
+    } else if (moment.photo.count>6 && moment.photo.count <10) {
+        return 324.0f;
+    }
+    return 100.0f;
 }
 
 
@@ -256,26 +240,28 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 
 #pragma mark - go to moment entry
 
-- (void)goToMomentEntryWithImageAsset:(NSArray*)imageAssets {
+- (void)goToMomentEntryWithImageAsset:(NSArray*)imageAssets isOnlyText:(BOOL)onlyText{
     GXMomentEntryViewController* detailVC = [[GXMomentEntryViewController alloc]initWithStyle:UITableViewStyleGrouped];
-    NSManagedObjectContext* childContext = [[GXCoreDataController sharedInstance] newManagedObjectContext];
-    Moment* newMomentEntry = [NSEntityDescription insertNewObjectForEntityForName:@"Moment" inManagedObjectContext:childContext];
+    NSManagedObjectContext* newContext = [[GXCoreDataController sharedInstance] newManagedObjectContext];
+    Moment* newMomentEntry = [NSEntityDescription insertNewObjectForEntityForName:@"Moment" inManagedObjectContext:newContext];
+    newMomentEntry.createTime = [NSDate date];
     if (imageAssets.count) {
         for (ALAsset* imageAsset in imageAssets) {
             ALAssetRepresentation *imageRep = [imageAsset defaultRepresentation];
             UIImage* image = [UIImage imageWithCGImage:imageRep.fullScreenImage scale:imageRep.scale orientation:(UIImageOrientation)imageRep.orientation];
             NSString* imageUrl = [GXPhotoEngine writePhotoToDisk:image];
             
-            Photo* photo = [NSEntityDescription insertNewObjectForEntityForName:@"Photo" inManagedObjectContext:childContext];
+            Photo* photo = [NSEntityDescription insertNewObjectForEntityForName:@"Photo" inManagedObjectContext:newContext];
             photo.thumbnailURL = imageUrl;
             photo.imageURL = imageUrl;
             photo.photoDescription = [imageRep filename];
             [newMomentEntry addPhotoObject:photo];
         }
     }
-    
+
     detailVC.momentEntry = newMomentEntry;
     detailVC.context = newMomentEntry.managedObjectContext;
+    detailVC.onlyText = onlyText;
     detailVC.delegate = self;
     
     UINavigationController* navi = [[UINavigationController alloc]initWithRootViewController:detailVC];
@@ -286,14 +272,10 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 
 - (void)didFinishMomentEntryViewController:(GXMomentEntryViewController *)viewController didSave:(BOOL)didSave {
     if (didSave) {
-        NSManagedObjectContext* context = viewController.context;
-        [context performBlockAndWait:^{
-            if (context.hasChanges && ![context save:NULL]) {
-                NSLog(@"could not sava new moment entry");
-            }
-        }];
-        [self.managedObjectContext save:NULL];
-        [self resendButtonTappedWithMoment:viewController.momentEntry];
+        [self loadMomentsFromCoreData];
+        [self.tableView reloadData];
+        [[GXMomentsEngine sharedEngine] startSync];
+        
         [self dismissViewControllerAnimated:YES completion:NULL];
     }
 }
@@ -302,7 +284,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 0) {  // only text
-        [self goToMomentEntryWithImageAsset:nil];
+        [self goToMomentEntryWithImageAsset:nil isOnlyText:YES];
     } else if (buttonIndex == 1) {   // take photo from camera
         if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
             UIImagePickerController *imagePickController=[[UIImagePickerController alloc]init];
@@ -336,7 +318,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
              [library assetForURL:assetURL resultBlock:^(ALAsset *asset )
               {
                   [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-                  [self goToMomentEntryWithImageAsset:@[asset]];
+                  [self goToMomentEntryWithImageAsset:@[asset] isOnlyText:NO];
               }
                      failureBlock:^(NSError *error )
               {
@@ -359,7 +341,7 @@ static NSString *CellIdentifier = @"MomentsCellIdentifier";
 {
     [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     
-    [self goToMomentEntryWithImageAsset:assets];
+    [self goToMomentEntryWithImageAsset:assets isOnlyText:NO];
 }
 
 

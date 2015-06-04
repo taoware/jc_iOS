@@ -14,5 +14,7 @@
 - (BOOL)canSendMomentForEmployee;
 - (BOOL)canSendMomentForSupplier;
 - (BOOL)canSendMomentForPurchase;
+- (BOOL)canIM;
+- (BOOL)canVisitSquare;
 
 @end

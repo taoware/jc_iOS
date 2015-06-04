@@ -34,7 +34,7 @@
 
 - (NSManagedObjectContext *)managedObjectContext {
     if (!_managedObjectContext) {
-        _managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+        _managedObjectContext = [[GXCoreDataController sharedInstance] newManagedObjectContext];
     }
     return _managedObjectContext;
 }
@@ -44,10 +44,15 @@
     NSString* mobile = [defaults objectForKey:@"userLoggedIn"];
     
     NSFetchRequest* fetchRequest = [[NSFetchRequest alloc]initWithEntityName:@"User"];
+//    fetchRequest.returnsObjectsAsFaults = NO;
+//    [fetchRequest setRelationshipKeyPathsForPrefetching:@[@"hasPermisson"]];
+//    [fetchRequest setRelationshipKeyPathsForPrefetching:@[@"inUnit"]];
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"mobile == %@", mobile];
     fetchRequest.predicate = predicate;
-    NSError* error;
-    self.userLoggedIn = [[self.managedObjectContext executeFetchRequest:fetchRequest error:&error] firstObject];
+    [self.managedObjectContext performBlockAndWait:^{
+        NSError* error;
+        self.userLoggedIn = [[self.managedObjectContext executeFetchRequest:fetchRequest error:&error] firstObject];
+    }];
 }
 
 - (NSString *)documentDirectoryForCurrentUser {
@@ -85,7 +90,9 @@
     NSDictionary *parameter = [NSDictionary dictionaryWithObjectsAndKeys:
                                     username, @"mobile",
                                     password, @"plainPassword", nil];
+    NSLog(@"Begin Log in");
     [[GXHTTPManager sharedManager] GET:@"users/login" parameters:parameter success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSLog(@"JC Log in Successfully");
         NSArray* users = [responseObject valueForKeyPath:API_RESULTS];
         NSDictionary* userDic = [users firstObject];
         User* user = [User UserWithUserInfo:userDic inManagedObjectContext:self.managedObjectContext]; // load user info into core data
@@ -99,11 +106,13 @@
             if ([[[EaseMob sharedInstance] chatManager] loginInfo]) {
                 [[EaseMob sharedInstance].chatManager logoffWithUnbindDeviceToken:YES error:NULL];
             }
+            NSLog(@"begin easemob log in");
             //环信异步登陆账号
             [[EaseMob sharedInstance].chatManager asyncLoginWithUsername:user.imUsername
                                                                 password:user.imPassword
                                                               completion:
              ^(NSDictionary *loginInfo, EMError *error) {
+                 NSLog(@"easemob Log in returned");
                  if (loginInfo && !error) {
                      [self updateUserLoggedInFlagWith:username];
                      [self enableUserAutoLogin];
@@ -145,10 +154,11 @@
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         // api error handling
         id responseObject = error.userInfo[@"kErrorResponseObjectKey"];
+        NSLog(@"jc log in failed %@", responseObject);
         if ([responseObject isKindOfClass:[NSDictionary class]]&&responseObject) {
             NSString* apiError = [responseObject objectForKey:@"msg"];
             if (apiError) {
-                completion(nil, [GXError errorWithCode:GXErrorAuthenticationFailure andDescription:apiError]);
+                completion(nil, [GXError errorWithCode:GXErrorJCServerAuthenticationFailure andDescription:apiError]);
             }
         } else {
             // AFNetworking error handling
@@ -163,7 +173,7 @@
     NSDictionary *parameter = [NSDictionary dictionaryWithObjectsAndKeys:
                                name, @"name",
                                gender, @"gender",
-                               category, @"category",
+                               @"管理员", @"category",
                                job, @"position",
                                area, @"location",
                                address, @"address",
@@ -299,15 +309,29 @@
     NSString* usernameAsString = [usernames componentsJoinedByString:@","];
     NSDictionary* parameter = @{@"imUsernames": usernameAsString};
     [[GXHTTPManager sharedManager] GET:endpoint parameters:parameter success:^(NSURLSessionDataTask *task, id responseObject) {
-        if ([responseObject isKindOfClass:[NSDictionary class]]) {
-            NSArray* users = [responseObject objectForKey:API_RESULTS];
-            [User loadUserFromUsersArray:users intoManagedObjectContext:self.managedObjectContext];
-        }
-        [self executeCompletedOperations];
-        completion(nil);
+        NSLog(@"user infos recevied");
+        NSManagedObjectContext* context = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+        [context performBlock:^{
+            if ([responseObject isKindOfClass:[NSDictionary class]]) {
+                NSArray* users = [responseObject objectForKey:API_RESULTS];
+                [User loadUserFromUsersArray:users intoManagedObjectContext:context];
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSLog(@"user infos saved");
+                [[GXCoreDataController sharedInstance] saveBackgroundContext];
+                [[GXCoreDataController sharedInstance] saveMasterContext];
+                if (completion) {
+                    completion(nil);
+                }
+            });
+        }];
+        
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         [self executeCompletedOperations];
-        completion([GXError errorWithCode:GXErrorUserQueryFailure andDescription:@"用户数据查询失败"]);
+        if (completion) {
+            completion([GXError errorWithCode:GXErrorUserQueryFailure andDescription:@"用户数据查询失败"]);
+        }
+
     }];
 }
 
@@ -316,13 +340,17 @@
     NSFetchRequest* fetchRequest = [[NSFetchRequest alloc]initWithEntityName:@"User"];
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"imUsername == %@", easemobUsername];
     fetchRequest.predicate = predicate;
-    NSError* error;
-    User* user = [[self.managedObjectContext executeFetchRequest:fetchRequest error:&error] firstObject];
+    __block User* user = nil;
+    [self.managedObjectContext performBlockAndWait:^{
+        NSError* error;
+        user = [[self.managedObjectContext executeFetchRequest:fetchRequest error:&error] firstObject];
+    }];
+    
     return user;
 }
 
-- (void)queryUserInfoUsingMobile:(NSString *)mobile completion:(void (^)(NSArray *, GXError *))completion {
-    NSDictionary* parameter = @{@"mobile": mobile};
+- (void)queryUserInfoWithQueryString:(NSString *)queryString ofType:(NSString *)type completion:(void (^)(NSArray *, GXError *))completion {
+    NSDictionary* parameter = @{type: queryString};
     [[GXHTTPManager sharedManager] GET:@"users" parameters:parameter success:^(NSURLSessionDataTask *task, id responseObject) {
         NSArray* users = [responseObject valueForKeyPath:API_RESULTS];
         NSArray* userArray = [User loadUserFromUsersArray:users intoManagedObjectContext:self.managedObjectContext]; // load user info into core data

@@ -10,6 +10,7 @@
 #import "UIImageView+AFNetworking.h"
 #import <CommonCrypto/CommonDigest.h>
 #import <QuartzCore/QuartzCore.h>
+#import "GXPhotoEngine.h"
 #define kMaxScale 3;
 #define kEnableCache YES
 #define kDismissSFPhotoesBrowser @"kDismissSFPhotoesBrowser"
@@ -179,7 +180,7 @@ static inline NSString *  md5(NSString * str){
         NSURL* photoURL = [documentDirectory URLByAppendingPathComponent:photoName];
         UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:photoURL]];
         
-        self.iv.image = image;
+        self.iv.image = [GXPhotoEngine imageForlocalPhotoUrl:self.photoURL];
         self.imageLoaded = YES;
     }
     

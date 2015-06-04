@@ -8,7 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "Moment.h"
+#import "EMBuddy+JCuser.h"
 
 @interface GXUserInfoViewController : UITableViewController
 @property (nonatomic, strong)Moment* moment;
+@property (nonatomic, strong)EMBuddy* buddy;
 @end

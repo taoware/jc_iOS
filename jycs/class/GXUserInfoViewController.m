@@ -10,14 +10,17 @@
 #import "User.h"
 #import "Photo.h"
 #import "ChatViewController.h"
+#import "GXUserEngine.h"
 
 @interface GXUserInfoViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *avatar;
-@property (weak, nonatomic) IBOutlet UILabel *name;
-@property (weak, nonatomic) IBOutlet UILabel *screenName;
+@property (weak, nonatomic) IBOutlet UILabel *companyLabel;
+@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+
+@property (weak, nonatomic) IBOutlet UITableViewCell *nameCell;
 @property (weak, nonatomic) IBOutlet UITableViewCell *phoneCell;
-@property (weak, nonatomic) IBOutlet UITableViewCell *regionCell;
 @property (weak, nonatomic) IBOutlet UITableViewCell *positionCell;
+@property (weak, nonatomic) IBOutlet UITableViewCell *companyCell;
 @property (strong, nonatomic) UIView* footerView;
 @property (strong, nonatomic) UIButton* contactButton;
 @end
@@ -26,22 +29,29 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"详细资料";
+    self.title = @"个人资料";
+    self.tableView.allowsSelection = NO;
     self.tableView.tableFooterView = self.footerView;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    User* user;
+    if (self.moment) {
+        user = self.moment.sender;
+    }
     
-    User* user = self.moment.sender;
+    if (self.buddy) {
+        user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:self.buddy.username];
+    }
     [self.avatar setImageWithURL:[NSURL URLWithString:user.avatar.thumbnailURL] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
-    self.name.text = user.name;
-    self.screenName.text = self.moment.screenName;
+    self.nameLabel.text = user.name;
+    self.companyLabel.text = user.address;
     
     self.phoneCell.detailTextLabel.text = user.mobile;
-    self.regionCell.detailTextLabel.text = user.location;
-    self.positionCell.detailTextLabel.text = self.moment.screenName;
-
+    self.nameCell.detailTextLabel.text = user.name;
+    self.positionCell.detailTextLabel.text = user.position;
+    self.companyCell.detailTextLabel.text = user.address;
 }
 
 - (UIButton *)contactButton {
@@ -50,7 +60,7 @@
         [_contactButton setTitle:@"发消息" forState:UIControlStateNormal];
         [_contactButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_contactButton addTarget:self action:@selector(contactAction) forControlEvents:UIControlEventTouchUpInside];
-        [_contactButton setBackgroundColor: [UIColor colorWithRed:87 / 255.0 green:186 / 255.0 blue:205 / 255.0 alpha:1.0]];
+        [_contactButton setBackgroundColor: [UIColor colorWithRed:36.0/255.0 green:148.0/255.0 blue:96.0/255.0 alpha:1.0]];
     }
     
     return _contactButton;
@@ -68,7 +78,14 @@
 }
 
 - (void)contactAction {
-    User* user = self.moment.sender;
+    User* user;
+    if (self.moment) {
+        user = self.moment.sender;
+    }
+    if (self.buddy) {
+        user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:self.buddy.username];
+    }
+    
     NSDictionary *loginInfo = [[[EaseMob sharedInstance] chatManager] loginInfo];
     NSString *loginUsername = [loginInfo objectForKey:kSDKUsername];
     if (loginUsername && loginUsername.length > 0) {

@@ -32,8 +32,10 @@ static NSString * const kAPIBaseURLString = @"http://vps1.taoware.com:8080/jc/";
     
     if (self) {
         
-        self.responseSerializer = [AFJSONResponseSerializer serializer];
         self.requestSerializer = [AFJSONRequestSerializer serializer];
+        AFJSONResponseSerializer *serializer = [AFJSONResponseSerializer serializer];
+        [serializer setRemovesKeysWithNullValues:YES];
+        [self setResponseSerializer:serializer];
     }
 
     return self;

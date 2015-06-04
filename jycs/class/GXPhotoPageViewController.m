@@ -10,6 +10,7 @@
 #import "GXPhotoItemViewController.h"
 #import "GXPhotoScrollView.h"
 #import "NSBundle+CTAssetsPickerController.h"
+#import "GXPhotoEngine.h"
 
 @interface GXPhotoPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, GXPhotoItemViewControllerDataSource>
 @property (nonatomic, strong) Moment *moment;
@@ -67,7 +68,10 @@
 }
 
 - (void)deleteCurrentPhoto {
+    NSString* photoURL;
+    
     NSMutableOrderedSet* photos = [self.moment.photo mutableCopy];
+    photoURL = [(Photo*)[photos objectAtIndex:self.pageIndex] imageURL];
     [photos removeObjectsAtIndexes:[NSIndexSet indexSetWithIndex:self.pageIndex]];
     self.moment.photo = photos;
     if (photos.count == 0) {
@@ -77,6 +81,8 @@
     } else {
         self.pageIndex = self.pageIndex;
     }
+    
+    [GXPhotoEngine deleteLocalPhotoWithURL:photoURL];
 }
 
 #pragma mark - Update Title

@@ -1347,7 +1347,7 @@
         __weak typeof(self) weakSelf = self;
         
         [EMAlertView showAlertWithTitle:NSLocalizedString(@"prompt", @"Prompt")
-                                message:NSLocalizedString(@"sureToDelete", @"please make sure to delete")
+                                message:@"确认要删除聊天记录吗?"
                         completionBlock:^(NSUInteger buttonIndex, EMAlertView *alertView) {
                             if (buttonIndex == 1) {
                                 [weakSelf.conversation removeAllMessages];

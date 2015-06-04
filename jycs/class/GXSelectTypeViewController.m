@@ -92,24 +92,24 @@
 - (NSArray *)typeArray {
     if (!_typeArray) {
         _typeArray = [[NSMutableArray alloc]init];
-        User* user = [GXUserEngine sharedEngine].userLoggedIn;
-        if ([user canSendMomentForEmployee]) {
+//        User* user = [GXUserEngine sharedEngine].userLoggedIn;
+//        if ([user canSendMomentForEmployee]) {
             [_typeArray addObject:@"员工广场"];
-        }
-        if ([user canSendMomentForPurchase]) {
+//        }
+//        if ([user canSendMomentForPurchase]) {
             [_typeArray addObject:@"联采广场"];
-        }
-        if ([user canSendMomentForSupplier]) {
+//        }
+//        if ([user canSendMomentForSupplier]) {
             [_typeArray addObject:@"供应商广场"];
-        }
+//        }
     }
     return _typeArray;
 }
 
 - (NSString *)typeDescriptionForType:(NSString *)type {
-    NSDictionary* typeDic = @{@"员工广场": @"所选单位的员工均可见",
-                              @"联采广场": @"全国联采业务员均可见",
-                              @"供应商广场": @"仅供应商可见"};
+    NSDictionary* typeDic = @{@"员工广场": @"发给员工的信息",
+                              @"联采广场": @"发给联采业务员的信息",
+                              @"供应商广场": @"发给供应商的信息"};
     return typeDic[type];
 }
 

@@ -48,8 +48,11 @@
     user.objectId = objectId;
     user.mobile = [userDictionary valueForKeyPath:USER_MOBILE];
     user.name = [userDictionary valueForKeyPath:USER_NAME];
+    user.position = [userDictionary valueForKey:USER_POSITION];
     user.screenName = [userDictionary valueForKey:USER_SCREENNAME];
     user.location = [userDictionary valueForKey:USER_LOCATION];
+    user.address = [userDictionary valueForKey:USER_ADDRESS];
+
     user.audit = [userDictionary valueForKey:USER_AUDIT];
     
     user.imUsername = [userDictionary valueForKeyPath:EASEMOB_USERNAME];

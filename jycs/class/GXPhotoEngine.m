@@ -34,8 +34,12 @@
 }
 
 + (NSString *)writePhotoToDisk:(UIImage *)image {
-//    UIImage* scaledImage = [image scaleProportionalToSize:[UIScreen mainScreen].bounds.size];  // doesn't scale for now
-    NSData* imageData = UIImageJPEGRepresentation(image, 0.8);
+    UIImage* scaledImage = image;
+    if (image.size.width>480 && image.size.height>480) {
+        scaledImage = [image scaleProportionalToSize:CGSizeMake(480, 480)];
+    }
+    
+    NSData* imageData = UIImageJPEGRepresentation(scaledImage, 0.8);
     
     NSString* imageRelatveUrl = [self uniqueDocumentURL];
     NSString* pathUrl = [[self documentDirectory] stringByAppendingPathComponent:imageRelatveUrl];
@@ -45,6 +49,12 @@
         NSLog(@"%@", error);
     }
     return imageRelatveUrl;
+}
+
++ (void)deleteLocalPhotoWithURL:(NSString *)photoURL {
+    NSString* pathUrl = [[self documentDirectory] stringByAppendingPathComponent:photoURL];
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    [fileManager removeItemAtPath:pathUrl error:NULL];
 }
 
 + (UIImage *)imageForlocalPhotoUrl:(NSString *)photoUrl {

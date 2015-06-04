@@ -37,4 +37,28 @@
     return NO;
 }
 
+- (BOOL)canIM {
+    for (Permission* permission in self.hasPermisson) {
+        if ([permission.permissonName isEqualToString:@"im"]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (BOOL)canVisitSquare {
+    for (Permission* permission in self.hasPermisson) {
+        if ([permission.permissonName isEqualToString:@"purchasingAvail"]) {
+            return YES;
+        }
+        if ([permission.permissonName isEqualToString:@"staffSquareAvail"]) {
+            return YES;
+        }
+        if ([permission.permissonName isEqualToString:@"supplierSquareAvail"]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 @end

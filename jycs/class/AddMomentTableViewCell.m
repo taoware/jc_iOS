@@ -185,8 +185,10 @@
         [self.imageViewArray addObject:imageView];
     }];
     
-    if (self.imageViewArray.count < 9) {
-        [self.imageViewArray addObject:self.plusImageView];
+    if (!self.onlyText) {
+        if (self.imageViewArray.count < 9) {
+            [self.imageViewArray addObject:self.plusImageView];
+        }
     }
     
     [self setNeedsUpdateConstraints];
@@ -197,7 +199,8 @@
 - (SZTextView *)momentTextView {
     if (!_momentTextView) {
         _momentTextView = [[SZTextView alloc]init];
-        _momentTextView.placeholder = @"说点什么吧...";
+        _momentTextView.placeholder = @"请输入您要发布的内容";
+        _momentTextView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
         _momentTextView.delegate = self;
     }
     return _momentTextView;

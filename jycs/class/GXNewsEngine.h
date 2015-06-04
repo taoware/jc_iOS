@@ -6,8 +6,15 @@
 //  Copyright (c) 2015 appleseed. All rights reserved.
 //
 
-#import "GXSyncEngine.h"
+#import <Foundation/Foundation.h>
+#import "GXSyncHeader.h"
 
-@interface GXNewsEngine : GXSyncEngine
+@interface GXNewsEngine : NSObject
+
+@property (atomic, readonly) BOOL syncInProgress;
+
++ (GXNewsEngine *)sharedEngine;
+
+- (void)startSync;
 
 @end

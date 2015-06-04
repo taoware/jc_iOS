@@ -20,10 +20,10 @@
     NSString* password = self.passwordField.text;
     NSString* conformPass = self.conformField.text;
     if (![password isEqualToString:conformPass]) {
-        TTAlert(@"两次密码不相同");
+        TTAlertNoTitle(@"两次密码不相同");
         return ;
     } else if (![self validatePassword:password]) {
-        TTAlert(@"密码要求6-16位，至少1个数字，1个字母");
+        TTAlertNoTitle(@"密码要求6-16位，至少1个数字，1个字母");
         return;
     } else {
         [self showHudInView:self.view hint:@"正在重置"];
@@ -33,16 +33,11 @@
                 [self.navigationController dismissViewControllerAnimated:YES completion:NULL];
             } else {
                 switch (error.errorCode) {
-                    case GXErrorRegistrationFailure:
-                        TTAlert(@"重置失败");
-                        NSLog(@"%@", error.description);
-                        break;
                     case GXErrorServerNotReachable:
-                        TTAlert(@"服务器连接失败");
+                        TTAlertNoTitle(@"服务器连接失败");
                         break;
                     default:
-                        TTAlert(@"重置失败");
-                        NSLog(@"%@", error.description);
+                        TTAlertNoTitle(error.description);
                         break;
                 }
             }

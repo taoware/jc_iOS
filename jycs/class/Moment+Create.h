@@ -13,6 +13,8 @@
 + (Moment *)momentWithMomentInfo:(NSDictionary *)momentDictionary
        inManagedObjectContext:(NSManagedObjectContext *)context;
 
++ (Moment *)updateMoment:(Moment *) moment withMomentInfo:(NSDictionary *)momentDictionary;
+
 + (void)loadMomentsFromMomentsArray:(NSArray *)moments // of Moments NSDictionary
          intoManagedObjectContext:(NSManagedObjectContext *)context;
 

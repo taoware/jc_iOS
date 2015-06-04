@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BaseViewController.h"
 
-@interface GXInfoChatListViewController : UIViewController
+@interface GXChatListViewController : BaseViewController
 
 - (void)refreshDataSource;
 

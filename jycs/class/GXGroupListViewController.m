@@ -47,7 +47,7 @@
     {
         [self setEdgesForExtendedLayout:UIRectEdgeNone];
     }
-    
+    self.navigationController.view.backgroundColor = [UIColor lightGrayColor];
     self.title = NSLocalizedString(@"title.group", @"Group");
     
 #warning 把self注册为SDK的delegate
@@ -145,7 +145,7 @@
             EMGroup *group = [weakSelf.searchController.resultsSource objectAtIndex:indexPath.row];
             NSString *imageName = group.isPublic ? @"groupPublicHeader" : @"groupPrivateHeader";
             cell.imageView.image = [UIImage imageNamed:imageName];
-            cell.textLabel.text = group.groupSubject;
+            cell.textLabel.text = [group.groupSubject substringFromIndex:6];
             
             return cell;
         }];

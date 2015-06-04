@@ -10,7 +10,7 @@
 #import "Moment.h"
 #import "User.h"
 #import "Photo.h"
-#import "GXSyncEngine.h"
+#import "GXSyncHeader.h"
 
 @protocol GXMomentsTableViewCellDelegate  <NSObject>
 

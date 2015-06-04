@@ -9,21 +9,13 @@
 #import "Moment+Create.h"
 #import "ResourceFetcher.h"
 #import "Photo+Create.h"
-#import "GXSyncEngine.h"
+#import "GXSyncHeader.h"
 #import "User+Query.h"
 
 @implementation Moment (Create)
 
 + (Moment *)momentWithMomentInfo:(NSDictionary *)momentDictionary inManagedObjectContext:(NSManagedObjectContext *)context {
     Moment *moment = nil;
-    
-    NSMutableDictionary* nullFreeRecord = [momentDictionary mutableCopy];
-    [nullFreeRecord enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        if ([obj isKindOfClass:[NSNull class]]) {
-            [nullFreeRecord setValue:nil forKey:key];
-        }
-    }];
-    momentDictionary = [nullFreeRecord copy];
     
     NSNumber *objectId = momentDictionary[RESOURCE_ID];
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Moment"];
@@ -34,7 +26,7 @@
     
     if (!matches || error || ([matches count] > 1)) {
         // handle error
-        NSLog(@"database error for news");
+        NSLog(@"database error for moment");
     } else if ([matches count]) {
         moment = [matches firstObject];
     } else {
@@ -52,6 +44,11 @@
     moment.deleteTime = [ResourceFetcher dateUsingStringFromAPI:[momentDictionary valueForKeyPath:RESOURCE_DELETED_DATE]];
     moment.syncStatus = [NSNumber numberWithInt:GXObjectSynced];
     
+    Photo* firstPhoto = [moment.photo.array firstObject];
+    if (![firstPhoto.imageURL hasPrefix:@"http"] && firstPhoto.imageURL.length) {
+        return moment;
+    }
+    
     NSMutableOrderedSet* set = [moment.photo mutableCopy];
     [set removeAllObjects];
     [set addObjectsFromArray:[Photo loadPhotosFromPhotosArray:[momentDictionary valueForKey:MOMENT_PHOTOS] intoManagedObjectContext:context]];
@@ -59,6 +56,25 @@
 
     return moment;
 
+}
+
++ (Moment *)updateMoment:(Moment *)moment withMomentInfo:(NSDictionary *)momentDictionary {
+    
+    moment.text = [momentDictionary valueForKeyPath:MOMENT_TEXT];
+    moment.type = [momentDictionary valueForKeyPath:MOMENT_TYPE];
+    moment.screenName = [momentDictionary valueForKey:MOMENT_SCREENNAME];
+    moment.sender = [User UserWithUserInfo:[momentDictionary valueForKey:MOMENT_SENDER] inManagedObjectContext:moment.managedObjectContext];
+    moment.updateTime = [ResourceFetcher dateUsingStringFromAPI:[momentDictionary valueForKeyPath:RESOURCE_UPDATED_DATE]];
+    moment.createTime = [ResourceFetcher dateUsingStringFromAPI:[momentDictionary valueForKeyPath:RESOURCE_CREATED_DATE]];
+    moment.deleteTime = [ResourceFetcher dateUsingStringFromAPI:[momentDictionary valueForKeyPath:RESOURCE_DELETED_DATE]];
+    moment.syncStatus = [NSNumber numberWithInt:GXObjectSynced];
+    
+    NSMutableOrderedSet* set = [moment.photo mutableCopy];
+    [set removeAllObjects];
+    [set addObjectsFromArray:[Photo loadPhotosFromPhotosArray:[momentDictionary valueForKey:MOMENT_PHOTOS] intoManagedObjectContext:moment.managedObjectContext]];
+    moment.photo = set;
+    
+    return moment;
 }
 
 + (void)loadMomentsFromMomentsArray:(NSArray *)moments intoManagedObjectContext:(NSManagedObjectContext *)context {

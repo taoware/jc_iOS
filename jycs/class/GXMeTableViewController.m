@@ -17,6 +17,8 @@
 #import "GXPostedViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "GXBookmarkedViewController.h"
+#import "GXMyMomentsViewController.h"
+#import "UIImage+UIImageFunctions.h"
 
 @interface GXMeTableViewController () <UINavigationControllerDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *avatar;
@@ -35,9 +37,8 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
     self.name.text = [GXUserEngine sharedEngine].userLoggedIn.name;
-    self.phoneNum.text = [GXUserEngine sharedEngine].userLoggedIn.screenName;
+    self.phoneNum.text = [GXUserEngine sharedEngine].userLoggedIn.address;
     NSString* avatarURL = [GXUserEngine sharedEngine].userLoggedIn.avatar.thumbnailURL;
     [self.avatar setImageWithURL:[NSURL URLWithString:avatarURL] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
 }
@@ -66,9 +67,14 @@
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 1) {
+        GXMyMomentsViewController* myVC = [[GXMyMomentsViewController alloc]init];
+        [self.navigationController pushViewController:myVC animated:YES];
+    }
     if (indexPath.section == 3) {
         [[[UIAlertView alloc]initWithTitle:nil message:@"确定退出?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil]show];
     }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -93,6 +99,7 @@
             UIImagePickerController *imagePickController=[[UIImagePickerController alloc]init];
             imagePickController.sourceType=UIImagePickerControllerSourceTypeCamera;
             imagePickController.mediaTypes = @[( NSString *)kUTTypeImage];
+            imagePickController.allowsEditing = YES;
             imagePickController.delegate=self;
             [self presentViewController:imagePickController animated:YES completion:NULL];
         } else {
@@ -114,7 +121,14 @@
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     UIImage *image=[info objectForKey:UIImagePickerControllerEditedImage];
-    NSData* imageData = UIImageJPEGRepresentation(image, 0.8);
+    
+    UIImage* scaledImage = image;
+    if (image.size.width>480 && image.size.height>480) {
+        scaledImage = [image scaleProportionalToSize:CGSizeMake(480, 480)];
+    }
+    NSData* imageData = UIImageJPEGRepresentation(scaledImage, 0.8);
+    
+    UIImage* newimage = [UIImage imageWithData:imageData];
 
     // get the ref url
     NSURL *refURL = [info valueForKey:UIImagePickerControllerReferenceURL];
@@ -126,17 +140,17 @@
         NSString* imageName = [imageRep filename];
         
         [self showHudInView:self.view hint:@"正在更新"];
-        [[GXUserEngine sharedEngine] asyncUpdateUserAvatarwithImageData:imageData andImageName:imageName completion:^(NSDictionary *info, GXError *error) {
+        [[GXUserEngine sharedEngine] asyncUpdateUserAvatarwithImageData:imageData andImageName:@"avatarImg.jpg" completion:^(NSDictionary *info, GXError *error) {
             [self hideHud];
             if (!error) {
                 self.avatar.image = [UIImage imageWithData:imageData];
             } else {
                 switch (error.errorCode) {
                     case GXErrorServerNotReachable:
-                        TTAlert(@"服务器连接失败");
+                        TTAlertNoTitle(@"服务器连接失败");
                         break;
                     default:
-                        TTAlert(@"上传头像失败");
+                        TTAlertNoTitle(@"上传头像失败");
                         break;
                 }
             }

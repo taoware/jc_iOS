@@ -35,10 +35,11 @@
 @property (nonatomic, strong)NSString* verificationCode;
 @property (nonatomic, strong)NSString* mobile;
 
-@property (weak, nonatomic) IBOutlet UIButton *gender_Btn;
-@property (weak, nonatomic) IBOutlet UIButton *category_Btn;
-@property (weak, nonatomic) IBOutlet UIButton *area_Btn;
-@property (weak, nonatomic) IBOutlet UIButton *job_Btn;
+@property (weak, nonatomic) IBOutlet UITextField *genderTextField;
+@property (weak, nonatomic) IBOutlet UITextField *categoryTextField;
+@property (weak, nonatomic) IBOutlet UITextField *jobTextField;
+@property (weak, nonatomic) IBOutlet UITextField *areaTextField;
+
 
 @property (weak, nonatomic) IBOutlet UITextField *firstTextField;
 //@property (weak, nonatomic) IBOutlet UITextField *secondTextField;
@@ -63,10 +64,6 @@
     [backButton addTarget:self action:@selector(cancelRegistation) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
     [self.navigationItem setLeftBarButtonItem:backItem];
-    self.area_Btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-    self.gender_Btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-    self.category_Btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-    self.job_Btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(keyboardWillShow:)
@@ -82,7 +79,29 @@
     [self initAreaData];
     self.gender = @[@"男", @"女"];
     self.category = @[@"管理员", @"联采", @"员工", @"供应商", @"游客"];
-    self.jobs = @[@"副校长", @"董事长", @"校长助理", @"主任", @"秘书长", @"副主任", @"副秘书长", @"处长", @"总经理", @"副处长", @"副总经理", @"科长", @"部门经理", @"员工"];
+    self.jobs = @[@"副校长", @"董事长", @"校长助理", @"主任", @"秘书长", @"副主任", @"副秘书长", @"处长", @"总经理", @"副处长", @"副总经理", @"科长", @"部门经理", @"员工", @"其他"];
+    
+    [self initializeTextFieldInputView];
+}
+
+- (void) initializeTextFieldInputView {
+    UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 40)];
+    UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(hidePicker)];
+    UIBarButtonItem *flexible = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+    [toolbar setItems:[NSArray arrayWithObjects:flexible,doneButton, nil]];
+    
+    self.genderTextField.inputView = self.genderPicker;
+    self.genderTextField.inputAccessoryView = toolbar;
+    self.categoryTextField.inputView = self.categoryPicker;
+    self.categoryTextField.inputAccessoryView = toolbar;
+    self.jobTextField.inputView = self.jobPicker;
+    self.jobTextField.inputAccessoryView = toolbar;
+    self.areaTextField.inputView = self.areaPicker;
+    self.areaTextField.inputAccessoryView = toolbar;
+}
+
+- (void)hidePicker {
+    [self.view endEditing:YES];
 }
 
 - (void)dealloc {
@@ -175,10 +194,10 @@
 
 - (IBAction)submitRegistation:(UIButton *)sender {
     NSString* name = self.firstTextField.text;
-    NSString* gender = self.gender_Btn.currentTitle;
-    NSString* category = self.category_Btn.currentTitle;
-    NSString* job = self.job_Btn.currentTitle;
-    NSString* locaction = self.area_Btn.currentTitle;
+    NSString* gender = self.genderTextField.text;
+    NSString* category = self.categoryTextField.text;
+    NSString* job = self.jobTextField.text;
+    NSString* locaction = self.areaTextField.text;
     NSString* address = self.thirdTextField.text;
     NSString* mobile = self.fourthTextField.text;
     NSString* validationCode = self.fifthTextField.text;
@@ -186,40 +205,50 @@
     NSString* conformPass = self.seventhTextField.text;
     NSString* notes = self.eighthTextField.text;
     
-    if (![self verifyCode:validationCode]) {
-        TTAlert(@"验证码错误");
+    if (![self.mobile isEqualToString:mobile]) {
+        TTAlertNoTitle(@"更改手机号需要重新获取验证码");
         return;
     }
     
-    if (!name.length || !gender.length || !category.length>0 || !job.length>0 || !locaction.length>0 || !address.length>0 || !mobile.length>0 || !password.length>0) {
-        TTAlert(@"注册信息不完整");
+    if (!name.length || !gender.length || !job.length>0 || !locaction.length>0 || !address.length>0 || !mobile.length>0 || !password.length>0) {
+        TTAlertNoTitle(@"注册信息不完整");
+        return;
+    }
+    
+    if (![self verifyCode:validationCode]) {
+        TTAlertNoTitle(@"验证码错误");
+        return;
+    }
+    
+    if (!name.length || !gender.length || !job.length>0 || !locaction.length>0 || !address.length>0 || !mobile.length>0 || !password.length>0) {
+        TTAlertNoTitle(@"注册信息不完整");
         return;
     } else if (![password isEqualToString:conformPass]) {
-        TTAlert(@"两次密码不相同");
+        TTAlertNoTitle(@"两次密码不相同");
         return ;
     } else if (![self validatePassword:password]) {  // password validation
-        TTAlert(@"密码要求6-16位，至少1个数字，1个字母");
+        TTAlertNoTitle(@"密码要求6-16位，至少1个数字，1个字母");
         return;
     } else if (![self verifyCode:validationCode]) {  // vefication code validation
-        TTAlert(@"验证码错误");
+        TTAlertNoTitle(@"验证码错误");
         return;
     } else {
         [self showHudInView:self.view hint:@"正在注册"];
         [[GXUserEngine sharedEngine] asyncUserRegisterWithRealName:name andGender:gender andCategory:category andJob:job andArea:locaction andAddress:address andPhoneNumber:mobile andValidationCode:validationCode andPassword:password andRemark:notes completion:^(NSDictionary *registerInfo, GXError *error) {
             [self hideHud];
             if (!error) {
+                [self showHint:@"注册成功"];
                 [self dismissViewControllerAnimated:YES completion:NULL];
             } else {
                 switch (error.errorCode) {
-                    case GXErrorRegistrationFailure:
-                        TTAlert(@"注册失败");
-                        NSLog(@"%@", error.description);
-                        break;
                     case GXErrorServerNotReachable:
-                        TTAlert(@"服务器连接失败");
+                        TTAlertNoTitle(@"服务器连接失败");
+                        break;
+                    case GXErrorRegistrationFailure:
+                        TTAlertNoTitle(error.description);
                         break;
                     default:
-                        TTAlert(@"注册失败");
+                        TTAlertNoTitle(@"注册失败");
                         NSLog(@"%@", error.description);
                         break;
                 }
@@ -250,137 +279,53 @@
     return result;
 }
 
-- (IBAction)showAreaPicker:(UIButton *)sender {
-    self.areaPicker = [[UIPickerView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 190.0f)];
-    self.areaPicker.tag = 203;
-    self.areaPicker.delegate = self;
-    self.areaPicker.dataSource = self;
-    self.areaPicker.showsSelectionIndicator = YES;
-    [self.areaPicker selectRow:self.currentProvince inComponent:PROVINCE_COMPONENT animated:NO];
-    [self.areaPicker selectRow:self.currentCity inComponent:CITY_COMPONENT animated:NO];
-    [self.areaPicker selectRow:self.currentDistrict inComponent:DISTRICT_COMPONENT animated:NO];
-
-    
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"\n\n\n\n\n\n\n\n\n" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    [alert.view addSubview:self.areaPicker];
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        NSInteger provinceIndex = [self.areaPicker selectedRowInComponent: PROVINCE_COMPONENT];
-        NSInteger cityIndex = [self.areaPicker selectedRowInComponent: CITY_COMPONENT];
-        NSInteger districtIndex = [self.areaPicker selectedRowInComponent: DISTRICT_COMPONENT];
-        
-        self.currentProvince = provinceIndex;
-        self.currentCity = cityIndex;
-        self.currentDistrict = districtIndex;
-        
-        NSString *provinceStr = [self.province objectAtIndex: provinceIndex];
-        NSString *cityStr = [self.city objectAtIndex: cityIndex];
-        NSString *districtStr = [self.district objectAtIndex:districtIndex];
-        
-        if ([provinceStr isEqualToString: cityStr] && [cityStr isEqualToString: districtStr]) {
-            cityStr = @"";
-            districtStr = @"";
-        }
-        else if ([cityStr isEqualToString: districtStr]) {
-            districtStr = @"";
-        }
-        
-        NSString *showMsg = [NSString stringWithFormat: @"%@ %@ %@", provinceStr, cityStr, districtStr];
-        [self.area_Btn setTitle:showMsg forState:UIControlStateNormal];
-        [self.thirdTextField becomeFirstResponder];
-    }];
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        
-    }];
-    
-    [alert addAction:ok];
-    [alert addAction:cancel];
-    [self presentViewController:alert animated:YES completion:^{
-        
-    }];
-
+- (UIPickerView *)genderPicker {
+    if (!_genderPicker) {
+        _genderPicker = [[UIPickerView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 10.0f)];
+        _genderPicker.tag = 201;
+        _genderPicker.delegate = self;
+        _genderPicker.dataSource = self;
+        _genderPicker.showsSelectionIndicator = YES;
+    }
+    return _genderPicker;
 }
 
-- (IBAction)showGenderPicker:(UIButton *)sender {
-    self.genderPicker = [[UIPickerView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 10.0f)];
-    self.genderPicker.tag = 201;
-    self.genderPicker.delegate = self;
-    self.genderPicker.dataSource = self;
-    self.genderPicker.showsSelectionIndicator = YES;
-    
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"\n\n\n\n\n\n\n" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    [alert.view addSubview:self.genderPicker];
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        NSInteger genderIndex = [self.genderPicker selectedRowInComponent: 0];
-        
-        NSString *showMsg = self.gender[genderIndex];
-        [self.gender_Btn setTitle:showMsg forState:UIControlStateNormal];
-        
-        [self showCategoryPicker:nil];
-    }];
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-
-    }];
-    
-    [alert addAction:ok];
-    [alert addAction:cancel];
-    [self presentViewController:alert animated:YES completion:^{
-        
-    }];
+- (UIPickerView *)categoryPicker {
+    if (!_categoryPicker) {
+        _categoryPicker = [[UIPickerView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 190.0f)];
+        _categoryPicker.tag = 202;
+        _categoryPicker.delegate = self;
+        _categoryPicker.dataSource = self;
+        _categoryPicker.showsSelectionIndicator = YES;
+    }
+    return _categoryPicker;
 }
 
-- (IBAction)showCategoryPicker:(UIButton *)sender {
-    self.categoryPicker = [[UIPickerView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 190.0f)];
-    self.categoryPicker.tag = 202;
-    self.categoryPicker.delegate = self;
-    self.categoryPicker.dataSource = self;
-    self.categoryPicker.showsSelectionIndicator = YES;
-    
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"\n\n\n\n\n\n\n\n" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    [alert.view addSubview:self.categoryPicker];
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        NSInteger genderIndex = [self.categoryPicker selectedRowInComponent: 0];
-        
-        NSString *showMsg = self.category[genderIndex];
-        [self.category_Btn setTitle:showMsg forState:UIControlStateNormal];
-        [self showJobPicker:nil];
-    }];
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-
-    }];
-    
-    [alert addAction:ok];
-    [alert addAction:cancel];
-    [self presentViewController:alert animated:YES completion:^{
-        
-    }];
+- (UIPickerView *)jobPicker {
+    if (!_jobPicker) {
+        _jobPicker = [[UIPickerView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 190.0f)];
+        _jobPicker.tag = 204;
+        _jobPicker.delegate = self;
+        _jobPicker.dataSource = self;
+        _jobPicker.showsSelectionIndicator = YES;
+    }
+    return _jobPicker;
 }
 
-- (IBAction)showJobPicker:(UIButton *)sender {
-    self.jobPicker = [[UIPickerView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 190.0f)];
-    self.jobPicker.tag = 204;
-    self.jobPicker.delegate = self;
-    self.jobPicker.dataSource = self;
-    self.jobPicker.showsSelectionIndicator = YES;
-    
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"\n\n\n\n\n\n\n\n" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    [alert.view addSubview:self.jobPicker];
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        NSInteger genderIndex = [self.jobPicker selectedRowInComponent: 0];
-        
-        NSString *showMsg = self.jobs[genderIndex];
-        [self.job_Btn setTitle:showMsg forState:UIControlStateNormal];
-        [self showAreaPicker:nil];
-    }];
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        
-    }];
-    
-    [alert addAction:ok];
-    [alert addAction:cancel];
-    [self presentViewController:alert animated:YES completion:^{
-        
-    }];
+- (UIPickerView *)areaPicker {
+    if (!_areaPicker) {
+        _areaPicker = [[UIPickerView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 190.0f)];
+        _areaPicker.tag = 203;
+        _areaPicker.delegate = self;
+        _areaPicker.dataSource = self;
+        _areaPicker.showsSelectionIndicator = YES;
+        [_areaPicker selectRow:self.currentProvince inComponent:PROVINCE_COMPONENT animated:NO];
+        [_areaPicker selectRow:self.currentCity inComponent:CITY_COMPONENT animated:NO];
+        [_areaPicker selectRow:self.currentDistrict inComponent:DISTRICT_COMPONENT animated:NO];
+    }
+    return _areaPicker;
 }
+
 
 - (IBAction)countDownXibTouched:(JKCountDownButton*)sender {
     sender.enabled = NO;
@@ -533,6 +478,40 @@
             [self.areaPicker selectRow: 0 inComponent: DISTRICT_COMPONENT animated: YES];
             [self.areaPicker reloadComponent: DISTRICT_COMPONENT];
         }
+        NSInteger provinceIndex = [self.areaPicker selectedRowInComponent: PROVINCE_COMPONENT];
+        NSInteger cityIndex = [self.areaPicker selectedRowInComponent: CITY_COMPONENT];
+        NSInteger districtIndex = [self.areaPicker selectedRowInComponent: DISTRICT_COMPONENT];
+
+        self.currentProvince = provinceIndex;
+        self.currentCity = cityIndex;
+        self.currentDistrict = districtIndex;
+
+        NSString *provinceStr = [self.province objectAtIndex: provinceIndex];
+        NSString *cityStr = [self.city objectAtIndex: cityIndex];
+        NSString *districtStr = [self.district objectAtIndex:districtIndex];
+
+        if ([provinceStr isEqualToString: cityStr] && [cityStr isEqualToString: districtStr]) {
+            cityStr = @"";
+            districtStr = @"";
+        }
+        else if ([cityStr isEqualToString: districtStr]) {
+            districtStr = @"";
+        }
+
+        NSString *showMsg = [NSString stringWithFormat: @"%@ %@ %@", provinceStr, cityStr, districtStr];
+        self.areaTextField.text = showMsg;
+    } else if (pickerView.tag == 201) {
+        NSInteger genderIndex = [self.genderPicker selectedRowInComponent: 0];
+        NSString *showMsg = self.gender[genderIndex];
+        self.genderTextField.text = showMsg;
+    } else if (pickerView.tag == 202) {
+        NSInteger categoryIndex = [self.categoryPicker selectedRowInComponent: 0];
+        NSString *showMsg = self.category[categoryIndex];
+        self.categoryTextField.text = showMsg;
+    } else if (pickerView.tag == 204) {
+        NSInteger jobIndex = [self.jobPicker selectedRowInComponent: 0];
+        NSString *showMsg = self.jobs[jobIndex];
+        self.jobTextField.text = showMsg;
     }
 }
 
@@ -558,7 +537,7 @@
         myView = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 78, 50)];
         myView.textAlignment = UITextAlignmentCenter;
         myView.text = [self.gender objectAtIndex:row];
-        myView.font = [UIFont systemFontOfSize:20];
+        myView.font = [UIFont systemFontOfSize:25];
         myView.backgroundColor = [UIColor clearColor];
     } else if (pickerView.tag == 202) {
         myView = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 78, 30)];
@@ -571,28 +550,28 @@
             myView = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 78, 30)];
             myView.textAlignment = UITextAlignmentCenter;
             myView.text = [self.province objectAtIndex:row];
-            myView.font = [UIFont systemFontOfSize:14];
+            myView.font = [UIFont systemFontOfSize:18];
             myView.backgroundColor = [UIColor clearColor];
         }
         else if (component == CITY_COMPONENT) {
             myView = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 95, 30)];
             myView.textAlignment = UITextAlignmentCenter;
             myView.text = [self.city objectAtIndex:row];
-            myView.font = [UIFont systemFontOfSize:14];
+            myView.font = [UIFont systemFontOfSize:18];
             myView.backgroundColor = [UIColor clearColor];
         }
         else {
             myView = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 110, 30)];
             myView.textAlignment = UITextAlignmentCenter;
             myView.text = [self.district objectAtIndex:row];
-            myView.font = [UIFont systemFontOfSize:14];
+            myView.font = [UIFont systemFontOfSize:18];
             myView.backgroundColor = [UIColor clearColor];
         }
     } else if (pickerView.tag == 204) {
-        myView = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 78, 30)];
+        myView = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 120, 30)];
         myView.textAlignment = UITextAlignmentCenter;
         myView.text = [self.jobs objectAtIndex:row];
-        myView.font = [UIFont systemFontOfSize:18];
+        myView.font = [UIFont systemFontOfSize:25];
         myView.backgroundColor = [UIColor clearColor];
     }
     
@@ -601,17 +580,25 @@
     return myView;
 }
 
+- (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component {
+    if (pickerView == self.areaPicker) {
+        return 30;
+    }
+    return 35;
+}
+
 #pragma mark - uiscrollview delegate
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     [self.view endEditing:YES];
 }
 
+
 #pragma mark - text field delegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     if (textField == self.firstTextField) {
         [self.firstTextField resignFirstResponder];
-        [self showGenderPicker:nil];
+        [self.genderTextField becomeFirstResponder];
     } else if (textField == self.thirdTextField) {
         [self.fourthTextField becomeFirstResponder];
     } else if (textField == self.fourthTextField) {
@@ -628,5 +615,103 @@
     return YES;
 }
 
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    if (textField == self.areaTextField) {
+        NSInteger row = 0;
+        NSInteger component = 0;
+        if (component == PROVINCE_COMPONENT) {
+            self.selectedProvince = [self.province objectAtIndex: row];
+            NSDictionary *tmp = [NSDictionary dictionaryWithDictionary: [self.areaDic objectForKey: [NSString stringWithFormat:@"%d", row]]];
+            NSDictionary *dic = [NSDictionary dictionaryWithDictionary: [tmp objectForKey: self.selectedProvince]];
+            NSArray *cityArray = [dic allKeys];
+            NSArray *sortedArray = [cityArray sortedArrayUsingComparator: ^(id obj1, id obj2) {
+                
+                if ([obj1 integerValue] > [obj2 integerValue]) {
+                    return (NSComparisonResult)NSOrderedDescending;//递减
+                }
+                
+                if ([obj1 integerValue] < [obj2 integerValue]) {
+                    return (NSComparisonResult)NSOrderedAscending;//上升
+                }
+                return (NSComparisonResult)NSOrderedSame;
+            }];
+            
+            NSMutableArray *array = [[NSMutableArray alloc] init];
+            for (int i=0; i<[sortedArray count]; i++) {
+                NSString *index = [sortedArray objectAtIndex:i];
+                NSArray *temp = [[dic objectForKey: index] allKeys];
+                [array addObject: [temp objectAtIndex:0]];
+            }
+            
+            self.city = [[NSArray alloc] initWithArray: array];
+            
+            NSDictionary *cityDic = [dic objectForKey: [sortedArray objectAtIndex: 0]];
+            self.district = [[NSArray alloc] initWithArray: [cityDic objectForKey: [self.city objectAtIndex: 0]]];
+            [self.areaPicker selectRow: 0 inComponent: CITY_COMPONENT animated: YES];
+            [self.areaPicker selectRow: 0 inComponent: DISTRICT_COMPONENT animated: YES];
+            [self.areaPicker reloadComponent: CITY_COMPONENT];
+            [self.areaPicker reloadComponent: DISTRICT_COMPONENT];
+            
+        }
+        else if (component == CITY_COMPONENT) {
+            NSString *provinceIndex = [NSString stringWithFormat: @"%d", [self.province indexOfObject: self.selectedProvince]];
+            NSDictionary *tmp = [NSDictionary dictionaryWithDictionary: [self.areaDic objectForKey: provinceIndex]];
+            NSDictionary *dic = [NSDictionary dictionaryWithDictionary: [tmp objectForKey: self.selectedProvince]];
+            NSArray *dicKeyArray = [dic allKeys];
+            NSArray *sortedArray = [dicKeyArray sortedArrayUsingComparator: ^(id obj1, id obj2) {
+                
+                if ([obj1 integerValue] > [obj2 integerValue]) {
+                    return (NSComparisonResult)NSOrderedDescending;
+                }
+                
+                if ([obj1 integerValue] < [obj2 integerValue]) {
+                    return (NSComparisonResult)NSOrderedAscending;
+                }
+                return (NSComparisonResult)NSOrderedSame;
+            }];
+            
+            NSDictionary *cityDic = [NSDictionary dictionaryWithDictionary: [dic objectForKey: [sortedArray objectAtIndex: row]]];
+            NSArray *cityKeyArray = [cityDic allKeys];
+            
+            self.district = [[NSArray alloc] initWithArray: [cityDic objectForKey: [cityKeyArray objectAtIndex:0]]];
+            [self.areaPicker selectRow: 0 inComponent: DISTRICT_COMPONENT animated: YES];
+            [self.areaPicker reloadComponent: DISTRICT_COMPONENT];
+        }
+        NSInteger provinceIndex = [self.areaPicker selectedRowInComponent: PROVINCE_COMPONENT];
+        NSInteger cityIndex = [self.areaPicker selectedRowInComponent: CITY_COMPONENT];
+        NSInteger districtIndex = [self.areaPicker selectedRowInComponent: DISTRICT_COMPONENT];
+        
+        self.currentProvince = provinceIndex;
+        self.currentCity = cityIndex;
+        self.currentDistrict = districtIndex;
+        
+        NSString *provinceStr = [self.province objectAtIndex: provinceIndex];
+        NSString *cityStr = [self.city objectAtIndex: cityIndex];
+        NSString *districtStr = [self.district objectAtIndex:districtIndex];
+        
+        if ([provinceStr isEqualToString: cityStr] && [cityStr isEqualToString: districtStr]) {
+            cityStr = @"";
+            districtStr = @"";
+        }
+        else if ([cityStr isEqualToString: districtStr]) {
+            districtStr = @"";
+        }
+        
+        NSString *showMsg = [NSString stringWithFormat: @"%@ %@ %@", provinceStr, cityStr, districtStr];
+        self.areaTextField.text = showMsg;
+    } else if (textField == self.genderTextField) {
+        NSInteger genderIndex = [self.genderPicker selectedRowInComponent: 0];
+        NSString *showMsg = self.gender[genderIndex];
+        self.genderTextField.text = showMsg;
+    } else if (textField == self.categoryTextField) {
+        NSInteger categoryIndex = [self.categoryPicker selectedRowInComponent: 0];
+        NSString *showMsg = self.category[categoryIndex];
+        self.categoryTextField.text = showMsg;
+    } else if (textField == self.jobTextField) {
+        NSInteger jobIndex = [self.jobPicker selectedRowInComponent: 0];
+        NSString *showMsg = self.jobs[jobIndex];
+        self.jobTextField.text = showMsg;
+    }
+}
 
 @end

@@ -8,10 +8,8 @@
 
 #import "GXMainTabBarViewController.h"
 #import "GXUserEngine.h"
-#import "GXInfoButtonBarViewController.h"
-#import "GXInfoChatListViewController.h"
-#import "GXContactButtonBarViewController.h"
-#import "GXContactListViewController.h"
+#import "GXChatListViewController.h"
+#import "GXContactsViewController.h"
 #import "GXMomentListViewController.h"
 #import "ApplyViewController.h"
 #import "CallViewController.h"
@@ -20,21 +18,30 @@
 #import "GXCoreDataController.h"
 #import "User+Permission.h"
 #import "GXGoToLoginViewController.h"
+#import "GXMeTableViewController.h"
+#import "GXInfoViewController.h"
+#import "GXGoLoginViewController.h"
+#import "GXMomentsEngine.h"
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
 
 @interface GXMainTabBarViewController () <UIAlertViewDelegate, IChatManagerDelegate, EMCallManagerDelegate>
-@property (nonatomic, strong)UIViewController* infoVC;
-@property (nonatomic, strong)UIViewController* contactVC;
+@property (nonatomic, strong)GXInfoViewController* infoVC;
+@property (nonatomic, strong)GXChatListViewController* chatListVC;
+@property (nonatomic, strong)GXContactsViewController* contactsVC;
 @property (nonatomic, strong)GXMomentListViewController* squareVC;
+@property (nonatomic, strong)GXMeTableViewController* meVC;
 
 @property (nonatomic, strong)UIBarButtonItem* showItem;
 @property (nonatomic, strong)UIBarButtonItem* addItem;
+@property (nonatomic, strong)UIBarButtonItem* refreshItem;
 @property (nonatomic, strong)UIBarButtonItem* giftItem;
 @property (nonatomic, strong)UIBarButtonItem* sendItem;
 
 @property (strong, nonatomic) NSDate *lastPlaySoundDate;
+
+@property (nonatomic) BOOL wasInSquare;
 @end
 
 @implementation GXMainTabBarViewController
@@ -43,15 +50,19 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.title = @"信息";
+    //if 使tabBarController中管理的viewControllers都符合 UIRectEdgeNone
+    if ([UIDevice currentDevice].systemVersion.floatValue >= 7) {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+    }
+    self.title = @"资讯";
+    self.wasInSquare = NO;
     
     self.infoVC = self.viewControllers[0];
-    self.contactVC = self.viewControllers[1];
-    [self.contactVC performSelector:@selector(view)];   // force load contactListVC
-    self.squareVC = self.viewControllers[2];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setChatListVC:) name:@"chatListViewControllerSetted" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setContactListVC:) name:@"contactViewControllerSetted" object:nil];
-
+    self.chatListVC = self.viewControllers[1];
+    self.contactsVC = self.viewControllers[2];
+//    [self.contactsVC performSelector:@selector(view)];   // force load contactListVC
+    self.squareVC = self.viewControllers[3];
+    self.meVC = self.viewControllers[4];
     [self setupTabBarappearance];
     
     //获取未读消息数，此时并没有把self注册为SDK的delegate，读取出的未读数是上次退出程序时的
@@ -62,18 +73,18 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callOutWithChatter:) name:@"callOutWithChatter" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callControllerClose:) name:@"callControllerClose" object:nil];
     
-    [self setupSubviews];
-    
     UIButton *showButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
     [showButton setImage:[UIImage imageNamed:@"store.png"] forState:UIControlStateNormal];
     [showButton addTarget:_infoVC action:@selector(showStoreInfo) forControlEvents:UIControlEventTouchUpInside];
     _showItem = [[UIBarButtonItem alloc] initWithCustomView:showButton];
-    self.navigationItem.rightBarButtonItem = _showItem;
+//    self.navigationItem.rightBarButtonItem = _showItem;
     
     UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
     [addButton setImage:[UIImage imageNamed:@"add_contact.png"] forState:UIControlStateNormal];
-    [addButton addTarget:_contactVC action:@selector(addFriendAction) forControlEvents:UIControlEventTouchUpInside];
+    [addButton addTarget:_contactsVC action:@selector(addFriendAction) forControlEvents:UIControlEventTouchUpInside];
     _addItem = [[UIBarButtonItem alloc] initWithCustomView:addButton];
+    
+    _refreshItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshButtonTouched:)];
     
     UIButton *giftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
     [giftButton setImage:[UIImage imageNamed:@"gift.png"] forState:UIControlStateNormal];
@@ -89,24 +100,51 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     [self setupUntreatedApplyCount];
     
     [self fetchBuddyList];
+    [self fetchMembersInGroup];
 }
 
 - (void)setupSubviews {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
-    GXGoToLoginViewController *goToLoginVCForContact = [storyboard instantiateViewControllerWithIdentifier:@"goToLoginVC"];
+    GXGoLoginViewController *goToLoginVCForChatList = [storyboard instantiateViewControllerWithIdentifier:@"goLogin"];
+    goToLoginVCForChatList.tabBarItem = [[UITabBarItem alloc]initWithTitle:@"消息" image:[UIImage imageNamed:@"tabbar_message.png"] selectedImage:[UIImage imageNamed:@"tabbar_messageHL.png"]];
+    GXGoLoginViewController *goToLoginVCForContact = [storyboard instantiateViewControllerWithIdentifier:@"goLogin"];
     goToLoginVCForContact.tabBarItem = [[UITabBarItem alloc]initWithTitle:@"通讯录" image:[UIImage imageNamed:@"tabbar_contact.png"] selectedImage:[UIImage imageNamed:@"tabbar_contactHL.png"]];
-    GXGoToLoginViewController *goToLoginVCForSquare = [storyboard instantiateViewControllerWithIdentifier:@"goToLoginVC"];
+    GXGoLoginViewController *goToLoginVCForSquare = [storyboard instantiateViewControllerWithIdentifier:@"goLogin"];
     goToLoginVCForSquare.tabBarItem = [[UITabBarItem alloc]initWithTitle:@"广场" image:[UIImage imageNamed:@"tabbar_square.png"] selectedImage:[UIImage imageNamed:@"tabbar_squareHL.png"]];
-    GXGoToLoginViewController *goToLoginVCForMe = [storyboard instantiateViewControllerWithIdentifier:@"goToLoginVC"];
+    GXGoLoginViewController *goToLoginVCForMe = [storyboard instantiateViewControllerWithIdentifier:@"goLogin"];
     goToLoginVCForMe.tabBarItem = [[UITabBarItem alloc]initWithTitle:@"我" image:[UIImage imageNamed:@"tabbar_me.png"] selectedImage:[UIImage imageNamed:@"tabbar_meHL.png"]];
+    
+    UIViewController* noPermisssionForChatList = [storyboard instantiateViewControllerWithIdentifier:@"noPermission"];
+    noPermisssionForChatList.tabBarItem = [[UITabBarItem alloc]initWithTitle:@"消息" image:[UIImage imageNamed:@"tabbar_message.png"] selectedImage:[UIImage imageNamed:@"tabbar_messageHL.png"]];
+    UIViewController* noPermissionForContact = [storyboard instantiateViewControllerWithIdentifier:@"noPermission"];
+    noPermissionForContact.tabBarItem = [[UITabBarItem alloc]initWithTitle:@"通讯录" image:[UIImage imageNamed:@"tabbar_contact.png"] selectedImage:[UIImage imageNamed:@"tabbar_contactHL.png"]];
+    UIViewController* noPermissionForSquare = [storyboard instantiateViewControllerWithIdentifier:@"noPermission"];
+    noPermissionForSquare.tabBarItem = [[UITabBarItem alloc]initWithTitle:@"广场" image:[UIImage imageNamed:@"tabbar_square.png"] selectedImage:[UIImage imageNamed:@"tabbar_squareHL.png"]];
+
+
+    
     NSMutableArray *tabbarViewControllers = [self.viewControllers mutableCopy];
-    if (![GXUserEngine sharedEngine].userLoggedIn.audit.boolValue) {
-        [tabbarViewControllers replaceObjectAtIndex:1 withObject:goToLoginVCForContact];
-        [tabbarViewControllers replaceObjectAtIndex:2 withObject:goToLoginVCForSquare];
-        if (![GXUserEngine sharedEngine].userLoggedIn) {
-            [tabbarViewControllers replaceObjectAtIndex:3 withObject:goToLoginVCForMe];
+    User* userLoggedIn = [GXUserEngine sharedEngine].userLoggedIn;
+    NSLog(@"%@", userLoggedIn);
+    id obj = [userLoggedIn.hasPermisson anyObject];
+    NSLog(@"%i", userLoggedIn.hasPermisson.count);
+    NSLog(@"%@", userLoggedIn.name);
+    NSLog(@"%@", userLoggedIn.managedObjectContext);
+    if (!userLoggedIn) {
+        [tabbarViewControllers replaceObjectAtIndex:1 withObject:goToLoginVCForChatList];
+        [tabbarViewControllers replaceObjectAtIndex:2 withObject:goToLoginVCForContact];
+        [tabbarViewControllers replaceObjectAtIndex:3 withObject:goToLoginVCForSquare];
+        [tabbarViewControllers replaceObjectAtIndex:4 withObject:goToLoginVCForMe];
+    } else {
+        if (![userLoggedIn canIM]) {
+            [tabbarViewControllers replaceObjectAtIndex:1 withObject:noPermisssionForChatList];
+            [tabbarViewControllers replaceObjectAtIndex:2 withObject:noPermissionForContact];
+        }
+        if (![userLoggedIn canVisitSquare]) {
+            [tabbarViewControllers replaceObjectAtIndex:3 withObject:noPermissionForSquare];
         }
     }
+    
     self.viewControllers = tabbarViewControllers;
 }
 
@@ -115,10 +153,33 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     [[EaseMob sharedInstance].chatManager asyncFetchBuddyListWithCompletion:^(NSArray *buddyList, EMError *error) {
         if (!error && buddyList.count) {
             [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:[buddyList valueForKey:@"username"] completion:^(GXError *error) {
-                [_contactListVC reloadDataSource];
+                [_contactsVC reloadDataSource];
             }];
         }
     } onQueue:dispatch_get_main_queue()];
+}
+
+- (void)fetchMembersInGroup {
+    NSArray *rooms = [[EaseMob sharedInstance].chatManager groupList];
+    NSMutableArray* usernames = [[NSMutableArray alloc]init];
+    
+    // Create a dispatch group
+    dispatch_group_t group = dispatch_group_create();
+    for (EMGroup* room in rooms) {
+        dispatch_group_enter(group);
+        [[EaseMob sharedInstance].chatManager asyncFetchGroupInfo:room.groupId completion:^(EMGroup *room, EMError *error) {
+            [usernames addObjectsFromArray:room.members];
+            
+            // Leave the group as soon as the request failed
+            dispatch_group_leave(group);
+        } onQueue:nil];
+    }
+    
+    // Here we wait for all the requests to finish
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        // Do whatever you need to do when all requests are finished
+        [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:usernames completion:NULL];
+    });
 }
 
 - (void)dealloc
@@ -135,16 +196,19 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     UITabBarItem *tabBarItem2 = [tabBar.items objectAtIndex:1];
     UITabBarItem *tabBarItem3 = [tabBar.items objectAtIndex:2];
     UITabBarItem *tabBarItem4 = [tabBar.items objectAtIndex:3];
+    UITabBarItem *tabBarItem5 = [tabBar.items objectAtIndex:4];
     
-    tabBarItem1.title = @"信息";
-    tabBarItem2.title = @"通讯录";
-    tabBarItem3.title = @"广场";
-    tabBarItem4.title = @"我";
+    tabBarItem1.title = @"资讯";
+    tabBarItem2.title = @"消息";
+    tabBarItem3.title = @"通讯录";
+    tabBarItem4.title = @"广场";
+    tabBarItem5.title = @"我";
     
-    [tabBarItem1 setFinishedSelectedImage:[UIImage imageNamed:@"tabbar_messageHL.png"] withFinishedUnselectedImage:[UIImage imageNamed:@"tabbar_message.png"]];
-    [tabBarItem2 setFinishedSelectedImage:[UIImage imageNamed:@"tabbar_contactHL.png"] withFinishedUnselectedImage:[UIImage imageNamed:@"tabbar_contact.png"]];
-    [tabBarItem3 setFinishedSelectedImage:[UIImage imageNamed:@"tabbar_squareHL.png"] withFinishedUnselectedImage:[UIImage imageNamed:@"tabbar_square.png"]];
-    [tabBarItem4 setFinishedSelectedImage:[UIImage imageNamed:@"tabbar_meHL.png"] withFinishedUnselectedImage:[UIImage imageNamed:@"tabbar_me.png"]];
+    [tabBarItem1 setFinishedSelectedImage:[UIImage imageNamed:@"tabbar_infoHL.png"] withFinishedUnselectedImage:[UIImage imageNamed:@"tabbar_info.png"]];
+    [tabBarItem2 setFinishedSelectedImage:[UIImage imageNamed:@"tabbar_messageHL.png"] withFinishedUnselectedImage:[UIImage imageNamed:@"tabbar_message.png"]];
+    [tabBarItem3 setFinishedSelectedImage:[UIImage imageNamed:@"tabbar_contactHL.png"] withFinishedUnselectedImage:[UIImage imageNamed:@"tabbar_contact.png"]];
+    [tabBarItem4 setFinishedSelectedImage:[UIImage imageNamed:@"tabbar_squareHL.png"] withFinishedUnselectedImage:[UIImage imageNamed:@"tabbar_square.png"]];
+    [tabBarItem5 setFinishedSelectedImage:[UIImage imageNamed:@"tabbar_meHL.png"] withFinishedUnselectedImage:[UIImage imageNamed:@"tabbar_me.png"]];
 }
 
 #pragma mark - UITabBarDelegate
@@ -153,48 +217,101 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 {
     NSInteger index = [tabBar.items indexOfObject:item];
 
-    if (![GXUserEngine sharedEngine].userLoggedIn.audit.boolValue) {
+    if (self.wasInSquare) {
+        [[GXMomentsEngine sharedEngine] removeObserver:self forKeyPath:@"syncInProgress"];
+    }
+    self.wasInSquare = false;
+//    if (![GXUserEngine sharedEngine].userLoggedIn.audit.boolValue) {
+//        if (index == 0) {
+//            self.title = @"资讯";
+//            self.navigationItem.rightBarButtonItem = nil;
+//            self.navigationItem.rightBarButtonItem = self.showItem;
+//        }else if (index == 1){
+//            self.navigationItem.rightBarButtonItem = nil;
+//            self.title = @"消息";
+//        }else if (index == 2){
+//            self.title = @"通讯录";
+//            self.navigationItem.rightBarButtonItem = nil;
+//            self.navigationItem.rightBarButtonItems = nil;
+//        }else if (index == 3){
+//            self.title = @"广场";
+//            self.navigationItem.rightBarButtonItem = nil;
+//            self.navigationItem.rightBarButtonItems = nil;
+//        }else if (index == 4) {
+//            self.title = @"我";
+//            self.navigationItem.rightBarButtonItem = nil;
+//            self.navigationItem.rightBarButtonItems = nil;
+//        }
+//    } else {
         if (index == 0) {
-            self.title = @"信息";
-            self.navigationItem.rightBarButtonItem = nil;
-            self.navigationItem.rightBarButtonItem = self.showItem;
-        }else if (index == 1){
-            self.navigationItem.rightBarButtonItem = nil;
-            self.title = @"通讯录";
-        }else if (index == 2){
-            self.title = @"广场";
+            self.title = @"资讯";
             self.navigationItem.rightBarButtonItem = nil;
             self.navigationItem.rightBarButtonItems = nil;
-        }else if (index == 3){
-            self.title = @"我";
-            self.navigationItem.rightBarButtonItem = nil;
-            self.navigationItem.rightBarButtonItems = nil;
-        }
-    } else {
-        if (index == 0) {
-            self.title = @"信息";
-            self.navigationItem.rightBarButtonItem = nil;
-            self.navigationItem.rightBarButtonItem = self.showItem;
+            self.navigationItem.leftBarButtonItem = nil;
         }else if (index == 1){
             self.navigationItem.rightBarButtonItem = nil;
+            self.navigationItem.rightBarButtonItems = nil;
+            self.navigationItem.leftBarButtonItem = nil;
+            self.title = @"消息";
+        }else if (index == 2) {
             self.title = @"通讯录";
+            self.navigationItem.rightBarButtonItem = nil;
+            self.navigationItem.rightBarButtonItems = nil;
+            self.navigationItem.leftBarButtonItem = nil;
             self.navigationItem.rightBarButtonItem = self.addItem;
-        }else if (index == 2){
+            
+        }else if (index == 3){
             self.title = @"广场";
+            self.wasInSquare = YES;
             self.navigationItem.rightBarButtonItem = nil;
             self.navigationItem.rightBarButtonItems = nil;
-            User* userLoggedIn = [GXUserEngine sharedEngine].userLoggedIn;
-            if ([userLoggedIn canSendMomentForEmployee] || [userLoggedIn canSendMomentForPurchase] || [userLoggedIn canSendMomentForSupplier]) {
-                self.navigationItem.rightBarButtonItem = self.sendItem;
-            }
-            //        [self.navigationItem setRightBarButtonItems:@[self.sendItem, self.giftItem]];
-        }else if (index == 3){
+            self.navigationItem.leftBarButtonItem = self.refreshItem;
+            self.navigationItem.rightBarButtonItem = self.sendItem;
+            [self checkSyncStatus];
+            [[GXMomentsEngine sharedEngine] addObserver:self forKeyPath:@"syncInProgress" options:NSKeyValueObservingOptionNew context:nil];
+        }else if (index == 4){
             self.title = @"我";
             self.navigationItem.rightBarButtonItem = nil;
             self.navigationItem.rightBarButtonItems = nil;
+            self.navigationItem.leftBarButtonItem = nil;
         }
+//    }
+}
+
+- (IBAction)refreshButtonTouched:(id)sender {
+    [[GXMomentsEngine sharedEngine] startSync];
+}
+
+- (void)checkSyncStatus {
+    if ([[GXMomentsEngine sharedEngine] syncInProgress]) {
+        [self replaceRefreshButtonWithActivityIndicator];
+    } else {
+        [self removeActivityIndicatorFromRefreshButon];
     }
 }
+
+- (void)replaceRefreshButtonWithActivityIndicator {
+    UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 25, 25)];
+    [activityIndicator setAutoresizingMask:(UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin)];
+    [activityIndicator startAnimating];
+    UIBarButtonItem *activityItem = [[UIBarButtonItem alloc] initWithCustomView:activityIndicator];
+    self.navigationItem.leftBarButtonItem = activityItem;
+    self.navigationItem.leftBarButtonItem = nil;
+}
+
+- (void)removeActivityIndicatorFromRefreshButon {
+    self.navigationItem.leftBarButtonItem = self.refreshItem;
+    self.navigationItem.leftBarButtonItem = nil;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"syncInProgress"]) {
+        [self checkSyncStatus];
+    }
+}
+
+
 
 
 #pragma mark - UIAlertViewDelegate
@@ -256,11 +373,11 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     for (EMConversation *conversation in conversations) {
         unreadCount += conversation.unreadMessagesCount;
     }
-    if (_infoVC) {
+    if (_chatListVC) {
         if (unreadCount > 0) {
-            _infoVC.tabBarItem.badgeValue = [NSString stringWithFormat:@"%i",(int)unreadCount];
+            _chatListVC.tabBarItem.badgeValue = [NSString stringWithFormat:@"%i",(int)unreadCount];
         }else{
-            _infoVC.tabBarItem.badgeValue = nil;
+            _chatListVC.tabBarItem.badgeValue = nil;
         }
     }
     
@@ -271,11 +388,11 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 - (void)setupUntreatedApplyCount
 {
     NSInteger unreadCount = [[[ApplyViewController shareController] dataSource] count];
-    if (_contactVC) {
+    if (_contactsVC) {
         if (unreadCount > 0) {
-            _contactVC.tabBarItem.badgeValue = [NSString stringWithFormat:@"%i",(int)unreadCount];
+            _contactsVC.tabBarItem.badgeValue = [NSString stringWithFormat:@"%i",(int)unreadCount];
         }else{
-            _contactVC.tabBarItem.badgeValue = nil;
+            _contactsVC.tabBarItem.badgeValue = nil;
         }
     }
 }
@@ -337,7 +454,6 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 {
     [self setupUnreadMessageCount];
     [_chatListVC refreshDataSource];
-    [_notificationVC refreshDataSource];
 }
 
 // 未读消息数量变化回调
@@ -517,7 +633,7 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
         }
 #endif
         
-        [_contactListVC reloadApplyView];
+        [_contactsVC reloadApplyView];
     }];
 }
 
@@ -535,9 +651,8 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
             }
             [[EaseMob sharedInstance].chatManager removeConversationsByChatters:deletedBuddies deleteMessages:YES append2Chat:YES];
             [_chatListVC refreshDataSource];
-            [_notificationVC refreshDataSource];
         }
-        [_contactListVC reloadDataSource];
+        [_contactsVC reloadDataSource];
     }];
 }
 
@@ -546,16 +661,20 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
     [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:@[username] completion:^(GXError *error) {
         User* user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:username];
         [[EaseMob sharedInstance].chatManager removeConversationByChatter:user?user.name:@"未知" deleteMessages:YES append2Chat:YES];
+//        NSString *message = [NSString stringWithFormat:@"'%@' 已经将你从联系人中删除", user?user.name:@"未知"];
+//        TTAlertNoTitle(message);
         [_chatListVC refreshDataSource];
-        [_notificationVC refreshDataSource];
-        [_contactListVC reloadDataSource];
+        [_contactsVC reloadDataSource];
     }];
 }
 
 - (void)didAcceptedByBuddy:(NSString *)username
 {
     [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:@[username] completion:^(GXError *error) {
-        [_contactListVC reloadDataSource];
+        User* user = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:username];
+        NSString *message = [NSString stringWithFormat:@"'%@' 已同意添加你为联系人", user?user.name:@"未知"];
+        TTAlertNoTitle(message);
+        [_contactsVC reloadDataSource];
     }];
 }
 
@@ -571,7 +690,7 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
 - (void)didAcceptBuddySucceed:(NSString *)username
 {
     [[GXUserEngine sharedEngine] asyncFetchUserInfoWithEasemobUsername:@[username] completion:^(GXError *error) {
-        [_contactListVC reloadDataSource];
+        [_contactsVC reloadDataSource];
     }];
 }
 
@@ -586,7 +705,7 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
         [self playSoundAndVibration];
 #endif
         
-        [_contactListVC reloadGroupView];
+        [_contactsVC reloadGroupView];
     }];
 }
 
@@ -603,7 +722,7 @@ static const CGFloat kDefaultPlaySoundInterval = 3.0;
             [self playSoundAndVibration];
 #endif
             
-            [_contactListVC reloadGroupView];
+            [_contactsVC reloadGroupView];
         }
     }];
 }

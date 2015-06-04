@@ -12,4 +12,5 @@
 @interface GXMomentListViewController : UITableViewController
 - (void)showGiftInfo;
 - (void)sendSquareMoments;
+- (IBAction)refreshButtonTouched:(id)sender;
 @end

@@ -20,7 +20,7 @@
 static ApplyViewController *controller = nil;
 
 @interface ApplyViewController ()<ApplyFriendCellDelegate>
-
+@property (strong, nonatomic)UILabel *hintLabel;
 @end
 
 @implementation ApplyViewController
@@ -61,6 +61,16 @@ static ApplyViewController *controller = nil;
     [self.navigationItem setLeftBarButtonItem:backItem];
     
     [self loadDataSourceFromLocalDB];
+    
+    [self.view addSubview:self.hintLabel];
+}
+
+- (void)updateHintLabel {
+    if (self.dataSource.count == 0) {
+        self.hintLabel.hidden = NO;
+    } else {
+        self.hintLabel.hidden = YES;
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -73,10 +83,22 @@ static ApplyViewController *controller = nil;
 {
     [super viewWillAppear:animated];
     
+    [self updateHintLabel];
 //    [self.tableView reloadData];
 }
 
 #pragma mark - getter
+
+- (UILabel *)hintLabel {
+    if (_hintLabel == nil) {
+        _hintLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+        _hintLabel.textAlignment = NSTextAlignmentCenter;
+        _hintLabel.text = @"您目前没有任何通知";
+        _hintLabel.textColor = [UIColor grayColor];
+        _hintLabel.hidden = YES;
+    }
+    return _hintLabel;
+}
 
 - (NSMutableArray *)dataSource
 {
@@ -199,6 +221,10 @@ static ApplyViewController *controller = nil;
             NSString *loginUsername = [[[EaseMob sharedInstance].chatManager loginInfo] objectForKey:kSDKUsername];
             [[InvitationManager sharedInstance] removeInvitation:entity loginUser:loginUsername];
             [self.tableView reloadData];
+            if (self.dataSource.count == 0) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"setupUntreatedApplyCount" object:nil];
+                [self.navigationController popViewControllerAnimated:YES];
+            }
         }
         else{
             [self showHint:NSLocalizedString(@"acceptFail", @"accept failure")];
@@ -233,6 +259,10 @@ static ApplyViewController *controller = nil;
             [[InvitationManager sharedInstance] removeInvitation:entity loginUser:loginUsername];
             
             [self.tableView reloadData];
+            if (self.dataSource.count == 0) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"setupUntreatedApplyCount" object:nil];
+                [self.navigationController popViewControllerAnimated:YES];
+            }
         }
         else{
             [self showHint:NSLocalizedString(@"rejectFail", @"reject failure")];
@@ -294,6 +324,8 @@ static ApplyViewController *controller = nil;
 
         }
     }
+    
+    [self updateHintLabel];
 }
 
 - (void)loadDataSourceFromLocalDB
@@ -309,6 +341,8 @@ static ApplyViewController *controller = nil;
         
         [self.tableView reloadData];
     }
+    
+    [self updateHintLabel];
 }
 
 - (void)back

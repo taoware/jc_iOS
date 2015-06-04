@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 appleseed. All rights reserved.
 //
 
-#import "GXInfoChatListViewController.h"
+#import "GXChatListViewController.h"
 #import "SRRefreshView.h"
 #import "ChatListCell.h"
 #import "EMSearchBar.h"
@@ -15,12 +15,12 @@
 #import "ChatViewController.h"
 #import "EMSearchDisplayController.h"
 #import "ConvertToCommonEmoticonsHelper.h"
-#import "XLPagerTabStripViewController.h"
 #import "GXUserEngine.h"
 #import "User.h"
 #import "Photo.h"
+#import "EMConversation+JCchattername.h"
 
-@interface GXInfoChatListViewController ()<UITableViewDelegate,UITableViewDataSource, UISearchDisplayDelegate,SRRefreshDelegate, UISearchBarDelegate, IChatManagerDelegate, XLPagerTabStripChildItem>
+@interface GXChatListViewController ()<UITableViewDelegate,UITableViewDataSource, UISearchDisplayDelegate,SRRefreshDelegate, UISearchBarDelegate, IChatManagerDelegate>
 @property (strong, nonatomic) NSMutableArray        *dataSource;
 
 @property (strong, nonatomic) UITableView           *tableView;
@@ -31,7 +31,7 @@
 @property (strong, nonatomic) EMSearchDisplayController *searchController;
 @end
 
-@implementation GXInfoChatListViewController
+@implementation GXChatListViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -115,17 +115,17 @@
     return _slimeView;
 }
 
-//- (UISearchBar *)searchBar
-//{
-//    if (!_searchBar) {
-//        _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, self.view.frame.size.width, 44)];
-//        _searchBar.delegate = self;
-//        _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
-//        _searchBar.backgroundColor = [UIColor colorWithRed:0.747 green:0.756 blue:0.751 alpha:1.000];
-//    }
-//    
-//    return _searchBar;
-//}
+- (UISearchBar *)searchBar
+{
+    if (!_searchBar) {
+        _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, self.view.frame.size.width, 44)];
+        _searchBar.delegate = self;
+        _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
+        _searchBar.backgroundColor = [UIColor colorWithRed:0.747 green:0.756 blue:0.751 alpha:1.000];
+    }
+    
+    return _searchBar;
+}
 
 - (UITableView *)tableView
 {
@@ -150,7 +150,7 @@
         _searchController.delegate = self;
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         
-        __weak GXInfoChatListViewController *weakSelf = self;
+        __weak GXChatListViewController *weakSelf = self;
         [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
             static NSString *CellIdentifier = @"ChatListCell";
             ChatListCell *cell = (ChatListCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -161,16 +161,19 @@
             }
             
             EMConversation *conversation = [weakSelf.searchController.resultsSource objectAtIndex:indexPath.row];
-            cell.name = conversation.chatter;
+//            cell.name = conversation.chatter;
+            User* sender = [[GXUserEngine sharedEngine] queryUserInfoUsingEasmobUsername:conversation.chatter];
+            cell.name = sender?sender.name:@"未知";
             if (!conversation.isGroup) {
                 cell.placeholderImage = [UIImage imageNamed:@"chatListCellHead.png"];
+                cell.imageURL = [NSURL URLWithString:sender.avatar.thumbnailURL];
             }
             else{
                 NSString *imageName = @"groupPublicHeader";
                 NSArray *groupArray = [[EaseMob sharedInstance].chatManager groupList];
                 for (EMGroup *group in groupArray) {
                     if ([group.groupId isEqualToString:conversation.chatter]) {
-                        cell.name = group.groupSubject;
+                        cell.name = [group.groupSubject substringFromIndex:6];
                         imageName = group.isPublic ? @"groupPublicHeader" : @"groupPrivateHeader";
                         break;
                     }
@@ -368,6 +371,7 @@
             cell.name = [[conversation.ext objectForKey:@"groupSubject"] substringFromIndex:6];
             imageName = [[conversation.ext objectForKey:@"isPublic"] boolValue] ? @"groupPublicHeader" : @"groupPrivateHeader";
         }
+        cell.imageURL = nil;
         cell.placeholderImage = [UIImage imageNamed:imageName];
     }
     cell.detailMsg = [self subTitleMessageByConversation:conversation];
@@ -440,7 +444,7 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    [[RealtimeSearchUtil currentUtil] realtimeSearchWithSource:self.dataSource searchText:(NSString *)searchText collationStringSelector:@selector(chatter) resultBlock:^(NSArray *results) {
+    [[RealtimeSearchUtil currentUtil] realtimeSearchWithSource:self.dataSource searchText:(NSString *)searchText collationStringSelector:@selector(chatterJCname) resultBlock:^(NSArray *results) {
         if (results) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.searchController.resultsSource removeAllObjects];
@@ -556,18 +560,5 @@
     NSLog(NSLocalizedString(@"message.endReceiveOffine", @"End to receive offline messages"));
     [self refreshDataSource];
 }
-
-#pragma mark - XLPagerTabStripViewControllerDelegate
-
--(NSString *)titleForPagerTabStripViewController:(XLPagerTabStripViewController *)pagerTabStripViewController
-{
-    return @"消息";
-}
-
--(UIColor *)colorForPagerTabStripViewController:(XLPagerTabStripViewController *)pagerTabStripViewController
-{
-    return [UIColor blackColor];
-}
-
 
 @end

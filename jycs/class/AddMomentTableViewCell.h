@@ -20,5 +20,6 @@
 
 @interface AddMomentTableViewCell : UITableViewCell
 @property (nonatomic, strong)Moment* momentEntry;
+@property (nonatomic)BOOL onlyText;
 @property (nonatomic, strong)id<AddMomentCellDelegate> delegate;
 @end

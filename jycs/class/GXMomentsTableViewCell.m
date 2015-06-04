@@ -10,6 +10,7 @@
 #import "UIImageView+AFNetworking.h"
 #import "UIView+AutoLayout.h"
 #import "SFPhotoBrowser.h"
+#import "GXPhotoEngine.h"
 
 /*
  *  从RGB获得颜色 0xffffff
@@ -107,7 +108,7 @@ alpha:1.0]
         [self.typeLabel autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:15.f];
         [self.typeLabel sizeToFit];
         
-        [self.resendButton autoPinEdge:ALEdgeTop  toEdge:ALEdgeBottom ofView:self.userNameLabel withOffset:8.f];
+        [self.resendButton autoAlignAxis:ALAxisBaseline toSameAxisOfView:self.typeLabel];
         [self.resendButton autoPinEdge:ALEdgeLeading toEdge:ALEdgeRight ofView:self.headImageView withOffset:15.f];
         self.resendButton.hidden = YES;
         [self.resendButton setTitle:@"点击重新发送" forState:UIControlStateNormal];
@@ -151,7 +152,9 @@ alpha:1.0]
 }
 
 - (void)userInfoTapped {
-    [self.delegate userInfoTappedWithMoment:self.momentToDisplay];
+    if ([self.delegate respondsToSelector:@selector(userInfoTappedWithMoment:)]) {
+        [self.delegate userInfoTappedWithMoment:self.momentToDisplay];
+    }
 }
 
 
@@ -175,7 +178,12 @@ alpha:1.0]
 
     [urlsOfThumbnail enumerateObjectsUsingBlock:^(NSString* url, NSUInteger idx, BOOL *stop) {
         __weak UIImageView* imgV = [self.imageViewArray objectAtIndex:idx];
-        [imgV setImageWithURL:[NSURL URLWithString:url] placeholderImage:[UIImage imageNamed:@"placeholder.jpg"]];
+        if ([url hasPrefix:@"http"]) {
+            [imgV setImageWithURL:[NSURL URLWithString:url] placeholderImage:[UIImage imageNamed:@"placeholder.jpg"]];
+        } else {
+            imgV.image = [GXPhotoEngine imageForlocalPhotoUrl:url];
+        }
+        
 //        NSURLRequest* imageRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
 //        [imgV setImageWithURLRequest:imageRequest placeholderImage:[UIImage imageNamed:@"placeholder.jpg"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 //            if ([request.URL.absoluteString isEqualToString:request.URL.absoluteString]) {
@@ -324,34 +332,34 @@ alpha:1.0]
 
 #pragma mark - Property Accessor
 
-- (void)setIsSynced:(BOOL)isSynced {
-    _syncStatus = isSynced;
-    self.timeLabel.hidden = isSynced;
-    self.resendButton.hidden = !isSynced;
-}
-
 - (void)setSyncStatus:(GXObjectSyncStatus)syncStatus {
     _syncStatus = syncStatus;
-    switch (syncStatus) {
-        case GXObjectSynced:
-            self.timeLabel.hidden = NO;
-            self.resendButton.hidden = YES;
-            break;
-        case GXObjectSyncing:
-            self.timeLabel.hidden = YES;
-            self.resendButton.hidden = NO;
-            self.resendButton.enabled = NO;
-            [self.resendButton setTitle:@"正在发送" forState:UIControlStateNormal];
-            break;
-        case GXObjectCreated:
-            self.timeLabel.hidden = YES;
-            self.resendButton.hidden = NO;
-            self.resendButton.enabled = YES;
-            [self.resendButton setTitle:@"点击发送" forState:UIControlStateNormal];
-            break;
-        default:
-            break;
-    }
+//    switch (syncStatus) {
+//        case GXObjectSynced:
+//            self.timeLabel.hidden = NO;
+//            self.resendButton.hidden = YES;
+//            break;
+//        case GXObjectSyncing:
+//            self.timeLabel.hidden = YES;
+//            self.resendButton.hidden = NO;
+//            self.resendButton.enabled = NO;
+//            [self.resendButton setTitle:@"正在发送" forState:UIControlStateNormal];
+//            break;
+//        case GXObjectCreated:
+//            self.timeLabel.hidden = YES;
+//            self.resendButton.hidden = NO;
+//            self.resendButton.enabled = YES;
+//            [self.resendButton setTitle:@"点击发送" forState:UIControlStateNormal];
+//            break;
+//        case GXObjectFailed:
+//            self.timeLabel.hidden = YES;
+//            self.resendButton.hidden = NO;
+//            self.resendButton.enabled = YES;
+//            [self.resendButton setTitle:@"点击重新发送" forState:UIControlStateNormal];
+//            break;
+//        default:
+//            break;
+//    }
     
 }
 
@@ -466,7 +474,7 @@ alpha:1.0]
 }
 
 - (void)updateUI {
-    self.userNameLabel.text= self.momentToDisplay.screenName;
+    self.userNameLabel.text= self.momentToDisplay.sender.name;
     self.timeLabel.text= [self.dateFormatter stringFromDate:self.momentToDisplay.createTime];
     
     NSString* typeText = [self.momentToDisplay.type stringByAppendingString:@"消息"];

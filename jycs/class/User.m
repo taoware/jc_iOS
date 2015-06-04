@@ -2,7 +2,7 @@
 //  User.m
 //  jycs
 //
-//  Created by appleseed on 5/10/15.
+//  Created by appleseed on 5/29/15.
 //  Copyright (c) 2015 appleseed. All rights reserved.
 //
 
@@ -14,6 +14,8 @@
 
 @implementation User
 
+@dynamic address;
+@dynamic audit;
 @dynamic createTime;
 @dynamic deleteTime;
 @dynamic imPassword;
@@ -22,9 +24,9 @@
 @dynamic mobile;
 @dynamic name;
 @dynamic objectId;
-@dynamic updateTime;
 @dynamic screenName;
-@dynamic audit;
+@dynamic updateTime;
+@dynamic position;
 @dynamic avatar;
 @dynamic hasPermisson;
 @dynamic inUnit;

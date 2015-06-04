@@ -28,6 +28,6 @@
 - (void)asyncPasswordForgotWithMobile:(NSString *)mobile NewPass:(NSString *)newPass completion:(void (^)(GXError *error))completion;
 
 - (User *)queryUserInfoUsingEasmobUsername:(NSString* )easemobUsername;
-- (void)queryUserInfoUsingMobile:(NSString *)mobile completion:(void (^)(NSArray* users ,GXError *error))completion;
+- (void)queryUserInfoWithQueryString:(NSString *)queryString ofType:(NSString *)type completion:(void (^)(NSArray* users ,GXError *error))completion;
 
 @end

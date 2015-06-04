@@ -2,7 +2,7 @@
 //  User.h
 //  jycs
 //
-//  Created by appleseed on 5/10/15.
+//  Created by appleseed on 5/29/15.
 //  Copyright (c) 2015 appleseed. All rights reserved.
 //
 
@@ -13,6 +13,8 @@
 
 @interface User : NSManagedObject
 
+@property (nonatomic, retain) NSString * address;
+@property (nonatomic, retain) NSNumber * audit;
 @property (nonatomic, retain) NSDate * createTime;
 @property (nonatomic, retain) NSDate * deleteTime;
 @property (nonatomic, retain) NSString * imPassword;
@@ -21,9 +23,9 @@
 @property (nonatomic, retain) NSString * mobile;
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSNumber * objectId;
-@property (nonatomic, retain) NSDate * updateTime;
 @property (nonatomic, retain) NSString * screenName;
-@property (nonatomic, retain) NSNumber * audit;
+@property (nonatomic, retain) NSDate * updateTime;
+@property (nonatomic, retain) NSString * position;
 @property (nonatomic, retain) Photo *avatar;
 @property (nonatomic, retain) NSSet *hasPermisson;
 @property (nonatomic, retain) NSSet *inUnit;

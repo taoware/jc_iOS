@@ -16,7 +16,7 @@
 
 @implementation GXStoreEngine
 
-+ (GXSyncEngine *)sharedEngine {
++ (GXStoreEngine *)sharedEngine {
     static GXStoreEngine *sharedEngine = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -27,7 +27,6 @@
 }
 
 - (void)startSync {
-    [super startSync];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         [self downloadDataForStore];
@@ -36,7 +35,7 @@
 
 - (void)downloadDataForStore {
 
-    NSManagedObjectContext* context = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+    NSManagedObjectContext* context = [[GXCoreDataController sharedInstance] masterManagedObjectContext];
     
     [[GXHTTPManager sharedManager] GET:@"store" parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
         if ([responseObject isKindOfClass:[NSDictionary class]]) {
@@ -66,7 +65,7 @@
 
 - (void)DeleteStoresRecoredNotInObjectIds:(NSArray*)idArray {
     __block NSArray *results = nil;
-    NSManagedObjectContext *managedObjectContext = [[GXCoreDataController sharedInstance] backgroundManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[GXCoreDataController sharedInstance] masterManagedObjectContext];
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Store"];
     NSPredicate *predicate;
     predicate = [NSPredicate predicateWithFormat:@"NOT (objectId IN %@)", idArray];
@@ -85,11 +84,6 @@
 
 - (void)executeSyncCompletedOperations {
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSError *error = nil;
-        [[GXCoreDataController sharedInstance] saveBackgroundContext];
-        if (error) {
-            NSLog(@"Error saving background context after creating objects on server: %@", error);
-        }
         
         [[GXCoreDataController sharedInstance] saveMasterContext];
         [[NSNotificationCenter defaultCenter]

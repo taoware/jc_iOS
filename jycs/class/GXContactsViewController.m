@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 appleseed. All rights reserved.
 //
 
-#import "GXContactListViewController.h"
+#import "GXContactsViewController.h"
 #import "BaseTableViewCell.h"
 #import "RealtimeSearchUtil.h"
 #import "ChineseToPinyin.h"
@@ -17,12 +17,13 @@
 #import "ApplyViewController.h"
 #import "GroupListViewController.h"
 #import "ChatViewController.h"
-#import "XLPagerTabStripViewController.h"
 #import "GXUserEngine.h"
 #import "EMBuddy+JCuser.h"
+#import "GXGroupListViewController.h"
+#import "GXUserInfoViewController.h"
 
 
-@interface GXContactListViewController ()<UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UIActionSheetDelegate, BaseTableCellDelegate, SRRefreshDelegate, IChatManagerDelegate, XLPagerTabStripChildItem>
+@interface GXContactsViewController ()<UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UISearchDisplayDelegate, UIActionSheetDelegate, BaseTableCellDelegate, SRRefreshDelegate, IChatManagerDelegate>
 {
     NSIndexPath *_currentLongPressIndex;
 }
@@ -32,15 +33,16 @@
 @property (strong, nonatomic) NSMutableArray *sectionTitles;
 
 @property (strong, nonatomic) UILabel *unapplyCountLabel;
-//@property (strong, nonatomic) UITableView *tableView;
+@property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) EMSearchBar *searchBar;
 @property (strong, nonatomic) SRRefreshView *slimeView;
+@property (strong, nonatomic) GXGroupListViewController* groupController;
 
 @property (strong, nonatomic) EMSearchDisplayController *searchController;
 
 @end
 
-@implementation GXContactListViewController
+@implementation GXContactsViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -54,21 +56,25 @@
     return self;
 }
 
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    _dataSource = [NSMutableArray array];
+    _contactsSource = [NSMutableArray array];
+    _sectionTitles = [NSMutableArray array];
+    [[EaseMob sharedInstance].chatManager addDelegate:self delegateQueue:nil];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.backgroundColor = [UIColor whiteColor];
-    self.tableView.tableFooterView = [[UIView alloc] init];
-    self.tableView.tableHeaderView = self.searchBar;
-    [self.tableView addSubview:self.slimeView];
     [self searchController];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
+    self.searchBar.frame = CGRectMake(0, 0, self.view.frame.size.width, 44);
+    [self.view addSubview:self.searchBar];
+    
+    self.tableView.frame = CGRectMake(0, self.searchBar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.searchBar.frame.size.height);
+    [self.view addSubview:self.tableView];
+    [self.tableView addSubview:self.slimeView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -82,7 +88,9 @@
 {
     [[EaseMob sharedInstance].chatManager removeDelegate:self];
 }
+
 #pragma mark - getter
+
 
 - (UISearchBar *)searchBar
 {
@@ -129,21 +137,21 @@
     return _slimeView;
 }
 
-//- (UITableView *)tableView
-//{
-//    if (_tableView == nil)
-//    {
-//        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-//        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-//        _tableView.backgroundColor = [UIColor whiteColor];
-//        _tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-//        _tableView.delegate = self;
-//        _tableView.dataSource = self;
-//        _tableView.tableFooterView = [[UIView alloc] init];
-//    }
-//    
-//    return _tableView;
-//}
+- (UITableView *)tableView
+{
+    if (_tableView == nil)
+    {
+        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        _tableView.backgroundColor = [UIColor whiteColor];
+        _tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        _tableView.delegate = self;
+        _tableView.dataSource = self;
+        _tableView.tableFooterView = [[UIView alloc] init];
+    }
+    
+    return _tableView;
+}
 
 - (EMSearchDisplayController *)searchController
 {
@@ -152,7 +160,7 @@
         _searchController.delegate = self;
         _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         
-        __weak GXContactListViewController *weakSelf = self;
+        __weak GXContactsViewController *weakSelf = self;
         [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
             static NSString *CellIdentifier = @"ContactListCell";
             BaseTableViewCell *cell = (BaseTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -163,8 +171,10 @@
             }
             
             EMBuddy *buddy = [weakSelf.searchController.resultsSource objectAtIndex:indexPath.row];
-            cell.imageView.image = [UIImage imageNamed:@"chatListCellHead.png"];
-            cell.textLabel.text = buddy.username;
+//            cell.imageView.image = [UIImage imageNamed:@"chatListCellHead.png"];
+//            cell.textLabel.text = buddy.username;
+            [cell.imageView setImageWithURL:[NSURL URLWithString:buddy.avatarUrl] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
+            cell.textLabel.text = buddy.realName;
             
             return cell;
         }];
@@ -210,8 +220,8 @@
 {
     // Return the number of rows in the section.
     if (section == 0) {
-//        return 2;
-        return 1;
+        return 2;
+//        return 1;
     }
     
     return [[self.dataSource objectAtIndex:(section - 1)] count];
@@ -228,7 +238,8 @@
         }
         
         cell.imageView.image = [UIImage imageNamed:@"newFriends"];
-        cell.textLabel.text = NSLocalizedString(@"title.apply", @"Application and notification");
+//        cell.textLabel.text = NSLocalizedString(@"title.apply", @"Application and notification");
+        cell.textLabel.text = @"我的申请";
         [cell addSubview:self.unapplyCountLabel];
     }
     else{
@@ -241,17 +252,16 @@
         }
         
         cell.indexPath = indexPath;
-        // show group vc in sibling VC
-//        if (indexPath.section == 0 && indexPath.row == 1) {
-//            cell.imageView.image = [UIImage imageNamed:@"groupPrivateHeader"];
-//            cell.textLabel.text = NSLocalizedString(@"title.group", @"Group");
-//        }
-//        else{
+        if (indexPath.section == 0 && indexPath.row == 1) {
+            cell.imageView.image = [UIImage imageNamed:@"groupPrivateHeader"];
+            cell.textLabel.text = NSLocalizedString(@"title.group", @"Group");
+        }
+        else{
             EMBuddy *buddy = [[self.dataSource objectAtIndex:(indexPath.section - 1)] objectAtIndex:indexPath.row];
 //            cell.imageView.image = [UIImage imageNamed:@"chatListCellHead.png"];
             [cell.imageView setImageWithURL:[NSURL URLWithString:buddy.avatarUrl] placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
             cell.textLabel.text = buddy.realName;
-//        }
+        }
     }
     
     return cell;
@@ -383,9 +393,14 @@
             }
         }
         
-        ChatViewController *chatVC = [[ChatViewController alloc] initWithChatter:buddy.username isGroup:NO];
-        chatVC.title = buddy.realName;
-        [self.navigationController pushViewController:chatVC animated:YES];
+//        ChatViewController *chatVC = [[ChatViewController alloc] initWithChatter:buddy.username isGroup:NO];
+//        chatVC.title = buddy.realName;
+//        [self.navigationController pushViewController:chatVC animated:YES];
+        
+        UIStoryboard* story = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+        GXUserInfoViewController* userVC = [story instantiateViewControllerWithIdentifier:@"UserInfo"];
+        userVC.buddy = buddy;
+        [self.navigationController pushViewController:userVC animated:YES];
     }
 }
 
@@ -400,7 +415,7 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    [[RealtimeSearchUtil currentUtil] realtimeSearchWithSource:self.contactsSource searchText:(NSString *)searchText collationStringSelector:@selector(username) resultBlock:^(NSArray *results) {
+    [[RealtimeSearchUtil currentUtil] realtimeSearchWithSource:self.contactsSource searchText:(NSString *)searchText collationStringSelector:@selector(realName) resultBlock:^(NSArray *results) {
         if (results) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.searchController.resultsSource removeAllObjects];
@@ -501,7 +516,7 @@
 //刷新列表
 - (void)slimeRefreshStartRefresh:(SRRefreshView *)refreshView
 {
-    __weak GXContactListViewController *weakSelf = self;
+    __weak GXContactsViewController *weakSelf = self;
     [[[EaseMob sharedInstance] chatManager] asyncFetchBuddyListWithCompletion:^(NSArray *buddyList, EMError *error) {
         [weakSelf.slimeView endRefresh];
     } onQueue:nil];
@@ -525,7 +540,7 @@
     
     _currentLongPressIndex = indexPath;
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:NSLocalizedString(@"cancel", @"Cancel") destructiveButtonTitle:NSLocalizedString(@"friend.block", @"join the blacklist") otherButtonTitles:@"删除联系人", nil];
-    [actionSheet showInView:[[UIApplication sharedApplication] keyWindow]];
+//    [actionSheet showInView:[[UIApplication sharedApplication] keyWindow]];
 }
 
 #pragma mark - private
@@ -637,24 +652,6 @@
 {
     AddFriendViewController *addController = [[AddFriendViewController alloc] initWithStyle:UITableViewStylePlain];
     [self.navigationController pushViewController:addController animated:YES];
-}
-
-#pragma mark - EMChatManagerBuddyDelegate
-- (void)didUpdateBlockedList:(NSArray *)blockedList
-{
-    [self reloadDataSource];
-}
-
-#pragma mark - XLPagerTabStripViewControllerDelegate
-
--(NSString *)titleForPagerTabStripViewController:(XLPagerTabStripViewController *)pagerTabStripViewController
-{
-    return @"联系人";
-}
-
--(UIColor *)colorForPagerTabStripViewController:(XLPagerTabStripViewController *)pagerTabStripViewController
-{
-    return [UIColor redColor];
 }
 
 

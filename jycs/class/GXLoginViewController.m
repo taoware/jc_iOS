@@ -56,28 +56,27 @@
             if (!error) {
                 [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@(YES)];
             } else {
-                NSLog(error.description);
                 switch (error.errorCode) {
                     case GXErrorJCServerAuthenticationFailure:
-                        TTAlertNoTitle(@"用户名、密码不匹配");
+                        TTAlertNoTitle(error.description);
                         break;
                     case GXErrorServerNotReachable:
                         TTAlertNoTitle(@"服务器连接失败");
                         break;
                     case GXErrorEaseMobAuthenticationFailure:
-                        TTAlertNoTitle(@"环信：用户名或密码错误");
+                        TTAlertNoTitle(@"服务器内部错误");
                         break;
                     default:
-                        TTAlertNoTitle(@"登陆失败");
+                        TTAlertNoTitle(error.description);
                         break;
                 }
             }
         }];
     } else {
-        [[[UIAlertView alloc] initWithTitle:@"Missing Information"
-                                    message:@"Make sure you fill out all of the information!"
+        [[[UIAlertView alloc] initWithTitle:@"信息不完整"
+                                    message:@"请填写手机号及密码！"
                                    delegate:nil
-                          cancelButtonTitle:@"ok"
+                          cancelButtonTitle:@"确定"
                           otherButtonTitles:nil] show];
 
     }
@@ -90,7 +89,7 @@
 
 
 - (void)updateLoginButton {
-    if (!self.usernameField.text.length && !self.passwordField.text.length) {
+    if (!self.usernameField.text.length || !self.passwordField.text.length) {
         self.login_Btn.enabled = NO;
         self.login_Btn.alpha = .8;
     } else {
@@ -106,6 +105,10 @@
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
+    [self updateLoginButton];
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
     [self updateLoginButton];
 }
 
